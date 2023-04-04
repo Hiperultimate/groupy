@@ -6,7 +6,7 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials"
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -39,10 +39,18 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
+    jwt({ token, user }) {
+      /* User table contents is exposed in tokens */
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session({ session, token, user }) {
       if (session.user) {
-        console.log("RUNNING CALLBACK : ", session, user)
-        // session.user.id = user.id;
+        session.user.id = token.id;
+        console.log("SESSION : ", session, token, user);
+
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
@@ -51,14 +59,18 @@ export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'Email',
+      name: "Email",
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
       // e.g. domain, username, password, 2FA token, etc.
       // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "example@gmail.com" },
-        password: { label: "Password", type: "password" }
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "example@gmail.com",
+        },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
         // You need to provide your own logic here that takes the credentials
@@ -68,27 +80,37 @@ export const authOptions: NextAuthOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         const creds = await loginSchema.parseAsync(credentials);
-        const user = await prisma.user.findFirst({ where: {email: creds.email}});
-        
-        if(!user){
+        const user = await prisma.user.findFirst({
+          where: { email: creds.email },
+        });
+
+        if (!user) {
           return null;
         }
-        
-        if(user){
-          console.log(user)
+
+        if (user) {
+          console.log(user);
         }
 
         // Maybe add password hashing here
-        if(user.password !== creds.password){
+        if (user.password !== creds.password) {
           return null;
         }
 
         return {
-          ...user
-        }
-      }
+          ...user,
+        };
+      },
     }),
   ],
+  // Provide your own pages here
+  // pages: {
+  //   signIn: 'auth/signin',
+  //   signOut: '/auth/signout',
+  //   error: '/auth/error', // Error code passed in query string as ?error=
+  //   verifyRequest: '/auth/verify-request', // (used for check email message)
+  //   newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
+  // },
   session: {
     strategy: "jwt",
   },
