@@ -49,8 +49,8 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
-    email         String   @unique
+    name          String
+    email         String    @unique
     password      String   
     emailVerified DateTime?
     image         String?

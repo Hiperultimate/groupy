@@ -8,29 +8,38 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 
-export const authenticate = createTRPCRouter({
-  checkUser: publicProcedure.input(loginSchema).query( async ({ input, ctx }) => {
-    const getUser = await ctx.prisma.user.findFirst({
-      where: { email: input.email },
-    });
-    const checkPassword = new Promise((resolve, reject) => {
-      if (getUser && getUser.password === input.password) {
-        resolve("Login successfull");
-      }else{
-        reject("Login failed");
-      }
-    });
-    checkPassword.then((successMessage) => {
-      // return ({message: successMessage, user: getUser, status: 200})
-      console.log(successMessage);
-      return ({user: getUser, status: 200})
-    })
-    .catch((error) => {
-      // return ({message: error,  status:401})
-      console.error(error);
-      return ({status:401})
-    });
-  }),
+export const authenticateRouter = createTRPCRouter({
+  authenticate: publicProcedure
+    .input(loginSchema)
+    .query(async ({ input, ctx }) => {
+      const getUser = await ctx.prisma.user.findFirst({
+        where: { email: input.email },
+      });
+      const checkPassword = new Promise((resolve, reject) => {
+        if (getUser && getUser.password === input.password) {
+          resolve("Login successfull");
+        } else {
+          reject("Login failed");
+        }
+      });
+      checkPassword
+        .then((successMessage) => {
+          // return ({message: successMessage, user: getUser, status: 200})
+          console.log(successMessage);
+          return { user: getUser, status: 200 };
+        })
+        .catch((error) => {
+          // return ({message: error,  status:401})
+          if (typeof error === "string") {
+            return { message: error, status: 401 };
+          } else {
+            throw error;
+          }
+          // console.error(error);
+          // return ({status:401})
+        });
+    }),
 });
 
 // {message: errorMessage, status: 401}
+
