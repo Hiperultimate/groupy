@@ -1,45 +1,43 @@
 import { z } from "zod";
 
-import { loginSchema } from "../../../common/authSchema";
+import { signUpSchema } from "../../../common/authSchema";
 
 import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 
-export const authenticateRouter = createTRPCRouter({
-  authenticate: publicProcedure
-    .input(loginSchema)
-    .query(async ({ input, ctx }) => {
-      const getUser = await ctx.prisma.user.findFirst({
-        where: { email: input.email },
+export const authRouter = createTRPCRouter({
+  signup: publicProcedure
+    .input(signUpSchema)
+    .output(
+      z.object({
+        message: z.string(),
+        status: z.number(),
+        result: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { name, email, password } = input;
+
+      const exists = await ctx.prisma.user.findFirst({ where: { email } });
+
+      if (exists) {
+        throw new TRPCError({message:"User with this Email ID already exists", code: "FORBIDDEN"})
+      }
+
+      // TODO: Hash password here and pass to result like password : hashed_password
+
+      const result = await ctx.prisma.user.create({
+        data: { name, email, password },
       });
-      const checkPassword = new Promise((resolve, reject) => {
-        if (getUser && getUser.password === input.password) {
-          resolve("Login successfull");
-        } else {
-          reject("Login failed");
-        }
-      });
-      checkPassword
-        .then((successMessage) => {
-          // return ({message: successMessage, user: getUser, status: 200})
-          console.log(successMessage);
-          return { user: getUser, status: 200 };
-        })
-        .catch((error) => {
-          // return ({message: error,  status:401})
-          if (typeof error === "string") {
-            return { message: error, status: 401 };
-          } else {
-            throw error;
-          }
-          // console.error(error);
-          // return ({status:401})
-        });
+
+      return {
+        message: "Account created successfully",
+        status: 201,
+        result: result.email,
+      };
     }),
 });
-
-// {message: errorMessage, status: 401}
-

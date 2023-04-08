@@ -47,6 +47,7 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// when adding new fields to these User model, you must provide default values for them, since the adapter is not aware of these fields
 model User {
     id            String    @id @default(cuid())
     name          String
