@@ -7,6 +7,25 @@ import { signUpSchema } from "~/common/authSchema";
 import { api } from "~/utils/api";
 import { type ZodError } from "zod";
 
+import { getServerAuthSession } from "../server/auth";
+import { type GetServerSideProps } from "next";
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
+  if (session) {
+    // Redirect to home page
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: { session },
+  };
+};
+
 const SignUp: NextPage = () => {
   const router = useRouter();
 
