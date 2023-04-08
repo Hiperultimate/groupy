@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  
+
   return (
     <>
       <Head>
@@ -18,14 +18,12 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
-          </div>
-        
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-2xl text-white">
+            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
+          </p>
+          <AuthShowcase />
+        </div>
       </main>
     </>
   );
@@ -35,16 +33,16 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
   const router = useRouter();
-  
+
   const { data: sessionData } = useSession();
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
-  
+
   useEffect(() => {
-    console.log("Front-end session data : " ,sessionData);
-  },[sessionData])
+    console.log("Front-end session data : ", sessionData);
+  }, [sessionData]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
