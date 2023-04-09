@@ -1,15 +1,16 @@
 import Image from "next/image";
+import Logo from "public/GroupyLogo.svg";
 
 const NavBar = () => {
   return (
-    <nav className="">
+    <nav className="ml-5 mr-5 flex h-20 items-center justify-between">
       <div>
-        <a href="#">
-          Logo
-          {/* <Image src="logo.png" alt="Logo" width={25} height={25}/> */}
+        <a className="relative flex font-teko text-[29px]" href="#">
+          <Image className="m-5" src={Logo as string} alt="logo" />
+          <span className="relative top-[18px]">GROUPY</span>
         </a>
       </div>
-      <ul className="">
+      <ul className="flex gap-8 font-poppins font-normal text-grey">
         <li>
           <a href="#">Home</a>
         </li>
