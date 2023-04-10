@@ -1,7 +1,36 @@
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Logo from "public/GroupyLogo.svg";
 
+type PageType = "home" | "chat" | "settings";
+
+export const pageStates = {
+  HOME: "home",
+  CHAT: "chat",
+  SETTINGS: "settings",
+} as const;
+
 const NavBar = () => {
+  const router = useRouter();
+  const currentUrl = router.asPath;
+
+  let selectedPage: PageType = pageStates.HOME;
+
+  switch (currentUrl) {
+    case "/":
+      selectedPage = pageStates.HOME;
+      break;
+    case "/settings":
+      selectedPage = pageStates.SETTINGS;
+      break;
+    case "/chat":
+      selectedPage = pageStates.CHAT;
+      break;
+    default:
+      // Handle any other URLs
+      break;
+  }
+
   return (
     <nav className="ml-5 mr-5 flex h-20 items-center justify-between">
       <div>
@@ -12,16 +41,42 @@ const NavBar = () => {
       </div>
       <ul className="flex gap-8 font-poppins font-normal text-grey">
         <li>
-          <a href="#">Home</a>
+          <a
+            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
+              selectedPage === pageStates.HOME ? `underline` : ``
+            }`}
+            href="#"
+          >
+            Home
+          </a>
         </li>
         <li>
-          <a href="#">Chat</a>
+          <a
+            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
+              selectedPage === pageStates.CHAT ? `underline` : ``
+            }`}
+            href="#"
+          >
+            Chat
+          </a>
         </li>
         <li>
-          <a href="#">Settings</a>
+          <a
+            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
+              selectedPage === pageStates.SETTINGS ? `underline` : ``
+            }`}
+            href="#"
+          >
+            Settings
+          </a>
         </li>
         <li>
-          <a href="#">Logout</a>
+          <a
+            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out`}
+            href="#"
+          >
+            Logout
+          </a>
         </li>
       </ul>
     </nav>
