@@ -33,7 +33,7 @@ const NavBar = ({ onlyLogo = false }: { onlyLogo?: boolean }) => {
 
   return (
     <nav
-      className={`absolute flex h-20 w-screen items-center justify-between ${
+      className={`absolute flex h-20 w-screen items-center justify-between z-50 ${
         onlyLogo ? "bg-transparent" : "bg-white"
       }`}
     >
