@@ -4,6 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
+import SvgGroupyLogo from "public/SvgGroupyLogo";
 
 import { api } from "~/utils/api";
 import InputField from "./components/InputField";
@@ -41,11 +42,17 @@ const Home: NextPage = () => {
             </div>
 
             <div className="w-3/6">
-              <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 drop-shadow-lg">
+              <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 pb-6 pt-6 drop-shadow-lg">
+                {/* <Image src={Logo as string} className="bg-orange" alt="Groupt Logo" /> */}
+                <div className="bg-orange p-6">
+                <SvgGroupyLogo fillColor = "#ffffff"/>
+
+                </div>
+                
                 <span className="text-3xl font-bold text-dark-blue">
                   Sign in to your account
                 </span>
-                <span className="text-xl text-grey">Start your journey</span>
+                <span className="my-4 text-xl text-grey">Start your journey</span>
                 <InputField
                   title="Email"
                   isRequired={true}
@@ -61,11 +68,11 @@ const Home: NextPage = () => {
                   // handleState={{ inputState: name, changeInputState: setName }}
                   // disabled={registerUser_isLoading}
                 />
-                <button className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                <button className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
                   Login
                 </button>
                 <span>--------or---------</span>
-                <span className="text-3xl font-bold text-dark-blue">
+                <span className="text-3xl font-bold py-4 text-dark-blue">
                   Join our community
                 </span>
                 <button className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
