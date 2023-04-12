@@ -30,36 +30,39 @@ const Home: NextPage = () => {
       </main> */}
       <main className="pt-[80px] font-poppins">
         <div className="background-design" />
-        <div className="flex w-screen">
-          <div className="flex flex-col items-end w-3/6">
-            <span className="text-5xl font-bold text-dark-blue">
-              &quot;Alone we can do so little, together we can do so much.&quot;
-            </span>
-            <span className="text-xl">-Helen Keller</span>
-          </div>
+        <div className="blur-gradient pt-[80px]">
+          <div className="flex w-screen">
+            <div className="flex w-3/6 flex-col items-end">
+              <span className="text-5xl font-bold text-dark-blue">
+                &quot;Alone we can do so little, together we can do so
+                much.&quot;
+              </span>
+              <span className="text-xl">-Helen Keller</span>
+            </div>
 
-          <div className="flex flex-col w-3/6">
-            <span>Sign in to your account</span>
-            <span>Start your journey</span>
-            <InputField
-              title="Email"
-              isRequired={true}
-              placeholder="Enter your email address"
-              // handleState={{ inputState: name, changeInputState: setName }}
-              // disabled={registerUser_isLoading}
-            />
+            <div className="flex w-3/6 flex-col">
+              <span>Sign in to your account</span>
+              <span>Start your journey</span>
+              <InputField
+                title="Email"
+                isRequired={true}
+                placeholder="Enter your email address"
+                // handleState={{ inputState: name, changeInputState: setName }}
+                // disabled={registerUser_isLoading}
+              />
 
-            <InputField
-              title="Password"
-              isRequired={true}
-              placeholder="Enter your password"
-              // handleState={{ inputState: name, changeInputState: setName }}
-              // disabled={registerUser_isLoading}
-            />
-            <button>Login</button>
-            <span>--------or---------</span>
-            <span>Join our community</span>
-            <button>Sign Up</button>
+              <InputField
+                title="Password"
+                isRequired={true}
+                placeholder="Enter your password"
+                // handleState={{ inputState: name, changeInputState: setName }}
+                // disabled={registerUser_isLoading}
+              />
+              <button>Login</button>
+              <span>--------or---------</span>
+              <span>Join our community</span>
+              <button>Sign Up</button>
+            </div>
           </div>
         </div>
       </main>

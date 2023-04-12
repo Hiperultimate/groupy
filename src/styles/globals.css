@@ -30,16 +30,23 @@
   font-style: normal;
 }
 
-.background-design {
+.background-design{
+  min-height: calc(100vh - 80px);
   background-color: #ffffff;
-  opacity: 0.1;
-  position:absolute;
-  z-index: -99;
-  height: calc(100vh - 80px);
-  width: 100vw;
   background-image: linear-gradient(#000000 0.9px, transparent 0.9px),
     linear-gradient(to right, #000000 0.9px, #ffffff 0.9px);
   background-size: 20px 20px;
-  filter: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,1) 100%)
 }
 
+/* .background-design::after{
+  content: "";
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.97) 50%, rgba(255,255,255,1) 100%);
+} */
+
+.blur-gradient{
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(247,248,249,0.97) 50%, rgba(247,248,249,1) 100%);
+}
