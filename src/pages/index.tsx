@@ -30,38 +30,48 @@ const Home: NextPage = () => {
       </main> */}
       <main className="pt-[80px] font-poppins">
         <div className="background-design" />
-        <div className="blur-gradient pt-[80px]">
-          <div className="flex w-screen">
+        <div className="blur-gradient">
+          <div className="flex h-screen w-screen items-center">
             <div className="flex w-3/6 flex-col items-end">
-              <span className="text-5xl font-bold text-dark-blue">
+              <span className="max-w-[701px] px-20 text-5xl font-bold text-dark-blue">
                 &quot;Alone we can do so little, together we can do so
                 much.&quot;
               </span>
-              <span className="text-xl">-Helen Keller</span>
+              <span className="px-20 text-xl">-Helen Keller</span>
             </div>
 
-            <div className="flex w-3/6 flex-col">
-              <span>Sign in to your account</span>
-              <span>Start your journey</span>
-              <InputField
-                title="Email"
-                isRequired={true}
-                placeholder="Enter your email address"
-                // handleState={{ inputState: name, changeInputState: setName }}
-                // disabled={registerUser_isLoading}
-              />
+            <div className="w-3/6">
+              <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 drop-shadow-lg">
+                <span className="text-3xl font-bold text-dark-blue">
+                  Sign in to your account
+                </span>
+                <span className="text-xl text-grey">Start your journey</span>
+                <InputField
+                  title="Email"
+                  isRequired={true}
+                  placeholder="Enter your email address"
+                  // handleState={{ inputState: name, changeInputState: setName }}
+                  // disabled={registerUser_isLoading}
+                />
 
-              <InputField
-                title="Password"
-                isRequired={true}
-                placeholder="Enter your password"
-                // handleState={{ inputState: name, changeInputState: setName }}
-                // disabled={registerUser_isLoading}
-              />
-              <button>Login</button>
-              <span>--------or---------</span>
-              <span>Join our community</span>
-              <button>Sign Up</button>
+                <InputField
+                  title="Password"
+                  isRequired={true}
+                  placeholder="Enter your password"
+                  // handleState={{ inputState: name, changeInputState: setName }}
+                  // disabled={registerUser_isLoading}
+                />
+                <button className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                  Login
+                </button>
+                <span>--------or---------</span>
+                <span className="text-3xl font-bold text-dark-blue">
+                  Join our community
+                </span>
+                <button className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                  Sign Up
+                </button>
+              </div>
             </div>
           </div>
         </div>
