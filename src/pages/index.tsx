@@ -1,16 +1,36 @@
-import { useEffect } from "react";
+import { type FormEventHandler, useEffect, useState } from "react";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn, signOut, useSession } from "next-auth/react";
-import SvgGroupyLogo from "public/SvgGroupyLogo";
-
 import { api } from "~/utils/api";
 import InputField from "./components/InputField";
+import SvgGroupyLogo from "public/SvgGroupyLogo";
+
+import { signIn, signOut, useSession } from "next-auth/react";
+import { loginSchema } from "~/common/authSchema";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
+
+  const [emailField, setEmailField] = useState("");
+  const [passwordField, setPasswordField] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const formSubmitHandler: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    const validate = loginSchema.safeParse({
+      email: emailField,
+      password: passwordField,
+    });
+
+    if (!validate.success) {
+      // update error message and return
+      // No need to tell the user of the exact error as they are just logging into existing account.
+      setErrorMessage("Email ID or Password is incorrect");
+      return;
+    }
+  };
 
   return (
     <>
@@ -41,9 +61,8 @@ const Home: NextPage = () => {
               <span className="px-20 text-xl">-Helen Keller</span>
             </div>
 
-            <div className="w-3/6">
+            <form className="w-3/6" onSubmit={formSubmitHandler}>
               <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 pb-6 pt-12 drop-shadow-lg">
-                {/* <Image src={Logo as string} className="bg-orange" alt="Groupt Logo" /> */}
                 <div className="absolute top-[-30px] rounded-lg bg-orange p-3">
                   <SvgGroupyLogo fillColor="#ffffff" />
                 </div>
@@ -54,22 +73,37 @@ const Home: NextPage = () => {
                 <span className="my-4 text-xl text-grey">
                   Start your journey
                 </span>
-                <InputField
-                  title="Email"
-                  isRequired={true}
-                  placeholder="Enter your email address"
-                  // handleState={{ inputState: name, changeInputState: setName }}
-                  // disabled={registerUser_isLoading}
-                />
+                <div className="w-full">
+                  <InputField
+                    title="Email"
+                    isRequired={true}
+                    placeholder="Enter your email address"
+                    handleState={{
+                      inputState: emailField,
+                      changeInputState: setEmailField,
+                    }}
+                    // disabled={registerUser_isLoading}
+                  />
+                  
+                  <span className="p-2" />
 
-                <InputField
-                  title="Password"
-                  isRequired={true}
-                  placeholder="Enter your password"
-                  // handleState={{ inputState: name, changeInputState: setName }}
-                  // disabled={registerUser_isLoading}
-                />
-                <button className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                  <InputField
+                    title="Password"
+                    type="password"
+                    isRequired={true}
+                    placeholder="Enter your password"
+                    handleState={{
+                      inputState: passwordField,
+                      changeInputState: setPasswordField,
+                    }}
+                    // disabled={registerUser_isLoading}
+                  />
+                </div>
+                <span className="text-red-600">{errorMessage}</span>
+                <button
+                  type="submit"
+                  className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                >
                   Login
                 </button>
                 <div className="flex w-full">
@@ -80,11 +114,14 @@ const Home: NextPage = () => {
                 <span className="py-4 text-3xl font-bold text-dark-blue">
                   Join our community
                 </span>
-                <button className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                <button
+                  type="button"
+                  className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                >
                   Sign Up
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </main>
