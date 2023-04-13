@@ -42,17 +42,18 @@ const Home: NextPage = () => {
             </div>
 
             <div className="w-3/6">
-              <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 pb-6 pt-6 drop-shadow-lg">
+              <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 pb-6 pt-12 drop-shadow-lg">
                 {/* <Image src={Logo as string} className="bg-orange" alt="Groupt Logo" /> */}
-                <div className="bg-orange p-6">
-                <SvgGroupyLogo fillColor = "#ffffff"/>
-
+                <div className="absolute top-[-30px] rounded-lg bg-orange p-3">
+                  <SvgGroupyLogo fillColor="#ffffff" />
                 </div>
-                
+
                 <span className="text-3xl font-bold text-dark-blue">
                   Sign in to your account
                 </span>
-                <span className="my-4 text-xl text-grey">Start your journey</span>
+                <span className="my-4 text-xl text-grey">
+                  Start your journey
+                </span>
                 <InputField
                   title="Email"
                   isRequired={true}
@@ -71,8 +72,12 @@ const Home: NextPage = () => {
                 <button className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
                   Login
                 </button>
-                <span>--------or---------</span>
-                <span className="text-3xl font-bold py-4 text-dark-blue">
+                <div className="flex w-full">
+                  <div className="relative top-[-10px] w-full border-b-2" />
+                  <span className="mx-4 text-sm text-grey">OR</span>
+                  <div className="relative top-[-10px] w-full border-b-2" />
+                </div>
+                <span className="py-4 text-3xl font-bold text-dark-blue">
                   Join our community
                 </span>
                 <button className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
