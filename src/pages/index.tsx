@@ -1,17 +1,21 @@
 import { type FormEventHandler, useEffect, useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { api } from "~/utils/api";
-import InputField from "./components/InputField";
-import SvgGroupyLogo from "public/SvgGroupyLogo";
 
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
+import { api } from "~/utils/api";
 import { loginSchema } from "~/common/authSchema";
 
-const Home: NextPage = () => {
+import SvgGroupyLogo from "public/SvgGroupyLogo";
+import InputField from "./components/InputField";
+
+const INVALID_CREDENTIALS_ERROR_MESSAGE = "Email-ID or Password is incorrect" as const
+
+const SignInPage: NextPage = () => {
+  const router = useRouter();
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   const [emailField, setEmailField] = useState("");
@@ -21,27 +25,34 @@ const Home: NextPage = () => {
   const {
     isFetching: signInFetching,
     data: signInData,
+    error: signInError,
     refetch: signInFunc,
   } = useQuery(
     ["signIn", emailField, passwordField],
-    () =>
-      signIn("credentials", {
+    async () => {
+      const response = await signIn("credentials", {
         email: emailField,
         password: passwordField,
         redirect: false,
-      }),
-    { enabled: false }
-  );
+      });
 
-  useEffect(() => {
-    setErrorMessage("");
-  }, [emailField, passwordField]);
+      if (!response || response.status === 401) {
+        throw new Error(INVALID_CREDENTIALS_ERROR_MESSAGE);
+      }
 
-  useEffect(() => {
-    if(signInData?.status === 401){
-      setErrorMessage("Email ID or Password is incorrect");
+      return response;
+    },
+    {
+      enabled: false,
+      retry: 0,
+      onError: () => {
+        setErrorMessage(INVALID_CREDENTIALS_ERROR_MESSAGE);
+      },
+      onSuccess: () => {
+        router.push("home");
+      }
     }
-  }, [signInData])
+  );
 
   const formSubmitHandler: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -51,13 +62,21 @@ const Home: NextPage = () => {
     });
 
     if (!validate.success) {
-      // update error message and return
-      // No need to tell the user of the exact error as they are just logging into existing account.
-      setErrorMessage("Email ID or Password is incorrect");
+      setErrorMessage(INVALID_CREDENTIALS_ERROR_MESSAGE);
       return;
     }
     void signInFunc();
   };
+
+  const handleEmailChange = (changeValue : string) => {
+    setErrorMessage("");
+    setEmailField(changeValue);
+  }
+
+  const handlePasswordChange = (changeValue : string) => {
+    setErrorMessage("");
+    setPasswordField(changeValue);
+  }
 
   return (
     <>
@@ -91,7 +110,7 @@ const Home: NextPage = () => {
             <form className="w-3/6" onSubmit={formSubmitHandler}>
               <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 pb-6 pt-12 drop-shadow-lg">
                 <div className="absolute top-[-30px] rounded-lg bg-orange p-3">
-                  <SvgGroupyLogo fillColor="#ffffff" />
+                  <SvgGroupyLogo fillcolor="#ffffff" />
                 </div>
 
                 <span className="text-3xl font-bold text-dark-blue">
@@ -107,7 +126,7 @@ const Home: NextPage = () => {
                     placeholder="Enter your email address"
                     handleState={{
                       inputState: emailField,
-                      changeInputState: setEmailField,
+                      changeInputState: handleEmailChange,
                     }}
                     disabled={signInFetching}
                   />
@@ -121,7 +140,7 @@ const Home: NextPage = () => {
                     placeholder="Enter your password"
                     handleState={{
                       inputState: passwordField,
-                      changeInputState: setPasswordField,
+                      changeInputState: handlePasswordChange,
                     }}
                     disabled={signInFetching}
                   />
@@ -146,6 +165,7 @@ const Home: NextPage = () => {
                 <button
                   type="button"
                   className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                  onClick={() => router.push("/sign-up")}
                   disabled={signInFetching}
                 >
                   Sign Up
@@ -159,7 +179,7 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default SignInPage;
 
 const AuthShowcase: React.FC = () => {
   const router = useRouter();

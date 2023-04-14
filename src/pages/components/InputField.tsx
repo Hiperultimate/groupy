@@ -9,7 +9,7 @@ type InputFieldPropType = {
   disabled?: boolean;
   handleState?: {
     inputState: string;
-    changeInputState: React.Dispatch<React.SetStateAction<string>>;
+    changeInputState: React.Dispatch<React.SetStateAction<string>> | ((value : string) => void);
   };
 };
 
