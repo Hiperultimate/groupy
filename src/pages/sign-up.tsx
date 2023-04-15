@@ -67,8 +67,8 @@ const SignUp: NextPage = () => {
       <div className="background-design" />
       <div className="blur-gradient flex items-center">
         <div className="m-auto w-4/5 rounded-xl bg-white p-12 font-poppins shadow-lg">
-          <div className="flex flex-col items-center">
-            <div className="bg-orange p-4">
+          <div className="flex flex-col items-center relative">
+            <div className="bg-orange p-4 rounded-lg w-20 h-20 absolute top-[-90px]">
               <SvgGroupyLogo fillcolor="#ffffff" />
             </div>
             <div className="m-2 text-3xl font-bold text-dark-blue">
