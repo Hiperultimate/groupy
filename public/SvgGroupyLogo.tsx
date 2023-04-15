@@ -2,15 +2,15 @@ import * as React from "react";
 
 type ComponentProp = {
   fillcolor?: string;
-  svgWidth?: number;
-  svgHeight?: number;
+  svgwidth?: number;
+  svgheight?: number;
 };
 
 const SvgGroupyLogo = (props: ComponentProp) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={props.svgWidth ? props.svgWidth : "36"}
-    height={props.svgHeight ? props.svgHeight : "36"}
+    width={props.svgwidth ? props.svgwidth : "36"}
+    height={props.svgheight ? props.svgheight : "36"}
     fill="none"
     {...props}
   >

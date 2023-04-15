@@ -9,6 +9,7 @@ import { type ZodError } from "zod";
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
 
+import SvgGroupyLogo from "public/SvgGroupyLogo";
 import InputField from "./components/InputField";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -63,37 +64,53 @@ const SignUp: NextPage = () => {
 
   return (
     <>
-      This is the sign-up page
-      <form onSubmit={submitHandler}>
-        <InputField
-          title="Name"
-          isRequired={true}
-          placeholder="Full name"
-          handleState={{ inputState: name, changeInputState: setName }}
-          disabled={registerUser_isLoading}
-        />
-        <InputField
-          title="Email"
-          isRequired={true}
-          placeholder="Email"
-          handleState={{ inputState: email, changeInputState: setEmail }}
-          disabled={registerUser_isLoading}
-        />
-        <InputField
-          title="Password"
-          isRequired={true}
-          placeholder="Enter password"
-          handleState={{ inputState: password, changeInputState: setPassword }}
-          disabled={registerUser_isLoading}
-        />
-        <button
-          className="rounded-md bg-slate-500 px-2 text-white"
-          type="submit"
-        >
-          Submit
-        </button>
-        {registerUser_isLoading && <span>Loading...</span>}
-      </form>
+      <div className="background-design" />
+      <div className="blur-gradient flex items-center">
+        <div className="m-auto w-4/5 rounded-xl bg-white p-12 font-poppins shadow-lg">
+          <div className="flex flex-col items-center">
+            <div className="bg-orange p-4">
+              <SvgGroupyLogo fillcolor="#ffffff" />
+            </div>
+            <div className="m-2 text-3xl font-bold text-dark-blue">
+              Create your account
+            </div>
+            <div className="m-2 text-xl text-grey">Start your journey</div>
+          </div>
+          <form onSubmit={submitHandler}>
+            <InputField
+              title="Name"
+              isRequired={true}
+              placeholder="Full name"
+              handleState={{ inputState: name, changeInputState: setName }}
+              disabled={registerUser_isLoading}
+            />
+            <InputField
+              title="Email"
+              isRequired={true}
+              placeholder="Email"
+              handleState={{ inputState: email, changeInputState: setEmail }}
+              disabled={registerUser_isLoading}
+            />
+            <InputField
+              title="Password"
+              isRequired={true}
+              placeholder="Enter password"
+              handleState={{
+                inputState: password,
+                changeInputState: setPassword,
+              }}
+              disabled={registerUser_isLoading}
+            />
+            <button
+              className="rounded-md bg-slate-500 px-2 text-white"
+              type="submit"
+            >
+              Submit
+            </button>
+            {registerUser_isLoading && <span>Loading...</span>}
+          </form>
+        </div>
+      </div>
     </>
   );
 };
