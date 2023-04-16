@@ -24,7 +24,7 @@ const InputField = ({
   return (
     <div className="flex flex-col">
       {title && (
-        <label htmlFor={title}>
+        <label htmlFor={title} className="hover:cursor-pointer">
           {title}
           {isRequired ? "*" : ""}
         </label>
