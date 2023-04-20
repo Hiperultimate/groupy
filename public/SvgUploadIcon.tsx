@@ -3,7 +3,7 @@ type ComponentProp = {
   dimention?: number;
 };
 
-const SvgComponent = (props: ComponentProp) => (
+const SvgUploadIcon = (props: ComponentProp) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={props.dimention ? props.dimention : 32}
@@ -18,4 +18,4 @@ const SvgComponent = (props: ComponentProp) => (
     />
   </svg>
 );
-export default SvgComponent;
+export default SvgUploadIcon;

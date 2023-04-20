@@ -11,6 +11,7 @@ import { type GetServerSideProps } from "next";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import SvgUploadIcon from "public/SvgUploadIcon";
+import SvgCamera from "public/SvgCamera";
 import InputField from "./components/InputField";
 import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
 
@@ -217,10 +218,18 @@ const SignUp: NextPage = () => {
                     <span className="text-orange">Browse</span>
                   </span>
                   <span className="text-[#cad0d9]">
-                    High resolution images (png,jpg)
+                    High resolution images (png, jpg)
                   </span>
                 </span>
               </label>
+            </div>
+
+            <div>
+              <span>Your Profile Picture</span>
+                {/* if no image, export this */}
+                  <div><SvgCamera /></div>
+
+                {/* Else this */}
             </div>
 
             <button
