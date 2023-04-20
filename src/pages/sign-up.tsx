@@ -10,6 +10,7 @@ import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
+import SvgUploadIcon from "public/SvgUploadIcon";
 import InputField from "./components/InputField";
 import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
 
@@ -184,13 +185,29 @@ const SignUp: NextPage = () => {
               />
             </div>
 
-            {/* Change this component to AsyncSelect to fetch data as user types */}
             <div className="my-4">
               <span>
                 Choose tags which resonates with you the most, or just create
                 them!
               </span>
               <AsyncCreatableSelectComponent />
+            </div>
+
+            <div className="flex flex-col">
+              <span>Upload your profile picture*</span>
+              <input className="hidden" type="file" id="imageUpload" />
+              <label htmlFor="imageUpload" className="cursor-pointer">
+                <span className="flex flex-col text-grey items-center">
+                <SvgUploadIcon dimention={50} />
+                  <span>
+                    Drag and drop an image, or{" "}
+                    <span className="text-orange">Browse</span>
+                  </span>
+                  <span className="text-[#cad0d9]">
+                    High resolution images (png,jpg)
+                  </span>
+                </span>
+              </label>
             </div>
 
             <button
