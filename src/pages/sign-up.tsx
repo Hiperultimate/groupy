@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 
@@ -72,6 +72,13 @@ const SignUp: NextPage = () => {
       const wrongInputError: ZodError = checkDetails.error;
       console.log(wrongInputError);
     }
+  };
+
+  const handleDrop = (e : React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    // do something with the dropped file
+    console.log(file);
   };
 
   return (
@@ -195,10 +202,16 @@ const SignUp: NextPage = () => {
 
             <div className="flex flex-col">
               <span>Upload your profile picture*</span>
+              {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
               <input className="hidden" type="file" id="imageUpload" />
-              <label htmlFor="imageUpload" className="cursor-pointer">
-                <span className="flex flex-col text-grey items-center">
-                <SvgUploadIcon dimention={50} />
+              <label
+                htmlFor="imageUpload"
+                onDrop={handleDrop}
+                onDragOver={(e) => e.preventDefault()}
+                className="my-1 flex h-60 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-8"
+              >
+                <span className="flex flex-col items-center text-grey">
+                  <SvgUploadIcon dimention={50} />
                   <span>
                     Drag and drop an image, or{" "}
                     <span className="text-orange">Browse</span>
