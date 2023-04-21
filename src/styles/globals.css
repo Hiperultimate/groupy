@@ -31,19 +31,13 @@
 }
 
 .background-design {
-  min-height: calc(100vh - 80px);
+  position: relative;
+  min-height: 100vh;
   background-color: #ffffff;
   background-image: linear-gradient(#bbbbbb 0.9px, transparent 0.9px),
     linear-gradient(to right, #bbbbbb 0.9px, #ffffff 0.9px);
   background-size: 25px 25px;
 }
-
-/* .background-design::after{
-  content: "";
-  position:absolute;
-  inset:0;
-  background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.97) 50%, rgba(255,255,255,1) 100%);
-} */
 
 .blur-gradient {
   position: absolute;

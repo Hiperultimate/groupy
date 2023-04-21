@@ -13,6 +13,7 @@ import SvgGroupyLogo from "public/SvgGroupyLogo";
 import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
 import InputField from "./components/InputField";
+import BackgroundContainer from "./components/BackgroundContainer";
 import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
 import Image from "next/image";
 
@@ -85,8 +86,7 @@ const SignUp: NextPage = () => {
 
   return (
     <>
-      <div className="background-design" />
-      <div className="blur-gradient">
+      <BackgroundContainer>
         <div className="flex items-center py-60">
           <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white px-12 pt-12 font-poppins shadow-lg">
             <div className="relative flex flex-col items-center">
@@ -268,7 +268,7 @@ const SignUp: NextPage = () => {
             </form>
           </div>
         </div>
-      </div>
+      </BackgroundContainer>
     </>
   );
 };
