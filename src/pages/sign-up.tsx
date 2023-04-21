@@ -14,6 +14,7 @@ import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
 import InputField from "./components/InputField";
 import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
+import Image from "next/image";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -75,7 +76,7 @@ const SignUp: NextPage = () => {
     }
   };
 
-  const handleDrop = (e : React.DragEvent<HTMLLabelElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     // do something with the dropped file
@@ -85,161 +86,187 @@ const SignUp: NextPage = () => {
   return (
     <>
       <div className="background-design" />
-      <div className="blur-gradient flex items-center">
-        <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white p-12 font-poppins shadow-lg">
-          <div className="relative flex flex-col items-center">
-            <div className="absolute top-[-90px] h-20 w-20 rounded-lg bg-orange p-4">
-              <SvgGroupyLogo fillcolor="#ffffff" />
-            </div>
-            <div className="m-2 text-3xl font-bold text-dark-blue">
-              Create your account
-            </div>
-            <div className="m-2 text-xl text-grey">Start your journey</div>
-          </div>
-          <form onSubmit={submitHandler}>
-            <div className="my-4 flex w-full flex-row">
-              <div className="mr-6 w-1/2">
-                <InputField
-                  title="Name"
-                  isRequired={true}
-                  placeholder="Full name"
-                  handleState={{ inputState: name, changeInputState: setName }}
-                  disabled={registerUser_isLoading}
-                />
+      <div className="blur-gradient">
+        <div className="flex items-center py-60">
+          <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white px-12 pt-12 font-poppins shadow-lg">
+            <div className="relative flex flex-col items-center">
+              <div className="absolute top-[-90px] h-20 w-20 rounded-lg bg-orange p-4">
+                <SvgGroupyLogo fillcolor="#ffffff" />
               </div>
-              <div className="w-1/2">
-                <InputField
-                  title="Email"
-                  isRequired={true}
-                  placeholder="Email"
-                  handleState={{
-                    inputState: email,
-                    changeInputState: setEmail,
-                  }}
-                  disabled={registerUser_isLoading}
-                />
+              <div className="m-2 text-3xl font-bold text-dark-blue">
+                Create your account
               </div>
+              <div className="m-2 text-xl text-grey">Start your journey</div>
             </div>
-            <div className="my-4 flex w-full flex-row">
-              <div className="mr-6 w-1/2">
-                <InputField
-                  title="Password"
-                  isRequired={true}
-                  placeholder="Enter password"
-                  handleState={{
-                    inputState: password,
-                    changeInputState: setPassword,
-                  }}
-                  disabled={registerUser_isLoading}
+            <form onSubmit={submitHandler}>
+              <div className="my-4 flex w-full flex-row">
+                <div className="mr-6 w-1/2">
+                  <InputField
+                    title="Name"
+                    isRequired={true}
+                    placeholder="Full name"
+                    handleState={{
+                      inputState: name,
+                      changeInputState: setName,
+                    }}
+                    disabled={registerUser_isLoading}
+                  />
+                </div>
+                <div className="w-1/2">
+                  <InputField
+                    title="Email"
+                    isRequired={true}
+                    placeholder="Email"
+                    handleState={{
+                      inputState: email,
+                      changeInputState: setEmail,
+                    }}
+                    disabled={registerUser_isLoading}
+                  />
+                </div>
+              </div>
+              <div className="my-4 flex w-full flex-row">
+                <div className="mr-6 w-1/2">
+                  <InputField
+                    title="Password"
+                    isRequired={true}
+                    placeholder="Enter password"
+                    handleState={{
+                      inputState: password,
+                      changeInputState: setPassword,
+                    }}
+                    disabled={registerUser_isLoading}
+                  />
+                </div>
+
+                <div className="w-1/2">
+                  <InputField
+                    title="Confirm Password"
+                    isRequired={true}
+                    placeholder="Re-enter password"
+                    // handleState={{
+                    //   inputState: password,
+                    //   changeInputState: setPassword,
+                    // }}
+                    disabled={registerUser_isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="my-4 flex w-full flex-row">
+                <div className="mr-6 w-1/2">
+                  <InputField
+                    title="Date of Birth"
+                    type="date"
+                    isRequired={true}
+                    placeholder="Enter your DOB"
+                    // handleState={{
+                    //   inputState: password,
+                    //   changeInputState: setPassword,
+                    // }}
+                    disabled={registerUser_isLoading}
+                  />
+                </div>
+
+                <div className="w-1/2">
+                  <InputField
+                    title="@Tag-name"
+                    isRequired={true}
+                    placeholder="ExampleName25"
+                    // handleState={{
+                    //   inputState: password,
+                    //   changeInputState: setPassword,
+                    // }}
+                    disabled={registerUser_isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="my-2 flex w-full flex-col">
+                <label htmlFor="describe" className="hover:cursor-pointer">
+                  Describe Yourself*
+                </label>
+                {/* Set character or word limit to the textarea */}
+                <textarea
+                  id="describe"
+                  placeholder="Something about you..."
+                  rows={4}
+                  required
+                  className="rounded-lg border-2 px-4 py-3"
+                  // value={}
+                  // onChange={}
                 />
               </div>
 
-              <div className="w-1/2">
-                <InputField
-                  title="Confirm Password"
-                  isRequired={true}
-                  placeholder="Re-enter password"
-                  // handleState={{
-                  //   inputState: password,
-                  //   changeInputState: setPassword,
-                  // }}
-                  disabled={registerUser_isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="my-4 flex w-full flex-row">
-              <div className="mr-6 w-1/2">
-                <InputField
-                  title="Date of Birth"
-                  type="date"
-                  isRequired={true}
-                  placeholder="Enter your DOB"
-                  // handleState={{
-                  //   inputState: password,
-                  //   changeInputState: setPassword,
-                  // }}
-                  disabled={registerUser_isLoading}
-                />
-              </div>
-
-              <div className="w-1/2">
-                <InputField
-                  title="@Tag-name"
-                  isRequired={true}
-                  placeholder="ExampleName25"
-                  // handleState={{
-                  //   inputState: password,
-                  //   changeInputState: setPassword,
-                  // }}
-                  disabled={registerUser_isLoading}
-                />
-              </div>
-            </div>
-
-            <div className="my-2 flex w-full flex-col">
-              <label htmlFor="describe" className="hover:cursor-pointer">
-                Describe Yourself*
-              </label>
-              {/* Set character or word limit to the textarea */}
-              <textarea
-                id="describe"
-                placeholder="Something about you..."
-                rows={4}
-                required
-                className="rounded-lg border-2 px-4 py-3"
-                // value={}
-                // onChange={}
-              />
-            </div>
-
-            <div className="my-4">
-              <span>
-                Choose tags which resonates with you the most, or just create
-                them!
-              </span>
-              <AsyncCreatableSelectComponent />
-            </div>
-
-            <div className="flex flex-col">
-              <span>Upload your profile picture*</span>
-              {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
-              <input className="hidden" type="file" id="imageUpload" />
-              <label
-                htmlFor="imageUpload"
-                onDrop={handleDrop}
-                onDragOver={(e) => e.preventDefault()}
-                className="my-1 flex h-60 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-8"
-              >
-                <span className="flex flex-col items-center text-grey">
-                  <SvgUploadIcon dimention={50} />
-                  <span>
-                    Drag and drop an image, or{" "}
-                    <span className="text-orange">Browse</span>
-                  </span>
-                  <span className="text-[#cad0d9]">
-                    High resolution images (png, jpg)
-                  </span>
+              <div className="my-4">
+                <span>
+                  Choose tags which resonates with you the most, or just create
+                  them!
                 </span>
-              </label>
-            </div>
+                <AsyncCreatableSelectComponent />
+              </div>
 
-            <div>
-              <span>Your Profile Picture</span>
+              <div className="flex flex-col">
+                <span>Upload your profile picture*</span>
+                {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
+                <input className="hidden" type="file" id="imageUpload" />
+                <label
+                  htmlFor="imageUpload"
+                  onDrop={handleDrop}
+                  onDragOver={(e) => e.preventDefault()}
+                  className="my-1 flex h-60 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-8"
+                >
+                  <span className="flex flex-col items-center text-grey">
+                    <SvgUploadIcon dimention={50} />
+                    <span>
+                      Drag and drop an image, or{" "}
+                      <span className="text-orange">Browse</span>
+                    </span>
+                    <span className="text-[#cad0d9]">
+                      High resolution images (png, jpg)
+                    </span>
+                  </span>
+                </label>
+              </div>
+
+              <div className="my-4">
+                <span>Your Profile Picture</span>
                 {/* if no image, export this */}
-                  <div><SvgCamera /></div>
+                <div className="flex items-end">
+                  <div className="m-4 flex h-48 w-48 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                    <SvgCamera />
+                  </div>
+                  <div className="m-4 flex h-32 w-32 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                    <SvgCamera />
+                  </div>
+                  <div className="m-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                    <SvgCamera />
+                  </div>
+                </div>
 
-                {/* Else this */}
-            </div>
+                {/* Else this, include image */}
+                {/* <div className="flex items-end">
+                <div className="flex h-48 w-48 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
+                  <Image src="" alt="" />
+                </div>
+                <div className="flex h-32 w-32 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
+                  <Image src="" alt="" />
+                </div>
+                <div className="flex h-20 w-20 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
+                  <Image src="" alt="" />
+                </div>
+              </div> */}
+              </div>
 
-            <button
-              className="rounded-md bg-slate-500 px-2 text-white"
-              type="submit"
-            >
-              Submit
-            </button>
-            {registerUser_isLoading && <span>Loading...</span>}
-          </form>
+              <button
+                className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white"
+                type="submit"
+              >
+                Submit
+              </button>
+              {registerUser_isLoading && <span>Loading...</span>}
+            </form>
+          </div>
         </div>
       </div>
     </>
