@@ -9,7 +9,7 @@ type InputFieldPropType = {
   disabled?: boolean;
   handleState?: {
     inputState: string;
-    changeInputState: React.Dispatch<React.SetStateAction<string>>;
+    changeInputState: React.Dispatch<React.SetStateAction<string>> | ((value : string) => void);
   };
 };
 
@@ -22,9 +22,9 @@ const InputField = ({
   handleState,
 }: InputFieldPropType): JSX.Element => {
   return (
-    <div>
+    <div className="flex flex-col">
       {title && (
-        <label htmlFor={title}>
+        <label htmlFor={title} className="hover:cursor-pointer">
           {title}
           {isRequired ? "*" : ""}
         </label>
@@ -39,6 +39,7 @@ const InputField = ({
           onChange={(e) => handleState.changeInputState(e.target.value)}
           required={isRequired}
           disabled={disabled}
+          className="h-10 border-2 rounded-lg px-4 py-6"
         />
       ) : (
         <input
@@ -48,6 +49,7 @@ const InputField = ({
           id={title}
           required={isRequired}
           disabled={disabled}
+          className="h-10 border-2 rounded-lg px-4 py-6"
         />
       )}
     </div>
