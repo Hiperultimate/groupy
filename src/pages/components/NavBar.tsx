@@ -29,6 +29,7 @@ const NavBar = () => {
       break;
     case "/sign-up":
       selectedPage = pageStates.SIGNUP;
+      onlyLogo = true;
       break;
     case "/home":
       selectedPage = pageStates.HOME;
