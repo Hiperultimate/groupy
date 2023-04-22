@@ -39,18 +39,17 @@ const SignUp: NextPage = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [checkPassword, setCheckPassword] = useState<string>("");
+  const [dob, setDob] = useState<string>(new Date().toLocaleString());
+  const [userTag, setUserTag] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const { mutate: signUpUser, isLoading: registerUser_isLoading } =
     api.account.signup.useMutation();
-
-  const giveOptions = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
+  const [userImage, setUserImage] = useState<File | null>();
 
   // This state is for the AsyncCreatableSelectComponent component
   const [tagOptions, setTagOptions] =
-    useState<{ value: string; label: string }[]>(giveOptions);
+    useState<{ value: string; label: string }[]>();
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -144,10 +143,10 @@ const SignUp: NextPage = () => {
                     title="Confirm Password"
                     isRequired={true}
                     placeholder="Re-enter password"
-                    // handleState={{
-                    //   inputState: password,
-                    //   changeInputState: setPassword,
-                    // }}
+                    handleState={{
+                      inputState: checkPassword,
+                      changeInputState: setCheckPassword,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -160,10 +159,10 @@ const SignUp: NextPage = () => {
                     type="date"
                     isRequired={true}
                     placeholder="Enter your DOB"
-                    // handleState={{
-                    //   inputState: password,
-                    //   changeInputState: setPassword,
-                    // }}
+                    handleState={{
+                      inputState: dob,
+                      changeInputState: setDob,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -173,10 +172,10 @@ const SignUp: NextPage = () => {
                     title="@Tag-name"
                     isRequired={true}
                     placeholder="ExampleName25"
-                    // handleState={{
-                    //   inputState: password,
-                    //   changeInputState: setPassword,
-                    // }}
+                    handleState={{
+                      inputState: userTag,
+                      changeInputState: setUserTag,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -184,17 +183,16 @@ const SignUp: NextPage = () => {
 
               <div className="my-2 flex w-full flex-col">
                 <label htmlFor="describe" className="hover:cursor-pointer">
-                  Describe Yourself*
+                  Describe Yourself
                 </label>
                 {/* Set character or word limit to the textarea */}
                 <textarea
                   id="describe"
                   placeholder="Something about you..."
                   rows={4}
-                  required
                   className="rounded-lg border-2 px-4 py-3"
-                  // value={}
-                  // onChange={}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
 
