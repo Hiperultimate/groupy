@@ -3,13 +3,8 @@ import AsyncCreatableSelect from "react-select/async-creatable";
 import { type StylesConfig } from "react-select";
 
 export interface TagOption {
-  readonly value: string;
-  readonly label: string;
-}
-
-interface Option {
-  readonly label: string;
-  readonly value: string;
+   value: string;
+   label: string;
 }
 
 const createOption = (label: string) => ({
@@ -19,7 +14,7 @@ const createOption = (label: string) => ({
 
 // DUMMY DATA, you can initialize with id if needed.
 // https://react-select.com/async
-export const tagOptions: readonly TagOption[] = [
+export const tagOptions:  TagOption[] = [
   { value: "ocean", label: "Ocean" },
   { value: "purple", label: "Purple" },
   { value: "red", label: "Red" },
@@ -37,7 +32,7 @@ const filterTags = (inputValue: string) => {
   );
 };
 
-const creatableComponentStyle : StylesConfig<TagOption> = {
+const creatableComponentStyle: StylesConfig<TagOption> = {
   control: (styles) => {
     return {
       ...styles,
@@ -50,14 +45,13 @@ const creatableComponentStyle : StylesConfig<TagOption> = {
       },
     };
   },
-  option: (styles, {isFocused} : {isFocused: boolean}) => {
+  option: (styles, { isFocused }: { isFocused: boolean }) => {
     return {
       ...styles,
       backgroundColor: isFocused ? "#ff8640" : "#fff",
       color: isFocused ? "#fff" : "#000",
-      ":hover" : {backgroundColor: "#e15539", color: "#fff"},
-    }
-
+      ":hover": { backgroundColor: "#e15539", color: "#fff" },
+    };
   },
   multiValue: (styles) => {
     return {
@@ -97,9 +91,15 @@ const loadOptions = (
   }, 1000);
 };
 
-const InputCreatableSelect = () => {
+const InputCreatableSelect = ({
+  selectedTags,
+  setSelectedTags,
+}: {
+  selectedTags: TagOption[];
+  setSelectedTags: React.Dispatch<React.SetStateAction<TagOption[]>>;
+}) => {
   const [inputValue, setInputValue] = useState("");
-  const [selectedTags, setSelectedTags] = useState<readonly Option[]>([]);
+  // const [selectedTags, setSelectedTags] = useState<readonly TagOption[]>([]);
 
   // Cleaup this block after development is finished.
   useEffect(() => {
@@ -123,7 +123,7 @@ const InputCreatableSelect = () => {
       isClearable
       cacheOptions
       isMulti
-      onChange={(newValue) => setSelectedTags(newValue)}
+      onChange={(newValue) => setSelectedTags(newValue as TagOption[])}
       onInputChange={(newValue) => setInputValue(newValue)}
       onKeyDown={handleKeyDown}
       loadOptions={loadOptions}

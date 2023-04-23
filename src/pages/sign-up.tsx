@@ -14,7 +14,9 @@ import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
 import InputField from "./components/InputField";
 import BackgroundContainer from "./components/BackgroundContainer";
-import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
+import AsyncCreatableSelectComponent, {
+  type TagOption,
+} from "./components/InputCreatableSelect";
 import Image from "next/image";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -48,8 +50,7 @@ const SignUp: NextPage = () => {
   const [userImage, setUserImage] = useState<string | undefined>();
 
   // This state is for the AsyncCreatableSelectComponent component
-  const [tagOptions, setTagOptions] =
-    useState<{ value: string; label: string }[]>();
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -212,7 +213,10 @@ const SignUp: NextPage = () => {
                   Choose tags which resonates with you the most, or just create
                   them!
                 </span>
-                <AsyncCreatableSelectComponent />
+                <AsyncCreatableSelectComponent
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                />
               </div>
 
               {/* Image will be optional */}
