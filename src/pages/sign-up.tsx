@@ -41,9 +41,9 @@ const SignUp: NextPage = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [checkPassword, setCheckPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [dob, setDob] = useState<string>(new Date().toLocaleString());
-  const [userTag, setUserTag] = useState<string>("");
+  const [userNameTag, setUserNameTag] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const { mutate: signUpUser, isLoading: registerUser_isLoading } =
     api.account.signup.useMutation();
@@ -55,9 +55,19 @@ const SignUp: NextPage = () => {
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    const checkDetails = signUpSchema.safeParse({ name, email, password });
+    const checkDetails = signUpSchema.safeParse({
+      name: name,
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      dob: new Date(dob),
+      nameTag: userNameTag,
+      description: description,
+      userTags: selectedTags,
+      image: userImage,
+    });
 
-    console.log(checkDetails);
+    console.log("Details : " , checkDetails);
     // Retrieve error message ==> console.log(JSON.parse(checkDetails.error.message)[0].message); // Make sure you typecase "as ZodError"
 
     if (checkDetails.success) {
@@ -156,8 +166,8 @@ const SignUp: NextPage = () => {
                     isRequired={true}
                     placeholder="Re-enter password"
                     handleState={{
-                      inputState: checkPassword,
-                      changeInputState: setCheckPassword,
+                      inputState: confirmPassword,
+                      changeInputState: setConfirmPassword,
                     }}
                     disabled={registerUser_isLoading}
                   />
@@ -185,8 +195,8 @@ const SignUp: NextPage = () => {
                     isRequired={true}
                     placeholder="ExampleName25"
                     handleState={{
-                      inputState: userTag,
-                      changeInputState: setUserTag,
+                      inputState: userNameTag,
+                      changeInputState: setUserNameTag,
                     }}
                     disabled={registerUser_isLoading}
                   />
