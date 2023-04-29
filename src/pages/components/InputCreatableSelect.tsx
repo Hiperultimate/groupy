@@ -1,10 +1,11 @@
 import { useState, type KeyboardEventHandler, useEffect } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { type StylesConfig } from "react-select";
+import InputErrorText from "./InputErrorText";
 
 export interface TagOption {
-   value: string;
-   label: string;
+  value: string;
+  label: string;
 }
 
 const createOption = (label: string) => ({
@@ -14,7 +15,7 @@ const createOption = (label: string) => ({
 
 // DUMMY DATA, you can initialize with id if needed.
 // https://react-select.com/async
-export const tagOptions:  TagOption[] = [
+export const tagOptions: TagOption[] = [
   { value: "ocean", label: "Ocean" },
   { value: "purple", label: "Purple" },
   { value: "red", label: "Red" },
@@ -92,45 +93,61 @@ const loadOptions = (
 };
 
 const InputCreatableSelect = ({
-  selectedTags,
-  setSelectedTags,
+  handleFieldState,
+  handleErrorState,
 }: {
-  selectedTags: TagOption[];
-  setSelectedTags: React.Dispatch<React.SetStateAction<TagOption[]>>;
+  handleFieldState: {
+    inputState: TagOption[];
+    setInputState: React.Dispatch<React.SetStateAction<TagOption[]>>;
+  };
+
+  handleErrorState: {
+    errorState: string[];
+    setErrorState: React.Dispatch<React.SetStateAction<string[]>>;
+  };
 }) => {
   const [inputValue, setInputValue] = useState("");
   // const [selectedTags, setSelectedTags] = useState<readonly TagOption[]>([]);
 
   // Cleaup this block after development is finished.
   useEffect(() => {
-    console.log("AsyncCreatableSelect : ", selectedTags);
-  }, [selectedTags]);
+    console.log("AsyncCreatableSelect : ", handleFieldState.inputState);
+  }, [handleFieldState]);
 
   const handleKeyDown: KeyboardEventHandler = (event) => {
     if (!inputValue) return;
     switch (event.key) {
       case "Enter":
       case "Tab":
-        setSelectedTags((prev) => [...prev, createOption(inputValue)]);
+        handleFieldState.setInputState((prev) => [
+          ...prev,
+          createOption(inputValue),
+        ]);
         setInputValue("");
         event.preventDefault();
     }
   };
 
   return (
-    <AsyncCreatableSelect
-      inputValue={inputValue}
-      isClearable
-      cacheOptions
-      isMulti
-      onChange={(newValue) => setSelectedTags(newValue as TagOption[])}
-      onInputChange={(newValue) => setInputValue(newValue)}
-      onKeyDown={handleKeyDown}
-      loadOptions={loadOptions}
-      placeholder="Type something and press enter..."
-      value={selectedTags}
-      styles={creatableComponentStyle}
-    />
+    <div>
+      <AsyncCreatableSelect
+        inputValue={inputValue}
+        isClearable
+        cacheOptions
+        isMulti
+        onChange={(newValue) => {
+          handleFieldState.setInputState(newValue as TagOption[]);
+          handleErrorState.setErrorState([]);
+        }}
+        onInputChange={(newValue) => setInputValue(newValue)}
+        onKeyDown={handleKeyDown}
+        loadOptions={loadOptions}
+        placeholder="Type something and press enter..."
+        value={handleFieldState.inputState}
+        styles={creatableComponentStyle}
+      />
+      <InputErrorText errorArray={handleErrorState?.errorState} />
+    </div>
   );
 };
 
