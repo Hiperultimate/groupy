@@ -1,15 +1,17 @@
 const InputErrorText = ({ errorArray }: { errorArray?: string[] }) => {
-  if (errorArray) {
+  if (errorArray?.length) {
     return (
-      <div>
-        {errorArray.map((item, index) => {
-          return <div key={index}>{item}</div>;
-        })}
+      <div className="mt-2 bg-red-100 border-red-500 border rounded-md">
+        <div className="ml-2 text-red-500">
+          {errorArray.map((item, index) => {
+            return <div key={index}>{item}</div>;
+          })}
+        </div>
       </div>
     );
   }
 
-  return <></>
+  return <></>;
 };
 
 export default InputErrorText;
