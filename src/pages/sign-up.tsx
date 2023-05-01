@@ -18,6 +18,7 @@ import AsyncCreatableSelectComponent, {
 } from "./components/InputCreatableSelect";
 import Image from "next/image";
 import InputErrorText from "./components/InputErrorText";
+import imageValidation from "~/common/imageValidation";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -137,6 +138,8 @@ const SignUp: NextPage = () => {
     // do something with the dropped file
     if (file) {
       const objectUrl = convertImageToLink(file);
+      // console.log(imageValidation(file));
+
       setUserImage(objectUrl);
     } else {
       console.log("Error occured while loading file");
