@@ -13,6 +13,7 @@ import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
 import InputField from "../components/InputField";
 import BackgroundContainer from "../components/BackgroundContainer";
+import ErrorNotification from "~/components/ErrorNotification";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
@@ -80,7 +81,7 @@ const SignUp: NextPage = () => {
     image: setUserImageError,
   };
 
-  const formDataCheck = () : ISignUp | null => {
+  const formDataCheck = (): ISignUp | null => {
     const checkDetails = signUpSchema.safeParse({
       name: name,
       email: email,
@@ -110,7 +111,7 @@ const SignUp: NextPage = () => {
         }
       });
       return null;
-    }else{
+    } else {
       return checkDetails.data;
     }
   };
@@ -140,7 +141,7 @@ const SignUp: NextPage = () => {
       // Create user
       signUpUser(userData, {
         onError: (error) => {
-          console.log("Server side error : " , error.message, error);
+          console.log("Server side error : ", error.message, error);
         },
         onSuccess: (data) => {
           console.log("Success!");
@@ -169,7 +170,7 @@ const SignUp: NextPage = () => {
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
-    setUserImageError([])
+    setUserImageError([]);
     const file = e.dataTransfer.files[0];
     if (file) {
       imageErrorSetter(file);
@@ -180,6 +181,7 @@ const SignUp: NextPage = () => {
 
   return (
     <>
+          <ErrorNotification />
       <BackgroundContainer>
         <div className="flex items-center py-60">
           <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white px-12 pt-12 font-poppins shadow-lg">
@@ -346,7 +348,7 @@ const SignUp: NextPage = () => {
                   id="imageUpload"
                   onChange={(e) => {
                     e.preventDefault();
-                    setUserImageError([])
+                    setUserImageError([]);
                     const file = e.target.files ? e.target.files[0] : undefined;
                     if (file) {
                       imageErrorSetter(file);
