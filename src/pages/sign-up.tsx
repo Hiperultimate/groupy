@@ -140,7 +140,7 @@ const SignUp: NextPage = () => {
       // Create user
       signUpUser(userData, {
         onError: (error) => {
-          console.log(error.message);
+          console.log("Server side error : " , error.message, error);
         },
         onSuccess: (data) => {
           console.log("Success!");
