@@ -43,7 +43,7 @@ export const authRouter = createTRPCRouter({
       // NOTE: Your error handling is already synced from front-end and backend thanks to signUpSchema, on line 143 of sign-up.tsx all 
               // the server side errors are also being displyed.
 
-      // TODO: Display server field error on the front-end
+      // TODO: In authSchema check userTags error and make sure they are not repeating and does not contain spaces.
       // TODO: Get the uploaded image file directly in sign-up page > Validate file, maybe through zod refine  
       // TODO: Upload image on supabase storage bucket > Get image URL > Store URL in user Table image field
       // TODO: Hash password here and pass to result like password : hashed_password

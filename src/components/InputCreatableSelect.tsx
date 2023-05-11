@@ -119,9 +119,13 @@ const InputCreatableSelect = ({
     switch (event.key) {
       case "Enter":
       case "Tab":
+        const cleanInput = inputValue.replace(/ /g, "");
+        const isExisting = handleFieldState.inputState.some(
+          (obj) => obj.value === cleanInput
+        );
         handleFieldState.setInputState((prev) => [
           ...prev,
-          createOption(inputValue),
+          ...(isExisting ? [] : [createOption(cleanInput)]),
         ]);
         setInputValue("");
         event.preventDefault();
