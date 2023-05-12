@@ -17,11 +17,9 @@ export const signUpSchema = loginSchema
       .array(z.object({ value: z.string(), label: z.string() }))
       .min(3, { message: "You must select at least 3 tags." }),
   })
-  .refine((schema) => schema.nameTag.indexOf(" ") <= 0, {
-    message: "Tag-name cannot have blank spaces.", path : ["nameTag"],
-  })
   .refine((schema) => schema.password === schema.confirmPassword, {
-    message: "Passwords do not match", path: ["confirmPassword"],
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
   })
   .refine(
     (schema) => {
@@ -30,7 +28,15 @@ export const signUpSchema = loginSchema
       return dob < now;
     },
     { message: "Birth date must be in the past", path: ["dob"] }
-  );
+  )
+  .refine((schema) => schema.nameTag.indexOf(" ") < 0, {
+    message: "Tag-name cannot have blank spaces.",
+    path: ["nameTag"],
+  })
+  .refine((schema) => schema.userTags.every(({ value }) => !/\s/.test(value)), {
+    message: "Selected tags cannot have blank spaces in value property",
+    path: ["userTags"],
+  });
 
 export type ILogin = z.infer<typeof loginSchema>;
 export type ISignUp = z.infer<typeof signUpSchema>;
