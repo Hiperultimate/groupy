@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 
@@ -20,6 +20,9 @@ import AsyncCreatableSelectComponent, {
 import Image from "next/image";
 import InputErrorText from "../components/InputErrorText";
 import imageValidation from "~/common/imageValidation";
+import { supabase } from "~/utils/storageBucket";
+import { encodeImageToBase64 } from "~/common/imageConversion";
+import { StringValidation } from "zod";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -56,6 +59,7 @@ const SignUp: NextPage = () => {
   const [userImage, setUserImage] = useState<string | undefined>();
   // This state is for the AsyncCreatableSelectComponent component
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [userImageFile, setUserImageFile] = useState<File | null>(null);
 
   const [nameError, setNameError] = useState<string[]>([]);
   const [emailError, setEmailError] = useState<string[]>([]);
@@ -97,8 +101,7 @@ const SignUp: NextPage = () => {
     // Retrieve error message ==> console.log(JSON.parse(checkDetails.error.message)[0].message); // Make sure you typecase "as ZodError"
 
     if (!checkDetails.success) {
-      const formatErrors = checkDetails.error.format();
-      console.log("ERROR JSON :", formatErrors); // Creates objects with key value pair of all the errors
+      const formatErrors = checkDetails.error.format(); // Creates objects with key value pair of all the errors
       const fieldNames = Object.keys(formatErrors);
       fieldNames.forEach((fieldName) => {
         if (fieldSetErrorMap[fieldName]) {
@@ -133,16 +136,21 @@ const SignUp: NextPage = () => {
     return errorFields.every((errors) => errors.length === 0);
   };
 
-  const submitHandler = (e: React.SyntheticEvent) => {
+  const submitHandler = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     const userData: ISignUp | null = formDataCheck();
     const isValid: boolean = isValidFormData();
 
     if (isValid && userData) {
+      // Transform image to base64 and overwrite image to userData
+      if (userImageFile) {
+        const base64Image = await encodeImageToBase64(userImageFile);
+        userData.image = base64Image;
+      }
+
       // Create user
       signUpUser(userData, {
         onError: (error) => {
-          console.log("Server side error : ", error.message, error);
           setServerError(error.message);
         },
         onSuccess: (data) => {
@@ -154,20 +162,22 @@ const SignUp: NextPage = () => {
     }
   };
 
-  const convertImageToLink = (image: File): string => {
-    const objectUrl = URL.createObjectURL(image);
-    return objectUrl;
-  };
-
   // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions.
   //                 Using this function to keep same logic at both areas.
   const imageErrorSetter = (file: File) => {
-    const objectUrl = convertImageToLink(file);
-    const imageUploadError: string[] = imageValidation(file);
-    setUserImageError(imageUploadError);
-    if (imageUploadError.length === 0) {
-      setUserImage(objectUrl);
-    }
+    const promise = encodeImageToBase64(file);
+    promise
+      .then((base64String) => {
+        const imageUploadError: string[] = imageValidation(file);
+        setUserImageError(imageUploadError);
+        if (imageUploadError.length === 0) {
+          setUserImage(base64String);
+          setUserImageFile(file);
+        }
+      })
+      .catch((error) => {
+        console.log("Error occured : ", error);
+      });
   };
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -199,7 +209,7 @@ const SignUp: NextPage = () => {
               </div>
               <div className="m-2 text-xl text-grey">Start your journey</div>
             </div>
-            <form onSubmit={submitHandler}>
+            <form onSubmit={(event) => void submitHandler(event)}>
               <div className="my-4 flex w-full flex-row">
                 <div className="mr-6 w-1/2">
                   <InputField

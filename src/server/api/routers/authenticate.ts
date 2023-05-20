@@ -9,6 +9,10 @@ import {
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
+import { base64ToImageData } from "~/common/imageConversion";
+import { supabase } from "~/utils/storageBucket";
+import { v4 as uuidv4 } from "uuid";
+
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
     .input(signUpSchema)
@@ -39,7 +43,10 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      const nameTagExists = await ctx.prisma.user.findFirst({ where: { atTag : nameTag } });
+      const nameTagExists = await ctx.prisma.user.findFirst({
+        where: { atTag: nameTag },
+      });
+
       if (nameTagExists) {
         throw new TRPCError({
           message: "User with this Tag-name already exists",
@@ -47,14 +54,40 @@ export const authRouter = createTRPCRouter({
         });
       }
 
-      // NOTE: Your error handling is already synced from front-end and backend thanks to signUpSchema, on line 143 of sign-up.tsx all 
-              // the server side errors are also being displyed.
+      let imageHolder = image;
+      // Image is already validated through schema validation, upload image to supabase and get url then save the url to image
+      if (image !== undefined) {
+        console.log("Checking the generated file: ", image);
+        const { imageBuffer, fileSizeInBytes, imageMime, imageFormat } =
+          base64ToImageData(image);
 
-      // TODO: In authSchema check userTags error and make sure they are not repeating and does not contain spaces.
-      // TODO: Get the uploaded image file directly in sign-up page > Validate file, maybe through zod refine  
-      // TODO: Upload image on supabase storage bucket > Get image URL > Store URL in user Table image field
+        if (!imageMime || !imageFormat) {
+          throw new TRPCError({
+            message: "Error occured while handling image",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+
+        // This successfully uploads the image
+        // Add name with Checking.png using npm install uuid and add format
+        const { data: getImageURL, error } = await supabase.storage
+          .from("images")
+          .upload(`displayPictures/${uuidv4()}.${imageFormat}`, imageBuffer, {
+            contentType: `${imageMime}`,
+          });
+
+        if (error) {
+          throw new TRPCError({
+            message: "Error occured while generating image URL",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        } else {
+          imageHolder = getImageURL.path;
+        }
+      }
+
+      // TODO: userTags should fetch data from the server
       // TODO: Hash password here and pass to result like password : hashed_password
-
 
       const result = await ctx.prisma.user.create({
         data: {
@@ -70,7 +103,7 @@ export const authRouter = createTRPCRouter({
               create: { name: tag.value },
             })),
           },
-          image: image,
+          image: imageHolder,
         },
       });
 
