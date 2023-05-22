@@ -57,8 +57,7 @@ export const authRouter = createTRPCRouter({
       let imageHolder = image;
       // Image is already validated through schema validation, upload image to supabase and get url then save the url to image
       if (image !== undefined) {
-        console.log("Checking the generated file: ", image);
-        const { imageBuffer, fileSizeInBytes, imageMime, imageFormat } =
+        const { imageBuffer, imageMime, imageFormat } =
           base64ToImageData(image);
 
         if (!imageMime || !imageFormat) {
