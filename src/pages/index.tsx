@@ -11,8 +11,8 @@ import { api } from "~/utils/api";
 import { loginSchema } from "~/common/authSchema";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
-import InputField from "./components/InputField";
-import BackgroundContainer from "./components/BackgroundContainer";
+import InputField from "../components/InputField";
+import BackgroundContainer from "../components/BackgroundContainer";
 
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
