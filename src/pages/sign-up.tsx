@@ -248,6 +248,7 @@ const SignUp: NextPage = () => {
                 <div className="mr-6 w-1/2">
                   <InputField
                     title="Password"
+                    type="password"
                     isRequired={true}
                     placeholder="Enter password"
                     handleState={{
@@ -265,6 +266,7 @@ const SignUp: NextPage = () => {
                 <div className="w-1/2">
                   <InputField
                     title="Confirm Password"
+                    type="password"
                     isRequired={true}
                     placeholder="Re-enter password"
                     handleState={{
