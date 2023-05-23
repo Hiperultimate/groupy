@@ -1,7 +1,9 @@
-import { useState, type KeyboardEventHandler, useEffect } from "react";
+import { useState, type KeyboardEventHandler } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { type StylesConfig } from "react-select";
 import InputErrorText from "./InputErrorText";
+
+import { api } from "~/utils/api";
 
 export interface TagOption {
   value: string;
@@ -12,26 +14,6 @@ const createOption = (label: string) => ({
   label,
   value: label,
 });
-
-// DUMMY DATA, you can initialize with id if needed.
-// https://react-select.com/async
-export const tagOptions: TagOption[] = [
-  { value: "ocean", label: "Ocean" },
-  { value: "purple", label: "Purple" },
-  { value: "red", label: "Red" },
-  { value: "orange", label: "Orange" },
-  { value: "yellow", label: "Yellow" },
-  { value: "green", label: "Green" },
-  { value: "forest", label: "Forest" },
-  { value: "slate", label: "Slate" },
-  { value: "silver", label: "Silver" },
-];
-
-const filterTags = (inputValue: string) => {
-  return tagOptions.filter((i) =>
-    i.label.toLowerCase().includes(inputValue.toLowerCase())
-  );
-};
 
 const creatableComponentStyle: StylesConfig<TagOption> = {
   control: (styles) => {
@@ -82,16 +64,6 @@ const creatableComponentStyle: StylesConfig<TagOption> = {
   },
 };
 
-// Instead of calling filterTags function maybe call async function to populate data
-const loadOptions = (
-  inputValue: string,
-  callback: (options: TagOption[]) => void
-) => {
-  setTimeout(() => {
-    callback(filterTags(inputValue));
-  }, 1000);
-};
-
 const InputCreatableSelect = ({
   handleFieldState,
   handleErrorState,
@@ -107,12 +79,33 @@ const InputCreatableSelect = ({
   };
 }) => {
   const [inputValue, setInputValue] = useState("");
-  // const [selectedTags, setSelectedTags] = useState<readonly TagOption[]>([]);
+  const { data: relatedTags } = api.tags.relatedTags.useQuery(inputValue);
 
-  // Cleaup this block after development is finished.
-  useEffect(() => {
-    console.log("AsyncCreatableSelect : ", handleFieldState.inputState);
-  }, [handleFieldState]);
+  const filterTags = (inputValue: string) => {
+    const filterRelatedTags = relatedTags?.filter((i) =>
+      i.name.includes(inputValue.toLowerCase())
+    );
+    if (!filterRelatedTags) {
+      return [];
+    }
+    const convertToRequiredType: TagOption[] = filterRelatedTags.map(
+      (object) => {
+        return createOption(object.name);
+      }
+    );
+    return convertToRequiredType;
+  };
+
+  // Populate data from the server
+  const loadOptions = (
+    inputValue: string,
+    callback: (options: TagOption[]) => void
+  ) => {
+    setTimeout(() => {
+      const gettingTagResult = filterTags(inputValue);
+      callback(gettingTagResult);
+    }, 1000);
+  };
 
   const handleKeyDown: KeyboardEventHandler = (event) => {
     if (!inputValue) return;
