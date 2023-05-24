@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 
@@ -20,9 +20,7 @@ import AsyncCreatableSelectComponent, {
 import Image from "next/image";
 import InputErrorText from "../components/InputErrorText";
 import imageValidation from "~/common/imageValidation";
-import { supabase } from "~/utils/storageBucket";
 import { encodeImageToBase64 } from "~/common/imageConversion";
-import { StringValidation } from "zod";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
