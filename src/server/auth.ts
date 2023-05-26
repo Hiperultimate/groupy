@@ -10,6 +10,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "~/server/db";
 import { comparePassword } from "~/utils/passwordUtils";
+import { type DBTags } from "~/components/InputCreatableSelect";
+import { supabase } from "~/utils/storageBucket";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -17,19 +19,28 @@ import { comparePassword } from "~/utils/passwordUtils";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      atTag: string;
+      dateOfBirth: Date;
+      description: string | null;
+      tags: DBTags;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    atTag: string;
+    dateOfBirth: Date;
+    description: string | null;
+    tags: DBTags;
+    // ...other properties
+    // role: UserRole;
+  }
 }
 
 /**
@@ -43,12 +54,20 @@ export const authOptions: NextAuthOptions = {
       /* User table contents is exposed in tokens */
       if (user) {
         token.id = user.id;
+        token.atTag = user.atTag;
+        token.dateOfBirth = user.dateOfBirth;
+        token.description = user.description;
+        token.tags = user.tags;
       }
       return token;
     },
     session({ session, token, user }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.atTag = token.atTag as string;
+        session.user.dateOfBirth = token.dateOfBirth as Date;
+        session.user.description = token.description as string | null;
+        session.user.tags = token.tags as DBTags;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
@@ -80,19 +99,39 @@ export const authOptions: NextAuthOptions = {
         const creds = await loginSchema.parseAsync(credentials);
         const user = await prisma.user.findFirst({
           where: { email: creds.email },
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            password: true,
+            dateOfBirth: true,
+            atTag: true,
+            description: true,
+            tags: true,
+            image: true,
+          },
         });
 
         if (!user) {
           return null;
         }
 
-        if (user) {
-          console.log(user);
+        // Maybe add password hashing here
+        if (!comparePassword(user.password, creds.password)) {
+          return null;
         }
 
-        // Maybe add password hashing here
-        if(!comparePassword(user.password,creds.password)){
-          return null;
+        if (user) {
+          console.log("User logged in : ", user);
+        }
+
+        // Getting public URL from supabase
+        if (user.image) {
+          const { data: getImageData } = supabase.storage
+            .from("images")
+            .getPublicUrl(`${user.image}`);
+          
+            user.image = getImageData.publicUrl;
         }
 
         return {
@@ -103,7 +142,7 @@ export const authOptions: NextAuthOptions = {
   ],
   // Provide your own pages here
   pages: {
-    signIn: '/',
+    signIn: "/",
     // signOut: '/auth/signout',
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // (used for check email message)
