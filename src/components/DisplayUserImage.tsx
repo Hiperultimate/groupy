@@ -3,14 +3,14 @@ import SvgUserIcon from "public/SvgUserIcon";
 
 const DisplayUserImage = ({
   userImage,
-  dimentionPx,
+  dimensionPx,
 }: {
   userImage?: string | null;
-  dimentionPx: number;
+  dimensionPx: number;
 }) => {
   return (
     <div
-      className={`relative flex h-[${dimentionPx}px] w-[${dimentionPx}px] items-center justify-center rounded-full bg-[#d9d9d9] shadow-md`}
+      className={`relative flex h-[${dimensionPx}px] w-[${dimensionPx}px] items-center justify-center rounded-full bg-[#d9d9d9] shadow-md`}
     >
       {userImage === undefined || userImage === null ? (
         <SvgUserIcon />
@@ -19,8 +19,8 @@ const DisplayUserImage = ({
           className="rounded-full"
           src={userImage}
           alt="User image"
-          width={`${dimentionPx}`}
-          height={`${dimentionPx}`}
+          width={`${dimensionPx}`}
+          height={`${dimensionPx}`}
           style={{ objectFit: "cover" }}
         />
       )}
