@@ -20,8 +20,23 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
+// Fetch a comment from the server (which is made manually) and send it from server to client
+//   const posts = [{
+//     postId: '3512cx2',
+//     userImage : undefined,
+//     name: "John Smith",
+//     atTag: "@John Smith",
+//     tags: , 
+//     createdAt: ,
+//     description: ,
+//     postImage: ,
+//     postLikes: ,
+//     postComments: ,
+// }]
+
   return {
     props: { session },
+    // props: { session, posts },
   };
 };
 
@@ -40,7 +55,7 @@ const Home: NextPage = () => {
             <UserDetails userData={userSession}/>
             <div>
               <CreatePostInput userImage={userSession.user.image}/>
-              <div>Create a Post input</div>
+              
               <div>Post 1</div>
               <div>Post 2</div>
             </div>
