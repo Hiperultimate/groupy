@@ -6,7 +6,10 @@ import BackgroundContainer from "~/components/BackgroundContainer";
 import UserDetails from "~/components/UserDetails";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { getPosts } from "~/server/api/routers/posts";
+
 import CreatePostInput from "~/components/CreatePostInput";
+import { prisma } from "~/server/db";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -20,6 +23,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
+  const posts = await getPosts(prisma, session);
+  console.log("SENDING POST : ", posts);
 // Fetch a comment from the server (which is made manually) and send it from server to client
 //   const posts = [{
 //     postId: '3512cx2',
