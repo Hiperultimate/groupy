@@ -13,21 +13,23 @@ export const DisplayPost = ({ postData }: { postData: Post }) => {
   // return <div>{postData.content}</div>;
 
   return (
-    <div className="flex flex-col">
-      <div className="flex">
-        <DisplayUserImage sizeOption="medium" />
-        <div className="flex flex-col">
-          <div className="flex">
-            <div className="flex">
-              <div>Author Name</div>
-              <div>@AuthorTag</div>
+    <div className="m-3 flex flex-col rounded-lg bg-white p-3 font-poppins shadow-md">
+      <div className="flex ">
+        <div>
+          <DisplayUserImage sizeOption="medium" />
+        </div>
+        <div className="flex w-full flex-col">
+          <div className="flex justify-between">
+            <div className="mx-3 mt-3 flex flex-wrap">
+              <div className="font-bold">Author NameAuthor NameAuthor Name</div>
+              <div className="ml-1 text-grey">@AuthorTag</div>
             </div>
-            <div>June 22</div>
+            <div className="mx-3 mt-3 text-grey">June 22</div>
           </div>
-          <div className="flex">
-            <div>Tag1</div>
-            <div>Tag2</div>
-            <div>Tag3</div>
+          <div className="flex ml-3 flex-wrap">
+            <div className="text-sm mr-1 my-0.5 h-7 px-3 py-0.5 rounded-full bg-orange text-white">Tag1</div>
+            <div className="text-sm mr-1 my-0.5 h-7 px-3 py-0.5 rounded-full bg-orange text-white">Tag2</div>
+            <div className="text-sm mr-1 my-0.5 h-7 px-3 py-0.5 rounded-full bg-orange text-white">Tag3</div>
           </div>
         </div>
       </div>

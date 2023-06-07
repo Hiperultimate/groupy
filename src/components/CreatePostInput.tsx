@@ -7,7 +7,7 @@ const CreatePostInput = ({
   userImage: string | null | undefined;
 }) => {
   return (
-    <div className="mx-3 flex w-[545px] rounded-lg bg-white p-3 font-poppins shadow-md">
+    <div className="mx-3 flex rounded-lg bg-white p-3 font-poppins shadow-md">
       <div>
         <DisplayUserImage userImage={userImage} sizeOption="small" />
       </div>
