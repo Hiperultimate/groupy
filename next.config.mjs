@@ -25,6 +25,11 @@ const config = {
         protocol: 'https',
         hostname: `*.supabase.co`,
       },
+      // Using unsplash to test different sizes of images
+      {
+        protocol: 'https',
+        hostname: `*.unsplash.com`,
+      },
     ],
   },
 };
