@@ -1,6 +1,9 @@
 import { type Post } from "@prisma/client";
-import DisplayUserImage from "./DisplayUserImage";
 import Image from "next/image";
+import SvgMessageIcon from "public/SvgMessageIcon";
+import SvgPeopleIcon from "public/SvgPeopleIcon";
+import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
+import DisplayUserImage from "./DisplayUserImage";
 
 export const DisplayPost = ({ postData }: { postData: Post }) => {
   // TODO:
@@ -52,17 +55,34 @@ export const DisplayPost = ({ postData }: { postData: Post }) => {
           width={0}
           height={0}
           sizes="100vw"
-          style={{ width: "auto", height: "auto" , maxHeight : "600px" }}
-          alt={'An error occured while loading the image.'}
+          style={{ width: "auto", height: "auto", maxHeight: "600px" }}
+          alt={"An error occured while loading the image."}
         />
       </div>
-      <button>Join up &rarr;</button>
-      <div className="flex">
+      <button className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange">
+        Join up &rarr;
+      </button>
+      <div className="flex mx-4 my-6">
         <div className="flex">
-          <div>LikeIcon 110</div>
-          <div>CommentsIcon 21</div>
+          <div className="flex">
+            <div className="mx-2">
+              <SvgThumbsUpIcon />
+            </div>
+            110
+          </div>
+          <div className="flex">
+            <div className="mx-2">
+              <SvgMessageIcon />
+            </div>
+            21
+          </div>
         </div>
-        <div>PeopleIcon 1-10</div>
+        <div className="flex">
+          <div className="mx-2">
+            <SvgPeopleIcon />
+          </div>
+          1-10
+        </div>
       </div>
       <div className="flex flex-col">
         <div>Comments</div>
