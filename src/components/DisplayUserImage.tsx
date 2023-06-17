@@ -4,9 +4,11 @@ import SvgUserIcon from "public/SvgUserIcon";
 const DisplayUserImage = ({
   userImage,
   sizeOption,
+  userStatus,
 }: {
   userImage?: string | null;
   sizeOption: "big" | "medium" | "small";
+  userStatus?: boolean;
 }) => {
   const sizes = {
     big: "h-[104px] w-[104px]",
@@ -35,6 +37,16 @@ const DisplayUserImage = ({
           style={{ objectFit: "cover" }}
         />
       )}
+      {userStatus !== undefined &&
+        (userStatus ? (
+          <span
+            className={`absolute left-12 top-12 h-[11px] w-[11px] rounded-full bg-green-500 content-none`}
+          />
+        ) : (
+          <span
+            className={`absolute left-12 top-12 h-[11px] w-[11px] rounded-full bg-grey content-none`}
+          />
+        ))}
     </div>
   );
 };

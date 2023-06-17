@@ -16,6 +16,7 @@ import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
 import UserDetails from "~/components/UserDetails";
 import { DisplayPost } from "~/components/DisplayPost";
+import FriendList from "~/components/FriendList";
 
 type SerializablePost = {
   id: string;
@@ -104,7 +105,8 @@ const Home: NextPage<
                 return <DisplayPost key={post.id} postData={post} />;
               })}
             </div>
-            <div>Your Friends</div>
+            {/* <div>Your Friends</div> */}
+            <FriendList />
           </main>
         </div>
       </BackgroundContainer>
