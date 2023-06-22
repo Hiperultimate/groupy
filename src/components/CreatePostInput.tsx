@@ -15,12 +15,29 @@ const CreatePostInput = ({
 }) => {
   const dialogRef = useRef<DialogElement>(null);
 
+  function outsideModalClickHandler(e: React.MouseEvent) {
+    const dialogDimensions = dialogRef.current?.getBoundingClientRect();
+    if (
+      dialogDimensions &&
+      (e.clientX < dialogDimensions.left ||
+        e.clientX > dialogDimensions.right ||
+        e.clientY < dialogDimensions.top ||
+        e.clientY > dialogDimensions.bottom)
+    ) {
+      dialogRef.current?.close();
+    }
+  }
+
   return (
     <div>
-      <dialog ref={dialogRef}>
+      <dialog ref={dialogRef} onClick={(e) => outsideModalClickHandler(e)}>
         <header>
           <div>
-            <h2>Create a post</h2>
+            <div className="flex items-center">
+              <div className="m-2 text-3xl font-bold text-dark-blue">
+                Create your post
+              </div>
+            </div>
             <button
               onClick={() => {
                 dialogRef.current?.close();
