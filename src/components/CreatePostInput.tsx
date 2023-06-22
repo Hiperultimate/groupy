@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import DisplayUserImage from "./DisplayUserImage";
+import CreatePostForm from "./CreatePostForm";
 
 interface DialogElement extends HTMLDialogElement {
   showModal: () => void;
@@ -33,11 +34,7 @@ const CreatePostInput = ({
       <dialog ref={dialogRef} onClick={(e) => outsideModalClickHandler(e)}>
         <header>
           <div>
-            <div className="flex items-center">
-              <div className="m-2 text-3xl font-bold text-dark-blue">
-                Create your post
-              </div>
-            </div>
+            <CreatePostForm />
             <button
               onClick={() => {
                 dialogRef.current?.close();
