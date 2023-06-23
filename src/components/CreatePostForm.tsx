@@ -67,14 +67,33 @@ function CreatePostForm() {
 
       <div>
         <div className="flex items-center">
-          
-        <div>Group Name:</div>
-        <InputField
-          isRequired={true}
-          placeholder="Name of your group"
-          />
-      </div>
+          <span className="pr-2">Group Name:</span>
+          <InputField isRequired={true} placeholder="Name of your group" />
+        </div>
+        <div>
+          <span>Select Age Spectrum : </span>
+        </div>
+        <div>
+          <span>Group Size: </span>
+        </div>
+        <div className="flex">
+          <span className="pr-2">Instant Join: </span>
+          <div className="flex gap-4">
+            <div>
+              <input
+                type="radio"
+                value="false"
+                className="relative top-[1px]"
+              />
+              <span className="pl-1">No</span>
+            </div>
+            <div>
+              <input type="radio" value="true" className="relative top-[1px]" />
+              <span className="pl-1">Yes</span>
+            </div>
           </div>
+        </div>
+      </div>
     </form>
   );
 }
