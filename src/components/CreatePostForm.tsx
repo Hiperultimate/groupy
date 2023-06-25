@@ -9,16 +9,38 @@ import InputField from "./InputField";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
+function HoverMessageComponent({ message }: { message: string }) {
+  const [showMessage, setShowMessage] = useState(false);
+  return (
+    <span
+      onMouseEnter={() => {
+        setShowMessage(true);
+      }}
+      onMouseLeave={() => {
+        setShowMessage(false);
+      }}
+      className="relative rounded-full bg-slate-200 px-[10px] hover:cursor-pointer"
+    >
+      <span className=" text-sm text-grey ">!</span>
+      {showMessage && (
+        <span className="absolute left-8 z-50 min-w-[15em] max-w-[20em] rounded-md bg-light-grey p-2 text-sm text-grey">
+          {message}
+        </span>
+      )}
+    </span>
+  );
+}
+
 function CreatePostForm() {
   // UI states
   const scrollAgeMarkScale = {
     1: <span className="relative top-4 font-bold">1 y/o</span>,
     160: <span className="relative top-4 font-bold">160 y/o</span>,
-  }
+  };
   const scrollGroupMarkScale = {
     1: <span className="relative top-4 font-bold">1 Person</span>,
     100: <span className="relative top-4 font-bold">100 People</span>,
-  }
+  };
   const [scrollAgeMark, setScrollAgeMark] = useState<TScrollMark>({
     ...scrollAgeMarkScale,
     15: `15`,
@@ -96,7 +118,13 @@ function CreatePostForm() {
           <InputField isRequired={true} placeholder="Name of your group" />
         </div>
         <div>
-          <span>Select Age Spectrum : </span>
+          <span>
+            Select Age Spectrum
+            <span className="mx-1">
+              <HoverMessageComponent message="Select the age spectrum which can display this post and join your group." />
+            </span>
+            :
+          </span>
           <div className="h-20">
             <Slider
               marks={scrollAgeMark}
@@ -125,7 +153,13 @@ function CreatePostForm() {
           </div>
         </div>
         <div>
-          <span>Group Size: </span>
+          <span>
+            Group Size
+            <span className="mx-1">
+              <HoverMessageComponent message="Select the maximum number of people you want in your group." />
+            </span>
+            :
+          </span>
           <div className="h-20">
             <Slider
               marks={groupMark}
