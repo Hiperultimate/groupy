@@ -105,7 +105,6 @@ const Home: NextPage<
                 return <DisplayPost key={post.id} postData={post} />;
               })}
             </div>
-            {/* <div>Your Friends</div> */}
             <FriendList />
           </main>
         </div>

@@ -18,6 +18,10 @@ function CreatePostForm() {
   const [userImageFile, setUserImageFile] = useState<File | null>(null);
   const [userImageError, setUserImageError] = useState<string[]>([]);
 
+  // These states are temporary until frontend is completed.
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
+
   // UI states
   const scrollAgeMarkScale = {
     1: (
@@ -48,12 +52,10 @@ function CreatePostForm() {
     5: `5`,
   });
 
-  // These states are temporary until frontend is completed.
-  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
-  const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
+  
   return (
     <form className="font-poppins">
-      <div className="flex items-center">
+      <div className="flex items-center justify-center">
         <div className="m-2 text-3xl font-bold text-dark-blue">
           Create your post
         </div>
@@ -228,6 +230,15 @@ function CreatePostForm() {
           )}
         </div>
       </div>
+
+      <button
+        type="button"
+        className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+        // onClick={() => router.push("/sign-up")}
+        // disabled={signInFetching}
+      >
+        Create
+      </button>
     </form>
   );
 }
