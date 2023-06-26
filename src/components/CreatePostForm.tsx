@@ -1,23 +1,33 @@
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { type ReactElement, useState } from "react";
+import { useState, type ReactElement } from "react";
 
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
-import InputField from "./InputField";
 import HoverDisplayMessage from "./HoverDisplayMessage";
+import InputField from "./InputField";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
 function CreatePostForm() {
   // UI states
   const scrollAgeMarkScale = {
-    1: <span className="relative top-4 font-bold">1<br/>y/o</span>,
+    1: (
+      <span className="relative top-4 font-bold">
+        1<br />
+        y/o
+      </span>
+    ),
     160: <span className="relative top-4 font-bold">160 y/o</span>,
   };
   const scrollGroupMarkScale = {
-    1: <span className="relative top-4 font-bold">1<br/>Person</span>,
+    1: (
+      <span className="relative top-4 font-bold">
+        1<br />
+        Person
+      </span>
+    ),
     100: <span className="relative top-4 font-bold">100 People</span>,
   };
   const [scrollAgeMark, setScrollAgeMark] = useState<TScrollMark>({
@@ -77,7 +87,7 @@ function CreatePostForm() {
         />
       </div>
 
-      <div className="flex my-2">
+      <div className="my-2 flex">
         <div className="pr-2">Create a group: </div>
         <div className="flex gap-4">
           <div>
@@ -91,8 +101,8 @@ function CreatePostForm() {
         </div>
       </div>
 
-      <div className="border-2 border-dashed rounded-lg border-light-grey p-6">
-        <div className="flex items-center my-2">
+      <div className="rounded-lg border-2 border-dashed border-light-grey p-6">
+        <div className="my-2 items-center">
           <span className="pr-2">Group Name:</span>
           <InputField isRequired={true} placeholder="Name of your group" />
         </div>
