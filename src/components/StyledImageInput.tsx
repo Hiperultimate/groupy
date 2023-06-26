@@ -11,11 +11,13 @@ import imageValidation from "~/common/imageValidation";
  * const [userImageError, setUserImageError] = useState<string[]>([]);
  */
 const StyledImageInput = ({
+  title,
   setUserImage,
   setUserImageFile,
   setUserImageError,
   userImageError,
 }: {
+  title?: string;
   setUserImageError: React.Dispatch<React.SetStateAction<string[]>>;
   setUserImage: React.Dispatch<React.SetStateAction<string | undefined>>;
   setUserImageFile: React.Dispatch<React.SetStateAction<File | null>>;
@@ -53,7 +55,7 @@ const StyledImageInput = ({
 
   return (
     <div className="flex flex-col">
-      <span>Upload your profile picture</span>
+      {title && <span>{title}</span>}
       {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
       <input
         className="hidden"
