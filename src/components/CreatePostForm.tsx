@@ -7,10 +7,17 @@ import AsyncCreatableSelectComponent, {
 } from "../components/InputCreatableSelect";
 import HoverDisplayMessage from "./HoverDisplayMessage";
 import InputField from "./InputField";
+import StyledImageInput from "./StyledImageInput";
+import SvgCamera from "public/SvgCamera";
+import Image from "next/image";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
 function CreatePostForm() {
+  const [userImage, setUserImage] = useState<string | undefined>();
+  const [userImageFile, setUserImageFile] = useState<File | null>(null);
+  const [userImageError, setUserImageError] = useState<string[]>([]);
+
   // UI states
   const scrollAgeMarkScale = {
     1: (
@@ -188,6 +195,37 @@ function CreatePostForm() {
               <span className="pl-1">Yes</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="py-4">
+        <StyledImageInput
+          title={"Upload a picture"}
+          setUserImage={setUserImage}
+          setUserImageFile={setUserImageFile}
+          setUserImageError={setUserImageError}
+          userImageError={userImageError}
+        />
+      </div>
+
+      <div className="my-4">
+        <span>Your Profile Picture</span>
+        <div className="flex items-center justify-center bg-light-grey">
+          {userImage === undefined ? (
+            <div className="relative m-4 flex h-48 w-full items-center justify-center bg-[#d9d9d9] shadow-md">
+              <SvgCamera />
+            </div>
+          ) : (
+            <Image
+              className=""
+              src={userImage}
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: "auto", height: "auto", maxHeight: "600px" }}
+              alt={"An error occured while loading the image."}
+            />
+          )}
         </div>
       </div>
     </form>
