@@ -379,7 +379,7 @@ const SignUp: NextPage = () => {
                   className="my-1 flex h-60 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-8"
                 >
                   <span className="flex flex-col items-center text-grey">
-                    <SvgUploadIcon dimention={50} />
+                    <SvgUploadIcon dimension={50} />
                     <span>
                       Drag and drop an image, or{" "}
                       <span className="text-orange">Browse</span>
