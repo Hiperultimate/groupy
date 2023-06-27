@@ -31,8 +31,9 @@ model User {
     description   String?
     tags          Tag[]
     posts         Post[]
-    emailVerified DateTime?
     image         String? 
+    postsLiked    UserLikedPost[]
+    userComments  Comment[]
 }
 
 model Tag {
@@ -44,14 +45,28 @@ model Tag {
 
 model Post {
   id        String      @id @default(uuid())
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
   content   String
   image     String?
   tags      Tag[]
   author    User        @relation(fields: [authorId], references: [id])
   authorId  String
   comments  Comment[] 
+  likedBy   UserLikedPost[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model UserLikedPost {
+    id        String      @id @default(uuid())
+    
+    user      User        @relation(fields: [userId], references: [id])
+    userId    String 
+
+    post      Post        @relation(fields: [postId], references: [id])
+    postId    String   
+
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
 }
 
 model Comment {
@@ -59,5 +74,10 @@ model Comment {
   content   String
   post      Post         @relation(fields: [postId], references: [id])
   postId    String
+
+  author    User        @relation(fields: [authorId], references: [id])
+  authorId  String
+
+  createdAt DateTime    @default(now())
 }
 

@@ -1,13 +1,13 @@
 type ComponentProp = {
   fillcolor?: string;
-  dimention?: number;
+  dimension?: number;
 };
 
 const SvgUploadIcon = (props: ComponentProp) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={props.dimention ? props.dimention : 32}
-    height={props.dimention ? props.dimention : 32}
+    width={props.dimension ? props.dimension : 32}
+    height={props.dimension ? props.dimension : 32}
     fill="none"
     viewBox="0 0 36 36"
     {...props}

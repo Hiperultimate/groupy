@@ -1,12 +1,12 @@
 type ComponentProp = {
-  dimention?: number;
+  dimension?: number;
 };
 
 const SvgCamera = (props: ComponentProp) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={props.dimention ? props.dimention : 24}
-    height={props.dimention ? props.dimention : 24}
+    width={props.dimension ? props.dimension : 24}
+    height={props.dimension ? props.dimension : 24}
     fill="none"
   >
     <path

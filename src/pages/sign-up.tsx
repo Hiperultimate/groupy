@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +9,6 @@ import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
-import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
 import InputField from "../components/InputField";
 import BackgroundContainer from "../components/BackgroundContainer";
@@ -19,10 +18,8 @@ import AsyncCreatableSelectComponent, {
 } from "../components/InputCreatableSelect";
 import Image from "next/image";
 import InputErrorText from "../components/InputErrorText";
-import imageValidation from "~/common/imageValidation";
-import { supabase } from "~/utils/storageBucket";
 import { encodeImageToBase64 } from "~/common/imageConversion";
-import { StringValidation } from "zod";
+import StyledImageInput from "~/components/StyledImageInput";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -162,34 +159,8 @@ const SignUp: NextPage = () => {
     }
   };
 
-  // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions.
-  //                 Using this function to keep same logic at both areas.
-  const imageErrorSetter = (file: File) => {
-    const promise = encodeImageToBase64(file);
-    promise
-      .then((base64String) => {
-        const imageUploadError: string[] = imageValidation(file);
-        setUserImageError(imageUploadError);
-        if (imageUploadError.length === 0) {
-          setUserImage(base64String);
-          setUserImageFile(file);
-        }
-      })
-      .catch((error) => {
-        console.log("Error occured : ", error);
-      });
-  };
+  
 
-  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    setUserImageError([]);
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      imageErrorSetter(file);
-    } else {
-      console.log("Error occured while loading file");
-    }
-  };
 
   return (
     <>
@@ -356,43 +327,13 @@ const SignUp: NextPage = () => {
               </div>
 
               {/* Image will be optional */}
-              <div className="flex flex-col">
-                <span>Upload your profile picture</span>
-                {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
-                <input
-                  className="hidden"
-                  type="file"
-                  id="imageUpload"
-                  onChange={(e) => {
-                    e.preventDefault();
-                    setUserImageError([]);
-                    const file = e.target.files ? e.target.files[0] : undefined;
-                    if (file) {
-                      imageErrorSetter(file);
-                    } else {
-                      console.log("Error occured while loading file");
-                    }
-                  }}
-                />
-                <label
-                  htmlFor="imageUpload"
-                  onDrop={handleDrop}
-                  onDragOver={(e) => e.preventDefault()}
-                  className="my-1 flex h-60 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed p-8"
-                >
-                  <span className="flex flex-col items-center text-grey">
-                    <SvgUploadIcon dimention={50} />
-                    <span>
-                      Drag and drop an image, or{" "}
-                      <span className="text-orange">Browse</span>
-                    </span>
-                    <span className="text-[#cad0d9]">
-                      High resolution images (png, jpg)
-                    </span>
-                  </span>
-                </label>
-                <InputErrorText errorArray={userImageError} />
-              </div>
+              <StyledImageInput
+                title={"Upload your profile picture"}
+                setUserImage={setUserImage}
+                setUserImageFile={setUserImageFile}
+                setUserImageError={setUserImageError}
+                userImageError={userImageError}
+              />
 
               <div className="my-4">
                 <span>Your Profile Picture</span>
