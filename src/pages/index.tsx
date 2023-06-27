@@ -40,9 +40,9 @@ const AuthShowcase: React.FC = () => {
     { enabled: sessionData?.user !== undefined },
   );
   
-  // useEffect(() => {
-  //   console.log(sessionData);
-  // },[sessionData])
+  useEffect(() => {
+    console.log("ON THE FRONT END : " ,sessionData);
+  },[sessionData])
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
