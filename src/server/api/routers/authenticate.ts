@@ -31,11 +31,18 @@ export const authRouter = createTRPCRouter({
         image,
       } = input;
 
-      const exists = await ctx.prisma.user.findFirst({ where: { email } });
-
-      if (exists) {
+      const emailExists = await ctx.prisma.user.findFirst({ where: { email } });
+      if (emailExists) {
         throw new TRPCError({
           message: "User with this Email ID already exists",
+          code: "FORBIDDEN",
+        });
+      }
+
+      const nameTagExists = await ctx.prisma.user.findFirst({ where: { atTag : nameTag } });
+      if (nameTagExists) {
+        throw new TRPCError({
+          message: "User with this Tag-name already exists",
           code: "FORBIDDEN",
         });
       }
