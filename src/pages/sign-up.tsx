@@ -80,9 +80,7 @@ const SignUp: NextPage = () => {
     image: setUserImageError,
   };
 
-  const submitHandler = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-
+  const formErrorGenerator = () => {
     const checkDetails = signUpSchema.safeParse({
       name: name,
       email: email,
@@ -127,24 +125,54 @@ const SignUp: NextPage = () => {
     }
   };
 
+  const isValidFormData = (): boolean => {
+    const errorFields = [
+      nameError,
+      emailError,
+      passwordError,
+      confirmPasswordError,
+      dobError,
+      userNameTagError,
+      descriptionError,
+      userImageError,
+      selectedTagsError,
+    ];
+
+    return errorFields.every((errors) => errors.length === 0);
+  };
+
+  const submitHandler = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    formErrorGenerator();
+    const isValid: boolean = isValidFormData();
+
+    // Check if all the error tags is empty
+  };
+
   const convertImageToLink = (image: File): string => {
     const objectUrl = URL.createObjectURL(image);
     return objectUrl;
   };
 
+  // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions. 
+  //                 Using this function to keep same logic at both areas.
+  const imageErrorSetter = (file: File) => {
+    const objectUrl = convertImageToLink(file);
+    const imageUploadError: string[] = imageValidation(file);
+    setUserImageError(imageUploadError);
+    if (imageUploadError.length === 0) {
+      setUserImage(objectUrl);
+    }
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    // do something with the dropped file
     if (file) {
-      const objectUrl = convertImageToLink(file);
-      console.log(imageValidation(file));
-
-      setUserImage(objectUrl);
+      imageErrorSetter(file);
     } else {
       console.log("Error occured while loading file");
     }
-    console.log("FILE HERE : ", file);
   };
 
   return (
@@ -316,8 +344,9 @@ const SignUp: NextPage = () => {
                   onChange={(e) => {
                     const file = e.target.files ? e.target.files[0] : undefined;
                     if (file) {
-                      const objectUrl = convertImageToLink(file);
-                      setUserImage(objectUrl);
+                      imageErrorSetter(file);
+                    } else {
+                      console.log("Error occured while loading file");
                     }
                   }}
                 />

@@ -15,7 +15,7 @@ const imageValidation = (image: File): string[] => {
   }
 
   if (image.size > MAX_IMAGE_SIZE) {
-    errorList.push("Image size must be less than 1MB");
+    errorList.push("Image size must be less than 1 MB");
   }
 
   return errorList;
