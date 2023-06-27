@@ -8,6 +8,7 @@ import InputField from "./components/InputField";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 import { loginSchema } from "~/common/authSchema";
 
 const Home: NextPage = () => {
@@ -16,6 +17,31 @@ const Home: NextPage = () => {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const {
+    isFetching: signInFetching,
+    data: signInData,
+    refetch: signInFunc,
+  } = useQuery(
+    ["signIn", emailField, passwordField],
+    () =>
+      signIn("credentials", {
+        email: emailField,
+        password: passwordField,
+        redirect: false,
+      }),
+    { enabled: false }
+  );
+
+  useEffect(() => {
+    setErrorMessage("");
+  }, [emailField, passwordField]);
+
+  useEffect(() => {
+    if(signInData?.status === 401){
+      setErrorMessage("Email ID or Password is incorrect");
+    }
+  }, [signInData])
 
   const formSubmitHandler: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -30,6 +56,7 @@ const Home: NextPage = () => {
       setErrorMessage("Email ID or Password is incorrect");
       return;
     }
+    void signInFunc();
   };
 
   return (
@@ -82,9 +109,9 @@ const Home: NextPage = () => {
                       inputState: emailField,
                       changeInputState: setEmailField,
                     }}
-                    // disabled={registerUser_isLoading}
+                    disabled={signInFetching}
                   />
-                  
+
                   <span className="p-2" />
 
                   <InputField
@@ -96,10 +123,12 @@ const Home: NextPage = () => {
                       inputState: passwordField,
                       changeInputState: setPasswordField,
                     }}
-                    // disabled={registerUser_isLoading}
+                    disabled={signInFetching}
                   />
                 </div>
-                <span className="text-red-600">{errorMessage}</span>
+                <span className="relative top-[12px] text-red-600">
+                  {errorMessage}
+                </span>
                 <button
                   type="submit"
                   className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
@@ -117,6 +146,7 @@ const Home: NextPage = () => {
                 <button
                   type="button"
                   className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                  disabled={signInFetching}
                 >
                   Sign Up
                 </button>

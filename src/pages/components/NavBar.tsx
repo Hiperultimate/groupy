@@ -1,3 +1,4 @@
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 
@@ -12,6 +13,7 @@ export const pageStates = {
 const NavBar = ({ onlyLogo = false }: { onlyLogo?: boolean }) => {
   const router = useRouter();
   const currentUrl = router.asPath;
+  const { data: sessionData } = useSession();
 
   let selectedPage: PageType = pageStates.HOME;
 
@@ -78,14 +80,15 @@ const NavBar = ({ onlyLogo = false }: { onlyLogo?: boolean }) => {
               Settings
             </a>
           </li>
-          <li>
+          {sessionData?.user && <li>
             <a
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out`}
               href="#"
+              onClick={() => void signOut()}
             >
               Logout
             </a>
-          </li>
+          </li>}
         </ul>
       )}
     </nav>
