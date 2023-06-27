@@ -45,7 +45,7 @@ const SignUp: NextPage = () => {
   const [description, setDescription] = useState<string>("");
   const { mutate: signUpUser, isLoading: registerUser_isLoading } =
     api.account.signup.useMutation();
-  const [userImage, setUserImage] = useState<File | null>();
+  const [userImage, setUserImage] = useState<string | undefined>();
 
   // This state is for the AsyncCreatableSelectComponent component
   const [tagOptions, setTagOptions] =
@@ -76,11 +76,22 @@ const SignUp: NextPage = () => {
     }
   };
 
+  const convertImageToLink = (image: File): string => {
+    const objectUrl = URL.createObjectURL(image);
+    return objectUrl;
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     // do something with the dropped file
-    console.log(file);
+    if (file) {
+      const objectUrl = convertImageToLink(file);
+      setUserImage(objectUrl);
+    } else {
+      console.log("Error occured while loading file");
+    }
+    console.log("FILE HERE : ", file);
   };
 
   return (
@@ -208,7 +219,18 @@ const SignUp: NextPage = () => {
               <div className="flex flex-col">
                 <span>Upload your profile picture</span>
                 {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
-                <input className="hidden" type="file" id="imageUpload" />
+                <input
+                  className="hidden"
+                  type="file"
+                  id="imageUpload"
+                  onChange={(e) => {
+                    const file = e.target.files ? e.target.files[0] : undefined;
+                    if (file) {
+                      const objectUrl = convertImageToLink(file);
+                      setUserImage(objectUrl);
+                    }
+                  }}
+                />
                 <label
                   htmlFor="imageUpload"
                   onDrop={handleDrop}
@@ -233,28 +255,27 @@ const SignUp: NextPage = () => {
                 {/* if no image, export this */}
                 <div className="flex items-end">
                   <div className="m-4 flex h-48 w-48 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
-                    <SvgCamera />
+                    {userImage === undefined ? (
+                      <SvgCamera />
+                    ) : (
+                      <Image src={userImage} width={500} height={500} alt="" />
+                    )}
                   </div>
                   <div className="m-4 flex h-32 w-32 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
-                    <SvgCamera />
+                    {userImage === undefined ? (
+                      <SvgCamera />
+                    ) : (
+                      <Image src={userImage} width={500} height={500} alt="" />
+                    )}
                   </div>
                   <div className="m-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
-                    <SvgCamera />
+                    {userImage === undefined ? (
+                      <SvgCamera />
+                    ) : (
+                      <Image src={userImage} width={500} height={500} alt="" />
+                    )}
                   </div>
                 </div>
-
-                {/* Else this, include image */}
-                {/* <div className="flex items-end">
-                <div className="flex h-48 w-48 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
-                  <Image src="" alt="" />
-                </div>
-                <div className="flex h-32 w-32 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
-                  <Image src="" alt="" />
-                </div>
-                <div className="flex h-20 w-20 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
-                  <Image src="" alt="" />
-                </div>
-              </div> */}
               </div>
 
               <button
