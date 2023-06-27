@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
-import Image from "next/image";
-import Logo from "public/GroupyLogo.svg";
+import SvgGroupyLogo from "public/SvgGroupyLogo";
 
 type PageType = "home" | "chat" | "settings";
 
@@ -33,14 +32,18 @@ const NavBar = ({ onlyLogo = false }: { onlyLogo?: boolean }) => {
 
   return (
     <nav
-      className={`absolute flex h-20 w-screen items-center justify-between z-50 ${
+      className={`absolute z-50 flex h-20 w-screen items-center justify-between ${
         onlyLogo ? "bg-transparent" : "bg-white"
       }`}
     >
       <div>
         <a className="relative ml-5 flex font-teko text-[29px]" href="#">
-          <Image className="m-5" src={Logo as string} alt="logo" />
-          <span className="relative top-[18px]">GROUPY</span>
+          <div className="relative flex top-[3px]">
+            <div className="mx-5">
+              <SvgGroupyLogo />
+            </div>
+            <span className="relative">GROUPY</span>
+          </div>
         </a>
       </div>
       {!onlyLogo && (
