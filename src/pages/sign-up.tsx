@@ -66,9 +66,9 @@ const SignUp: NextPage = () => {
     <>
       <div className="background-design" />
       <div className="blur-gradient flex items-center">
-        <div className="m-auto w-4/5 rounded-xl bg-white p-12 font-poppins shadow-lg">
-          <div className="flex flex-col items-center relative">
-            <div className="bg-orange p-4 rounded-lg w-20 h-20 absolute top-[-90px]">
+        <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white p-12 font-poppins shadow-lg">
+          <div className="relative flex flex-col items-center">
+            <div className="absolute top-[-90px] h-20 w-20 rounded-lg bg-orange p-4">
               <SvgGroupyLogo fillcolor="#ffffff" />
             </div>
             <div className="m-2 text-3xl font-bold text-dark-blue">
@@ -77,30 +77,102 @@ const SignUp: NextPage = () => {
             <div className="m-2 text-xl text-grey">Start your journey</div>
           </div>
           <form onSubmit={submitHandler}>
-            <InputField
-              title="Name"
-              isRequired={true}
-              placeholder="Full name"
-              handleState={{ inputState: name, changeInputState: setName }}
-              disabled={registerUser_isLoading}
-            />
-            <InputField
-              title="Email"
-              isRequired={true}
-              placeholder="Email"
-              handleState={{ inputState: email, changeInputState: setEmail }}
-              disabled={registerUser_isLoading}
-            />
-            <InputField
-              title="Password"
-              isRequired={true}
-              placeholder="Enter password"
-              handleState={{
-                inputState: password,
-                changeInputState: setPassword,
-              }}
-              disabled={registerUser_isLoading}
-            />
+            <div className="my-4 flex w-full flex-row">
+              <div className="mr-6 w-1/2">
+                <InputField
+                  title="Name"
+                  isRequired={true}
+                  placeholder="Full name"
+                  handleState={{ inputState: name, changeInputState: setName }}
+                  disabled={registerUser_isLoading}
+                />
+              </div>
+              <div className="w-1/2">
+                <InputField
+                  title="Email"
+                  isRequired={true}
+                  placeholder="Email"
+                  handleState={{
+                    inputState: email,
+                    changeInputState: setEmail,
+                  }}
+                  disabled={registerUser_isLoading}
+                />
+              </div>
+            </div>
+            <div className="my-4 flex w-full flex-row">
+              <div className="mr-6 w-1/2">
+                <InputField
+                  title="Password"
+                  isRequired={true}
+                  placeholder="Enter password"
+                  handleState={{
+                    inputState: password,
+                    changeInputState: setPassword,
+                  }}
+                  disabled={registerUser_isLoading}
+                />
+              </div>
+
+              <div className="w-1/2">
+                <InputField
+                  title="Confirm Password"
+                  isRequired={true}
+                  placeholder="Re-enter password"
+                  // handleState={{
+                  //   inputState: password,
+                  //   changeInputState: setPassword,
+                  // }}
+                  disabled={registerUser_isLoading}
+                />
+              </div>
+            </div>
+
+            <div className="my-4 flex w-full flex-row">
+              <div className="mr-6 w-1/2">
+                <InputField
+                  title="Date of Birth"
+                  type="date"
+                  isRequired={true}
+                  placeholder="Enter your DOB"
+                  // handleState={{
+                  //   inputState: password,
+                  //   changeInputState: setPassword,
+                  // }}
+                  disabled={registerUser_isLoading}
+                />
+              </div>
+
+              <div className="w-1/2">
+                <InputField
+                  title="@Tag-name"
+                  isRequired={true}
+                  placeholder="ExampleName25"
+                  // handleState={{
+                  //   inputState: password,
+                  //   changeInputState: setPassword,
+                  // }}
+                  disabled={registerUser_isLoading}
+                />
+              </div>
+            </div>
+
+            <div className="flex w-full flex-col my-2">
+              <label htmlFor="describe" className="hover:cursor-pointer">
+                Describe Yourself*
+              </label>
+              {/* Set character or word limit to the textarea */}
+              <textarea
+                id="describe"
+                placeholder="Something about you..."
+                rows={4}
+                required
+                className="rounded-lg border-2 px-4 py-3"
+                // value={}
+                // onChange={}
+              />
+            </div>
+
             <button
               className="rounded-md bg-slate-500 px-2 text-white"
               type="submit"
