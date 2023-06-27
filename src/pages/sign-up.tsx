@@ -439,12 +439,12 @@ const SignUp: NextPage = () => {
               </div>
 
               <button
-                className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white"
+                className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white disabled:bg-[#ff9e3e]"
                 type="submit"
+                disabled={registerUser_isLoading}
               >
                 Submit
               </button>
-              {registerUser_isLoading && <span>Loading...</span>}
             </form>
           </div>
         </div>
