@@ -328,6 +328,7 @@ const SignUp: NextPage = () => {
 
               {/* Image will be optional */}
               <StyledImageInput
+                title={"Upload your profile picture"}
                 setUserImage={setUserImage}
                 setUserImageFile={setUserImageFile}
                 setUserImageError={setUserImageError}
