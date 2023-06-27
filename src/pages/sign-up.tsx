@@ -206,8 +206,9 @@ const SignUp: NextPage = () => {
                 <AsyncCreatableSelectComponent />
               </div>
 
+              {/* Image will be optional */}
               <div className="flex flex-col">
-                <span>Upload your profile picture*</span>
+                <span>Upload your profile picture</span>
                 {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
                 <input className="hidden" type="file" id="imageUpload" />
                 <label
