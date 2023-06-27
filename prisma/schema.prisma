@@ -27,6 +27,8 @@ model User {
     email         String    @unique
     password      String   
     dateOfBirth   DateTime  
+    atTag         String    @unique
+    description   String?
     tags          Tag[]
     posts         Post[]
     emailVerified DateTime?
