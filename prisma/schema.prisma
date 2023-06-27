@@ -20,12 +20,43 @@ model Example {
     updatedAt DateTime @updatedAt
 }
 
-// when adding new fields to these User model, you must provide default values for them, since the adapter is not aware of these fields
+// Bit by bit additing functionality to Groupy models as more functionality is required
 model User {
     id            String    @id @default(cuid())
     name          String
     email         String    @unique
     password      String   
+    dateOfBirth   DateTime  
+    tags          Tag[]
+    posts         Post[]
     emailVerified DateTime?
-    image         String?
+    image         String? 
 }
+
+model Tag {
+    id        String   @id @default(uuid())
+    name      String   @unique    
+    users     User[]
+    onPost    Post     @relation(fields: [tagId], references: [id])
+    tagId     String
+}
+
+model Post {
+  id        String      @id @default(uuid())
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  content   String
+  image     String?
+  tags      Tag[]
+  author    User        @relation(fields: [authorId], references: [id])
+  authorId  String
+  comments  Comment[] 
+}
+
+model Comment {
+  id        String       @id @default(uuid())
+  content   String
+  post      Post         @relation(fields: [postId], references: [id])
+  postId    String
+}
+
