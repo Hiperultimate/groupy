@@ -15,6 +15,8 @@ const createOption = (label: string) => ({
   value: label,
 });
 
+export type DBTags = { "id": string; "name": string }[];
+
 const creatableComponentStyle: StylesConfig<TagOption> = {
   control: (styles) => {
     return {
