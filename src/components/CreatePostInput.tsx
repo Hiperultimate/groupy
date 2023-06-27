@@ -31,9 +31,8 @@ const CreatePostInput = ({
 
   return (
     <div>
-      <dialog ref={dialogRef} onClick={(e) => outsideModalClickHandler(e)}>
-        <header>
-          <div>
+      <dialog className="w-3/6 max-w-[720px] rounded-lg" ref={dialogRef} onClick={(e) => outsideModalClickHandler(e)}>
+          <div className="p-4">
             <CreatePostForm />
             <button
               onClick={() => {
@@ -43,8 +42,7 @@ const CreatePostInput = ({
               Close
             </button>
           </div>
-        </header>
-        <section></section>
+
       </dialog>
       <div className="mx-3 flex rounded-lg bg-white p-3 font-poppins shadow-md">
         <div>
