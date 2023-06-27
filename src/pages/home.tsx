@@ -35,7 +35,7 @@ const Home: NextPage = () => {
     <>
       <BackgroundContainer>
         <div className="pt-[80px]">
-          <main className="flex justify-center">
+          <main className="flex justify-center my-8">
             <UserDetails userData={userSession}/>
             <div>
               <div>Create a Post input</div>
