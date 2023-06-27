@@ -10,7 +10,7 @@ export const pageStates = {
   SETTINGS: "settings",
 } as const;
 
-const NavBar = () => {
+const NavBar = ({ onlyLogo = false }: { onlyLogo: boolean }) => {
   const router = useRouter();
   const currentUrl = router.asPath;
 
@@ -32,53 +32,59 @@ const NavBar = () => {
   }
 
   return (
-    <nav className="ml-5 mr-5 flex h-20 items-center justify-between">
+    <nav
+      className={`absolute flex h-20 w-screen items-center justify-between ${
+        onlyLogo ? "bg-transparent" : "bg-white"
+      }`}
+    >
       <div>
-        <a className="relative flex font-teko text-[29px]" href="#">
+        <a className="relative ml-5 flex font-teko text-[29px]" href="#">
           <Image className="m-5" src={Logo as string} alt="logo" />
           <span className="relative top-[18px]">GROUPY</span>
         </a>
       </div>
-      <ul className="flex gap-8 font-poppins font-normal text-grey">
-        <li>
-          <a
-            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
-              selectedPage === pageStates.HOME ? `underline` : ``
-            }`}
-            href="#"
-          >
-            Home
-          </a>
-        </li>
-        <li>
-          <a
-            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
-              selectedPage === pageStates.CHAT ? `underline` : ``
-            }`}
-            href="#"
-          >
-            Chat
-          </a>
-        </li>
-        <li>
-          <a
-            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
-              selectedPage === pageStates.SETTINGS ? `underline` : ``
-            }`}
-            href="#"
-          >
-            Settings
-          </a>
-        </li>
-        <li>
-          <a
-            className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out`}
-            href="#"
-          >
-            Logout
-          </a>
-        </li>
-      </ul>
+      {!onlyLogo && (
+        <ul className="mr-5 flex gap-8 font-poppins font-normal text-grey">
+          <li>
+            <a
+              className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
+                selectedPage === pageStates.HOME ? `underline` : ``
+              }`}
+              href="#"
+            >
+              Home
+            </a>
+          </li>
+          <li>
+            <a
+              className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
+                selectedPage === pageStates.CHAT ? `underline` : ``
+              }`}
+              href="#"
+            >
+              Chat
+            </a>
+          </li>
+          <li>
+            <a
+              className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
+                selectedPage === pageStates.SETTINGS ? `underline` : ``
+              }`}
+              href="#"
+            >
+              Settings
+            </a>
+          </li>
+          <li>
+            <a
+              className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out`}
+              href="#"
+            >
+              Logout
+            </a>
+          </li>
+        </ul>
+      )}
     </nav>
   );
 };
