@@ -40,9 +40,14 @@ export const authRouter = createTRPCRouter({
         });
       }
 
+      // NOTE: Your error handling is already synced from front-end and backend thanks to signUpSchema, on line 143 of sign-up.tsx all 
+              // the server side errors are also being displyed.
+
+      // TODO: Display server field error on the front-end
+      // TODO: Get the uploaded image file directly in sign-up page > Validate file, maybe through zod refine  
+      // TODO: Upload image on supabase storage bucket > Get image URL > Store URL in user Table image field
       // TODO: Hash password here and pass to result like password : hashed_password
-      // TODO: Upload image > Get image URL > Store URL in user Table image field
-      // TODO: userTags should be updated if new tags are added
+
 
       const result = await ctx.prisma.user.create({
         data: {
