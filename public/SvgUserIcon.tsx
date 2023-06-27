@@ -1,9 +1,9 @@
-function SvgUserIcon() {
+function SvgUserIcon({iconSize=43} : {iconSize?: number}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="43"
-      height="43"
+      width={`${iconSize}`}
+      height={`${iconSize}`}
       fill="none"
       viewBox="0 0 43 43"
     >
