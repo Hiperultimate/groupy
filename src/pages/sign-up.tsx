@@ -138,7 +138,7 @@ const SignUp: NextPage = () => {
     // do something with the dropped file
     if (file) {
       const objectUrl = convertImageToLink(file);
-      // console.log(imageValidation(file));
+      console.log(imageValidation(file));
 
       setUserImage(objectUrl);
     } else {
