@@ -39,72 +39,52 @@ export const signUpSchema = loginSchema
     message: "Tag-name cannot have blank spaces.",
     path: ["nameTag"],
   })
-  .refine(
-    (schema) => {
-      // Image is an optional field. Skip image validation if no image is passed.
-      if(schema.image === undefined){
-        return true;
-      }
+  .superRefine((schema, ctx) => {
+    // Image is an optional field. Skip image validation if no image is passed.
+    if (schema.image !== undefined) {
       try {
-        const { imageMime } = base64ToImageData(schema.image);
-        if (!imageMime) {
-          console.log("Something went wrong while converting the image");
-          return false;
+        const { imageMime, fileSizeInBytes } = base64ToImageData(schema.image);
+        if (!imageMime || !fileSizeInBytes) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Something went wrong while converting the image",
+            path: ["image"],
+          });
+          return;
         }
-        return serverImageTypeValidation(imageMime);
-      } catch (e) {
-        return false;
-      }
-    },
-    {
-      message: "Invalid file type",
-      path: ["image"],
-    }
-  )
-  .refine(
-    (schema) => {
-      // Image is an optional field. Skip image validation if no image is passed.
-      if(schema.image === undefined){
-        return true;
-      }
-      try {
-        const { imageMime } = base64ToImageData(schema.image);
-        if (!imageMime) {
-          console.log("Something went wrong while converting the image");
-          return false;
+
+        if (!serverImageTypeValidation(imageMime)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid file type",
+            path: ["image"],
+          });
         }
-        return serverImageFormatValidation(imageMime);
-      } catch (e) {
-        return false;
-      }
-    },
-    {
-      message: "Invalid image format",
-      path: ["image"],
-    }
-  )
-  .refine(
-    (schema) => {
-      // Image is an optional field. Skip image validation if no image is passed.
-      if(schema.image === undefined){
-        return true;
-      }
-      try {
-        const { fileSizeInBytes } = base64ToImageData(schema.image);
-        if (!fileSizeInBytes) {
-          console.log("Something went wrong while converting the image");
-          return false;
+
+        if (!serverImageFormatValidation(imageMime)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid image format",
+            path: ["image"],
+          });
         }
-        return serverImageSizeValidation(fileSizeInBytes);
+
+        if (!serverImageSizeValidation(fileSizeInBytes)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Image size must be less than 1 MB",
+            path: ["image"],
+          });
+        }
       } catch (e) {
-        return false;
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Something went wrong while converting the image",
+          path: ["image"],
+        });
       }
-    },
-    {
-      message: "Image size must be less than 1 MB",
-      path: ["image"],
     }
-  )
+  })
   .refine((schema) => schema.userTags.every(({ value }) => !/\s/.test(value)), {
     message: "Selected tags cannot have blank spaces in value property",
     path: ["userTags"],
