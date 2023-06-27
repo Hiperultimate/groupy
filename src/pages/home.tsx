@@ -1,15 +1,17 @@
 import { type NextPage } from "next";
+import { useEffect } from "react";
 
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
 import BackgroundContainer from "~/components/BackgroundContainer";
 import UserDetails from "~/components/UserDetails";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { getPosts } from "~/server/api/routers/posts";
 
 import CreatePostInput from "~/components/CreatePostInput";
 import { prisma } from "~/server/db";
+import { type Post } from "@prisma/client";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -23,44 +25,41 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
+  // Getting posts to show
   const posts = await getPosts(prisma, session);
-  console.log("SENDING POST : ", posts);
-// Fetch a comment from the server (which is made manually) and send it from server to client
-//   const posts = [{
-//     postId: '3512cx2',
-//     userImage : undefined,
-//     name: "John Smith",
-//     atTag: "@John Smith",
-//     tags: , 
-//     createdAt: ,
-//     description: ,
-//     postImage: ,
-//     postLikes: ,
-//     postComments: ,
-// }]
+  const jsonPosts = JSON.stringify(posts);
 
   return {
-    props: { session },
-    // props: { session, posts },
+    props: { posts: jsonPosts },
   };
 };
 
-const Home: NextPage = () => {
+const Home: NextPage<{posts: string}> = ({posts} : {posts: string}) => {
   const router = useRouter();
-  const { data: userSession } = useSession();
-  if(userSession === undefined || userSession === null) {
-    void router.push("/")
+  const { data: userSession = null } = useSession();
+
+  useEffect(() => {
+    if (!userSession) {
+      router.push("/");
+    }
+  }, [userSession, router]);
+
+  if (!userSession) {
     return <></>;
   }
+
+  const postsObj : Post[] = JSON.parse(posts) as Post[];
+  console.log("Posts on the client side : " , postsObj)
+
   return (
     <>
       <BackgroundContainer>
         <div className="pt-[80px]">
-          <main className="flex justify-center my-8">
-            <UserDetails userData={userSession}/>
+          <main className="my-8 flex justify-center">
+            <UserDetails userData={userSession} />
             <div>
-              <CreatePostInput userImage={userSession.user.image}/>
-              
+              <CreatePostInput userImage={userSession.user.image} />
+
               <div>Post 1</div>
               <div>Post 2</div>
             </div>
