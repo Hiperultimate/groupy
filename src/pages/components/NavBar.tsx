@@ -10,7 +10,7 @@ export const pageStates = {
   SETTINGS: "settings",
 } as const;
 
-const NavBar = ({ onlyLogo = false }: { onlyLogo: boolean }) => {
+const NavBar = ({ onlyLogo = false }: { onlyLogo?: boolean }) => {
   const router = useRouter();
   const currentUrl = router.asPath;
 
