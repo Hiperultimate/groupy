@@ -29,3 +29,23 @@
   font-weight: 500;
   font-style: normal;
 }
+
+.background-design {
+  position: relative;
+  min-height: 100vh;
+  background-color: #ffffff;
+  background-image: linear-gradient(#bbbbbb 0.9px, transparent 0.9px),
+    linear-gradient(to right, #bbbbbb 0.9px, #ffffff 0.9px);
+  background-size: 25px 25px;
+}
+
+.blur-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(247, 248, 249, 0.97) 50%,
+    rgba(247, 248, 249, 1) 100%
+  );
+}
