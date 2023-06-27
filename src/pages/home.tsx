@@ -95,14 +95,14 @@ const Home: NextPage<
       <BackgroundContainer>
         <div className="pt-[80px]">
           <main className="my-8 flex justify-center">
-            <UserDetails userData={userSession} />
+            <div>
+              <UserDetails userData={userSession} />
+            </div>
             <div className="min-w-[545px] lg:w-[825px]">
               <CreatePostInput userImage={userSession.user.image} />
               {postData.map((post) => {
                 return <DisplayPost key={post.id} postData={post} />;
               })}
-              <div>Post 1</div>
-              <div>Post 2</div>
             </div>
             <div>Your Friends</div>
           </main>
