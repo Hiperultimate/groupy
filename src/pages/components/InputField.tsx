@@ -22,7 +22,7 @@ const InputField = ({
   handleState,
 }: InputFieldPropType): JSX.Element => {
   return (
-    <div>
+    <div className="flex flex-col">
       {title && (
         <label htmlFor={title}>
           {title}
@@ -39,6 +39,7 @@ const InputField = ({
           onChange={(e) => handleState.changeInputState(e.target.value)}
           required={isRequired}
           disabled={disabled}
+          className="h-10 border-2 rounded-lg px-4 py-6"
         />
       ) : (
         <input
@@ -48,6 +49,7 @@ const InputField = ({
           id={title}
           required={isRequired}
           disabled={disabled}
+          className="h-10 border-2 rounded-lg px-4 py-6"
         />
       )}
     </div>
