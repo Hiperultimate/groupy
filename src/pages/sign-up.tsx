@@ -11,6 +11,7 @@ import { type GetServerSideProps } from "next";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import InputField from "./components/InputField";
+import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -36,6 +37,16 @@ const SignUp: NextPage = () => {
   const [password, setPassword] = useState<string>("");
   const { mutate: signUpUser, isLoading: registerUser_isLoading } =
     api.account.signup.useMutation();
+
+  const giveOptions = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+  ];
+
+  // This state is for the AsyncCreatableSelectComponent component
+  const [tagOptions, setTagOptions] =
+    useState<{ value: string; label: string }[]>(giveOptions);
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -157,7 +168,7 @@ const SignUp: NextPage = () => {
               </div>
             </div>
 
-            <div className="flex w-full flex-col my-2">
+            <div className="my-2 flex w-full flex-col">
               <label htmlFor="describe" className="hover:cursor-pointer">
                 Describe Yourself*
               </label>
@@ -171,6 +182,15 @@ const SignUp: NextPage = () => {
                 // value={}
                 // onChange={}
               />
+            </div>
+
+            {/* Change this component to AsyncSelect to fetch data as user types */}
+            <div className="my-4">
+              <span>
+                Choose tags which resonates with you the most, or just create
+                them!
+              </span>
+              <AsyncCreatableSelectComponent />
             </div>
 
             <button
