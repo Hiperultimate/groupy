@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
 import UserDetails from "~/components/UserDetails";
+import { DisplayPost } from "~/components/DisplayPost";
 
 type SerializablePost = {
   id: string;
@@ -29,7 +30,9 @@ type ServerSideProps = {
   posts: SerializablePost[];
 };
 
-export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
+  ctx
+) => {
   const session = await getServerAuthSession(ctx);
   if (!session) {
     // Redirect to home page
@@ -61,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (ct
 
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({posts} : InferGetServerSidePropsType<typeof getServerSideProps>) => {
+> = ({ posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: userSession = null } = useSession();
 
@@ -72,9 +75,21 @@ const Home: NextPage<
   }, [userSession, router]);
 
   if (!userSession) {
-    return <></>;
+    return <>Error Occured. No user found!</>;
   }
-  
+
+  // Converting string dates to date type
+  const postData = posts.map((post) => {
+    const convertedCreatedAt = new Date(post.createdAt);
+    const convertedUpdatedAt = new Date(post.updatedAt);
+
+    return {
+      ...post,
+      createdAt: convertedCreatedAt,
+      updatedAt: convertedUpdatedAt,
+    };
+  });
+
   return (
     <>
       <BackgroundContainer>
@@ -83,7 +98,9 @@ const Home: NextPage<
             <UserDetails userData={userSession} />
             <div>
               <CreatePostInput userImage={userSession.user.image} />
-
+              {postData.map((post) => {
+                return <DisplayPost key={post.id} postData={post} />;
+              })}
               <div>Post 1</div>
               <div>Post 2</div>
             </div>
