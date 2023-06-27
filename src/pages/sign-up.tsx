@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 
-import { signUpSchema } from "~/common/authSchema";
+import { signUpSchema, type ISignUp } from "~/common/authSchema";
 import { api } from "~/utils/api";
 
 import { getServerAuthSession } from "../server/auth";
@@ -80,7 +80,7 @@ const SignUp: NextPage = () => {
     image: setUserImageError,
   };
 
-  const formErrorGenerator = () => {
+  const formErrorGenerator = () : ISignUp | null => {
     const checkDetails = signUpSchema.safeParse({
       name: name,
       email: email,
@@ -92,22 +92,9 @@ const SignUp: NextPage = () => {
       userTags: selectedTags,
       image: userImage,
     });
-
     // Retrieve error message ==> console.log(JSON.parse(checkDetails.error.message)[0].message); // Make sure you typecase "as ZodError"
 
-    if (checkDetails.success) {
-      signUpUser(checkDetails.data, {
-        onError: (error) => {
-          console.log(error.message);
-        },
-        onSuccess: (data) => {
-          console.log("Success!");
-          console.log("New user data : ", data);
-          router.push("/");
-        },
-      });
-    } else {
-      // Error message generated
+    if (!checkDetails.success) {
       const formatErrors = checkDetails.error.format();
       console.log("ERROR JSON :", formatErrors); // Creates objects with key value pair of all the errors
       const fieldNames = Object.keys(formatErrors);
@@ -122,6 +109,9 @@ const SignUp: NextPage = () => {
           }
         }
       });
+      return null;
+    }else{
+      return checkDetails.data;
     }
   };
 
@@ -143,10 +133,22 @@ const SignUp: NextPage = () => {
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    formErrorGenerator();
+    const userData: ISignUp | null = formErrorGenerator();
     const isValid: boolean = isValidFormData();
 
-    // Check if all the error tags is empty
+    if (isValid && userData) {
+      // Create user
+      signUpUser(userData, {
+        onError: (error) => {
+          console.log(error.message);
+        },
+        onSuccess: (data) => {
+          console.log("Success!");
+          console.log("New user data : ", data);
+          router.push("/");
+        },
+      });
+    }
   };
 
   const convertImageToLink = (image: File): string => {
@@ -154,7 +156,7 @@ const SignUp: NextPage = () => {
     return objectUrl;
   };
 
-  // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions. 
+  // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions.
   //                 Using this function to keep same logic at both areas.
   const imageErrorSetter = (file: File) => {
     const objectUrl = convertImageToLink(file);
@@ -167,6 +169,7 @@ const SignUp: NextPage = () => {
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
+    setUserImageError([])
     const file = e.dataTransfer.files[0];
     if (file) {
       imageErrorSetter(file);
@@ -342,6 +345,8 @@ const SignUp: NextPage = () => {
                   type="file"
                   id="imageUpload"
                   onChange={(e) => {
+                    e.preventDefault();
+                    setUserImageError([])
                     const file = e.target.files ? e.target.files[0] : undefined;
                     if (file) {
                       imageErrorSetter(file);

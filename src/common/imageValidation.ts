@@ -6,7 +6,8 @@ const MAX_IMAGE_SIZE = 1000000; // 1MB in Bytes
 const imageValidation = (image: File): string[] => {
   const errorList: string[] = [];
   const imageFormat = image.name.split(".").at(-1);
-  if (!imageFormat) {
+
+  if (!imageFormat || !image.type.startsWith('image/')) {
     errorList.push("Invalid file");
   }
 
