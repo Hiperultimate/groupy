@@ -1,4 +1,5 @@
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 
@@ -50,58 +51,58 @@ const NavBar = () => {
       }`}
     >
       <div>
-        <a className="relative ml-5 flex font-teko text-[29px]" href="#">
+        <Link className="relative ml-5 flex font-teko text-[29px]" href="/">
           <div className="relative top-[3px] flex">
-            <div className="mx-5">
+            <div className="mx-5 h-10 w-10 relative top-[-2px]">
               <SvgGroupyLogo />
             </div>
             <span className="relative">GROUPY</span>
           </div>
-        </a>
+        </Link>
       </div>
       {sessionData?.user && !onlyLogo && (
         <ul className="mr-5 flex gap-8 font-poppins font-normal text-grey">
           <li>
-            <a
+            <Link
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
                 selectedPage === pageStates.HOME ? `underline` : ``
               }`}
-              href="#"
+              href="/home"
             >
               Home
-            </a>
+            </Link>
           </li>
 
           <li>
-            <a
+            <Link
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
                 selectedPage === pageStates.CHAT ? `underline` : ``
               }`}
               href="#"
             >
               Chat
-            </a>
+            </Link>
           </li>
 
           <li>
-            <a
+            <Link
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
                 selectedPage === pageStates.SETTINGS ? `underline` : ``
               }`}
               href="#"
             >
               Settings
-            </a>
+            </Link>
           </li>
 
           <li>
-            <a
+            <Link
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out`}
               href="#"
               onClick={() => void signOut()}
             >
               Logout
-            </a>
+            </Link>
           </li>
         </ul>
       )}

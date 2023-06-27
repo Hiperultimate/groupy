@@ -16,7 +16,6 @@ import InputField from "./components/InputField";
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
 
-
 const INVALID_CREDENTIALS_ERROR_MESSAGE =
   "Email-ID or Password is incorrect" as const;
 
@@ -141,8 +140,8 @@ const SignInPage: NextPage = () => {
 
             <form className="w-3/6" onSubmit={formSubmitHandler}>
               <div className="flex w-5/6 max-w-[590px] flex-col items-center rounded-3xl bg-white px-24 pb-6 pt-12 drop-shadow-lg">
-                <div className="absolute top-[-30px] rounded-lg bg-orange p-3">
-                  <SvgGroupyLogo fillcolor="#ffffff"/>
+                <div className="absolute top-[-30px] h-16 w-16 rounded-lg bg-orange p-3">
+                  <SvgGroupyLogo fillcolor="#ffffff" />
                 </div>
 
                 <span className="text-3xl font-bold text-dark-blue">

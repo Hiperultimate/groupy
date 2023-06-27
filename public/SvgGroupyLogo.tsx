@@ -1,17 +1,14 @@
-import * as React from "react";
-
 type ComponentProp = {
   fillcolor?: string;
-  svgwidth?: number;
-  svgheight?: number;
 };
 
 const SvgGroupyLogo = (props: ComponentProp) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={props.svgwidth ? props.svgwidth : "36"}
-    height={props.svgheight ? props.svgheight : "36"}
+    width="100%"
+    height="auto"
     fill="none"
+    viewBox="0 0 36 36"
     {...props}
   >
     <path
