@@ -12,6 +12,7 @@ import { loginSchema } from "~/common/authSchema";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import InputField from "./components/InputField";
+import BackgroundContainer from "./components/BackgroundContainer";
 
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
@@ -126,9 +127,8 @@ const SignInPage: NextPage = () => {
           Some text
         
       </main> */}
-      <main className="pt-[80px] font-poppins">
-        <div className="background-design" />
-        <div className="blur-gradient">
+      <main className="font-poppins">
+        <BackgroundContainer>
           <div className="flex h-screen w-screen items-center">
             <div className="flex w-3/6 flex-col items-end">
               <span className="max-w-[701px] px-20 text-5xl font-bold text-dark-blue">
@@ -204,7 +204,7 @@ const SignInPage: NextPage = () => {
               </div>
             </form>
           </div>
-        </div>
+        </BackgroundContainer>
       </main>
     </>
   );

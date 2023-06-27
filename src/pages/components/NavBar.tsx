@@ -46,7 +46,7 @@ const NavBar = () => {
 
   return (
     <nav
-      className={`absolute z-50 flex h-20 w-screen items-center justify-between ${
+      className={`absolute z-50 flex h-20 w-full items-center justify-between ${
         onlyLogo ? "bg-transparent" : "bg-white"
       }`}
     >
