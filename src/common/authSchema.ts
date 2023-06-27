@@ -13,20 +13,24 @@ export const signUpSchema = loginSchema
     nameTag: z.string().min(3).max(30),
     description: z.string().optional(),
     image: z.string().optional(),
-    userTags: z.array(z.object({ value: z.string(), label: z.string() })),
+    userTags: z
+      .array(z.object({ value: z.string(), label: z.string() }))
+      .min(3, { message: "You must select at least 3 tags." }),
   })
-  .refine((schema) => schema.nameTag.indexOf(" ") < 0, {
-    message: "@Tag-name cannot have blank spaces."
+  .refine((schema) => schema.nameTag.indexOf(" ") <= 0, {
+    message: "@Tag-name cannot have blank spaces.", path : ["nameTag"],
   })
   .refine((schema) => schema.password === schema.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Passwords do not match", path: ["password", "confirmPassword"],
   })
-  .refine((schema) => {
-    const dob = new Date(schema.dob);
-    const now = new Date();
-    return dob < now;
-  }, { message: "Birth date must be in the past" })
+  .refine(
+    (schema) => {
+      const dob = new Date(schema.dob);
+      const now = new Date();
+      return dob < now;
+    },
+    { message: "Birth date must be in the past", path: ["dob"] }
+  );
 
 export type ILogin = z.infer<typeof loginSchema>;
 export type ISignUp = z.infer<typeof signUpSchema>;
-// .refine(check => check.dob >== new Date, {message: "You cannot be from the future"}),
