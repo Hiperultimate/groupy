@@ -39,8 +39,7 @@ model Tag {
     id        String   @id @default(uuid())
     name      String   @unique    
     users     User[]
-    onPost    Post     @relation(fields: [tagId], references: [id])
-    tagId     String
+    onPost    Post[]   
 }
 
 model Post {
