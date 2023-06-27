@@ -96,7 +96,7 @@ const Home: NextPage<
         <div className="pt-[80px]">
           <main className="my-8 flex justify-center">
             <UserDetails userData={userSession} />
-            <div>
+            <div className="min-w-[545px] lg:w-[825px]">
               <CreatePostInput userImage={userSession.user.image} />
               {postData.map((post) => {
                 return <DisplayPost key={post.id} postData={post} />;
