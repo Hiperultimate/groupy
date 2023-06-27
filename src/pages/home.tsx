@@ -6,6 +6,7 @@ import BackgroundContainer from "~/components/BackgroundContainer";
 import UserDetails from "~/components/UserDetails";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import CreatePostInput from "~/components/CreatePostInput";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -38,6 +39,7 @@ const Home: NextPage = () => {
           <main className="flex justify-center my-8">
             <UserDetails userData={userSession}/>
             <div>
+              <CreatePostInput userImage={userSession.user.image}/>
               <div>Create a Post input</div>
               <div>Post 1</div>
               <div>Post 2</div>

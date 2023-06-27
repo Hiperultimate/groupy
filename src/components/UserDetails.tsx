@@ -8,7 +8,7 @@ const UserDetails = ({ userData }: { userData: Session }) => {
   const userTags = userData?.user.tags.slice(0, 3); // Displaying only the top 3 tags
   const userSummary = userData?.user.description;
 
-  const tailwindComponentWidth = 'w-[350px]'; // in px
+  const tailwindComponentWidth = 'w-[350px]';
 
   return (
     <div
