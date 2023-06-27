@@ -80,7 +80,7 @@ const SignUp: NextPage = () => {
     image: setUserImageError,
   };
 
-  const formErrorGenerator = () : ISignUp | null => {
+  const formDataCheck = () : ISignUp | null => {
     const checkDetails = signUpSchema.safeParse({
       name: name,
       email: email,
@@ -133,7 +133,7 @@ const SignUp: NextPage = () => {
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    const userData: ISignUp | null = formErrorGenerator();
+    const userData: ISignUp | null = formDataCheck();
     const isValid: boolean = isValidFormData();
 
     if (isValid && userData) {
