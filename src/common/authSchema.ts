@@ -1,4 +1,10 @@
 import { z } from "zod";
+import {
+  serverImageTypeValidation,
+  serverImageFormatValidation,
+  serverImageSizeValidation,
+} from "./imageValidation";
+import { base64ToImageData } from "./imageConversion";
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -33,6 +39,72 @@ export const signUpSchema = loginSchema
     message: "Tag-name cannot have blank spaces.",
     path: ["nameTag"],
   })
+  .refine(
+    (schema) => {
+      // Image is an optional field. Skip image validation if no image is passed.
+      if(schema.image === undefined){
+        return true;
+      }
+      try {
+        const { imageMime } = base64ToImageData(schema.image);
+        if (!imageMime) {
+          console.log("Something went wrong while converting the image");
+          return false;
+        }
+        return serverImageTypeValidation(imageMime);
+      } catch (e) {
+        return false;
+      }
+    },
+    {
+      message: "Invalid file type",
+      path: ["image"],
+    }
+  )
+  .refine(
+    (schema) => {
+      // Image is an optional field. Skip image validation if no image is passed.
+      if(schema.image === undefined){
+        return true;
+      }
+      try {
+        const { imageMime } = base64ToImageData(schema.image);
+        if (!imageMime) {
+          console.log("Something went wrong while converting the image");
+          return false;
+        }
+        return serverImageFormatValidation(imageMime);
+      } catch (e) {
+        return false;
+      }
+    },
+    {
+      message: "Invalid image format",
+      path: ["image"],
+    }
+  )
+  .refine(
+    (schema) => {
+      // Image is an optional field. Skip image validation if no image is passed.
+      if(schema.image === undefined){
+        return true;
+      }
+      try {
+        const { fileSizeInBytes } = base64ToImageData(schema.image);
+        if (!fileSizeInBytes) {
+          console.log("Something went wrong while converting the image");
+          return false;
+        }
+        return serverImageSizeValidation(fileSizeInBytes);
+      } catch (e) {
+        return false;
+      }
+    },
+    {
+      message: "Image size must be less than 1 MB",
+      path: ["image"],
+    }
+  )
   .refine((schema) => schema.userTags.every(({ value }) => !/\s/.test(value)), {
     message: "Selected tags cannot have blank spaces in value property",
     path: ["userTags"],
