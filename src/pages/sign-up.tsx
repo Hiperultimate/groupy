@@ -11,13 +11,13 @@ import { type GetServerSideProps } from "next";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
-import InputField from "./components/InputField";
-import BackgroundContainer from "./components/BackgroundContainer";
+import InputField from "../components/InputField";
+import BackgroundContainer from "../components/BackgroundContainer";
 import AsyncCreatableSelectComponent, {
   type TagOption,
-} from "./components/InputCreatableSelect";
+} from "../components/InputCreatableSelect";
 import Image from "next/image";
-import InputErrorText from "./components/InputErrorText";
+import InputErrorText from "../components/InputErrorText";
 import imageValidation from "~/common/imageValidation";
 
 type FieldSetErrorMap = {
