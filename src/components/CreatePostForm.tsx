@@ -6,30 +6,9 @@ import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
 import InputField from "./InputField";
+import HoverDisplayMessage from "./HoverDisplayMessage";
 
 type TScrollMark = { [key: string]: string | ReactElement };
-
-function HoverMessageComponent({ message }: { message: string }) {
-  const [showMessage, setShowMessage] = useState(false);
-  return (
-    <span
-      onMouseEnter={() => {
-        setShowMessage(true);
-      }}
-      onMouseLeave={() => {
-        setShowMessage(false);
-      }}
-      className="relative rounded-full bg-slate-200 px-[10px] hover:cursor-pointer"
-    >
-      <span className=" text-sm text-grey ">!</span>
-      {showMessage && (
-        <span className="absolute left-8 z-50 min-w-[15em] max-w-[20em] rounded-md bg-light-grey p-2 text-sm text-grey">
-          {message}
-        </span>
-      )}
-    </span>
-  );
-}
 
 function CreatePostForm() {
   // UI states
@@ -121,7 +100,7 @@ function CreatePostForm() {
           <span>
             Select Age Spectrum
             <span className="mx-1">
-              <HoverMessageComponent message="Select the age spectrum which can display this post and join your group." />
+              <HoverDisplayMessage message="Select the age spectrum which can display this post and join your group." />
             </span>
             :
           </span>
@@ -156,7 +135,7 @@ function CreatePostForm() {
           <span>
             Group Size
             <span className="mx-1">
-              <HoverMessageComponent message="Select the maximum number of people you want in your group." />
+              <HoverDisplayMessage message="Select the maximum number of people you want in your group." />
             </span>
             :
           </span>
