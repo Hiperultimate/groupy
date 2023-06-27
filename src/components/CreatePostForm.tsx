@@ -1,10 +1,35 @@
-import { useState } from "react";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import { type ReactElement, useState } from "react";
+
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
 import InputField from "./InputField";
 
+type TScrollMark = { [key: string]: string | ReactElement };
+
 function CreatePostForm() {
+  // UI states
+  const scrollAgeMarkScale = {
+    1: <span className="relative top-4 font-bold">1 y/o</span>,
+    160: <span className="relative top-4 font-bold">160 y/o</span>,
+  }
+  const scrollGroupMarkScale = {
+    1: <span className="relative top-4 font-bold">1 Person</span>,
+    100: <span className="relative top-4 font-bold">100 People</span>,
+  }
+  const [scrollAgeMark, setScrollAgeMark] = useState<TScrollMark>({
+    ...scrollAgeMarkScale,
+    15: `15`,
+    30: `30`,
+  });
+
+  const [groupMark, setGroupMark] = useState<TScrollMark>({
+    ...scrollGroupMarkScale,
+    5: `5`,
+  });
+
   // These states are temporary until frontend is completed.
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
@@ -72,9 +97,57 @@ function CreatePostForm() {
         </div>
         <div>
           <span>Select Age Spectrum : </span>
+          <div className="h-20">
+            <Slider
+              marks={scrollAgeMark}
+              range={true}
+              allowCross={false}
+              min={1}
+              max={160}
+              onChange={(ageArr) => {
+                if (Array.isArray(ageArr)) {
+                  const startAge = ageArr[0] as number;
+                  const endAge = ageArr[1] as number;
+                  const newMark: TScrollMark = scrollAgeMarkScale;
+                  newMark[startAge] = `${startAge}`;
+                  newMark[endAge] = `${endAge}`;
+                  setScrollAgeMark(newMark);
+                }
+              }}
+              defaultValue={[15, 30]}
+              trackStyle={{
+                backgroundColor: "orange",
+              }}
+              handleStyle={{
+                borderColor: "orange",
+              }}
+            />
+          </div>
         </div>
         <div>
           <span>Group Size: </span>
+          <div className="h-20">
+            <Slider
+              marks={groupMark}
+              min={1}
+              max={100}
+              onChange={(ageArr) => {
+                if (Number.isInteger(ageArr)) {
+                  const peopleAmtMost = ageArr as number;
+                  const newMark: TScrollMark = scrollGroupMarkScale;
+                  newMark[peopleAmtMost] = `${peopleAmtMost}`;
+                  setGroupMark(newMark);
+                }
+              }}
+              defaultValue={5}
+              trackStyle={{
+                backgroundColor: "orange",
+              }}
+              handleStyle={{
+                borderColor: "orange",
+              }}
+            />
+          </div>
         </div>
         <div className="flex">
           <span className="pr-2">Instant Join: </span>
