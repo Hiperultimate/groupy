@@ -282,7 +282,7 @@ const SignUp: NextPage = () => {
                     setDescriptionError([]);
                   }}
                 />
-                <InputErrorText errorArray={descriptionError}/>
+                <InputErrorText errorArray={descriptionError} />
               </div>
 
               <div className="my-4">
@@ -342,25 +342,43 @@ const SignUp: NextPage = () => {
                 <span>Your Profile Picture</span>
                 {/* if no image, export this */}
                 <div className="flex items-end">
-                  <div className="m-4 flex h-48 w-48 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                  <div className="relative m-4 flex h-48 w-48 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
                     {userImage === undefined ? (
                       <SvgCamera />
                     ) : (
-                      <Image src={userImage} width={500} height={500} alt="" />
+                      <Image
+                        className="rounded-full"
+                        src={userImage}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
                     )}
                   </div>
-                  <div className="m-4 flex h-32 w-32 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                  <div className="relative m-4 flex h-32 w-32 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
                     {userImage === undefined ? (
                       <SvgCamera />
                     ) : (
-                      <Image src={userImage} width={500} height={500} alt="" />
+                      <Image
+                        className="rounded-full"
+                        src={userImage}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
                     )}
                   </div>
-                  <div className="m-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                  <div className="relative m-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
                     {userImage === undefined ? (
                       <SvgCamera />
                     ) : (
-                      <Image src={userImage} width={500} height={500} alt="" />
+                      <Image
+                        className="rounded-full"
+                        src={userImage}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
                     )}
                   </div>
                 </div>
