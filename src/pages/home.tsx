@@ -1,19 +1,35 @@
-import { type NextPage } from "next";
-import { useEffect } from "react";
+import {
+  type GetServerSideProps,
+  type InferGetServerSidePropsType,
+  type NextPage,
+} from "next";
 
+import { getPosts } from "~/server/api/routers/posts";
+import { prisma } from "~/server/db";
 import { getServerAuthSession } from "../server/auth";
-import { type GetServerSideProps } from "next";
-import BackgroundContainer from "~/components/BackgroundContainer";
-import UserDetails from "~/components/UserDetails";
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { getPosts } from "~/server/api/routers/posts";
+import { useEffect } from "react";
 
+import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
-import { prisma } from "~/server/db";
-import { type Post } from "@prisma/client";
+import UserDetails from "~/components/UserDetails";
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+type SerializablePost = {
+  id: string;
+  content: string;
+  image: string | null;
+  authorId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type ServerSideProps = {
+  posts: SerializablePost[];
+};
+
+export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (ctx) => {
   const session = await getServerAuthSession(ctx);
   if (!session) {
     // Redirect to home page
@@ -25,16 +41,27 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  // Getting posts to show
   const posts = await getPosts(prisma, session);
-  const jsonPosts = JSON.stringify(posts);
+
+  const serializablePosts = posts.map((post) => {
+    const convertedCreatedAt = post.createdAt.toString();
+    const convertedUpdatedAt = post.updatedAt.toString();
+
+    return {
+      ...post,
+      createdAt: convertedCreatedAt,
+      updatedAt: convertedUpdatedAt,
+    };
+  });
 
   return {
-    props: { posts: jsonPosts },
+    props: { posts: serializablePosts },
   };
 };
 
-const Home: NextPage<{posts: string}> = ({posts} : {posts: string}) => {
+const Home: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({posts} : InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: userSession = null } = useSession();
 
@@ -47,10 +74,7 @@ const Home: NextPage<{posts: string}> = ({posts} : {posts: string}) => {
   if (!userSession) {
     return <></>;
   }
-
-  const postsObj : Post[] = JSON.parse(posts) as Post[];
-  console.log("Posts on the client side : " , postsObj)
-
+  
   return (
     <>
       <BackgroundContainer>
