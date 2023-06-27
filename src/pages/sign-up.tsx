@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
-import InputField from "./components/InputField";
 
 import { signUpSchema } from "~/common/authSchema";
 import { api } from "~/utils/api";
@@ -9,6 +8,8 @@ import { type ZodError } from "zod";
 
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
+
+import InputField from "./components/InputField";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -61,7 +62,7 @@ const SignUp: NextPage = () => {
   };
 
   return (
-    <div>
+    <>
       This is the sign-up page
       <form onSubmit={submitHandler}>
         <InputField
@@ -93,7 +94,7 @@ const SignUp: NextPage = () => {
         </button>
         {registerUser_isLoading && <span>Loading...</span>}
       </form>
-    </div>
+    </>
   );
 };
 
