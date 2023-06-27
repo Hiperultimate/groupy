@@ -1,4 +1,4 @@
-// TODO: Handle value states later
+import InputErrorText from "./InputErrorText";
 
 type InputFieldPropType = {
   title?: string;
@@ -9,7 +9,13 @@ type InputFieldPropType = {
   disabled?: boolean;
   handleState?: {
     inputState: string;
-    changeInputState: React.Dispatch<React.SetStateAction<string>> | ((value : string) => void);
+    changeInputState:
+      | React.Dispatch<React.SetStateAction<string>>
+      | ((value: string) => void);
+  };
+  handleErrorState?: {
+    inputState: string[];
+    changeInputState: React.Dispatch<React.SetStateAction<string[]>>;
   };
 };
 
@@ -20,6 +26,7 @@ const InputField = ({
   placeholder,
   disabled,
   handleState,
+  handleErrorState,
 }: InputFieldPropType): JSX.Element => {
   return (
     <div className="flex flex-col">
@@ -36,10 +43,13 @@ const InputField = ({
           name={title}
           id={title}
           value={handleState.inputState}
-          onChange={(e) => handleState.changeInputState(e.target.value)}
+          onChange={(e) => {
+            handleState.changeInputState(e.target.value);
+            handleErrorState?.changeInputState([]);
+          }}
           required={isRequired}
           disabled={disabled}
-          className="h-10 border-2 rounded-lg px-4 py-6"
+          className="h-10 rounded-lg border-2 px-4 py-6"
         />
       ) : (
         <input
@@ -49,9 +59,10 @@ const InputField = ({
           id={title}
           required={isRequired}
           disabled={disabled}
-          className="h-10 border-2 rounded-lg px-4 py-6"
+          className="h-10 rounded-lg border-2 px-4 py-6"
         />
       )}
+      <InputErrorText errorArray={handleErrorState?.inputState} />
     </div>
   );
 };

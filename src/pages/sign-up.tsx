@@ -17,6 +17,7 @@ import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "./components/InputCreatableSelect";
 import Image from "next/image";
+import InputErrorText from "./components/InputErrorText";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -113,10 +114,11 @@ const SignUp: NextPage = () => {
       const fieldNames = Object.keys(formatErrors);
       fieldNames.forEach((fieldName) => {
         if (fieldSetErrorMap[fieldName]) {
-          const key = fieldName as keyof typeof formatErrors & keyof typeof fieldSetErrorMap;
+          const key = fieldName as keyof typeof formatErrors &
+            keyof typeof fieldSetErrorMap;
           const setErrorStateField = fieldSetErrorMap[key];
           const fieldError = formatErrors[key];
-          if( fieldError && "_errors" in fieldError && setErrorStateField){
+          if (fieldError && "_errors" in fieldError && setErrorStateField) {
             setErrorStateField(fieldError._errors);
           }
         }
@@ -167,6 +169,10 @@ const SignUp: NextPage = () => {
                       inputState: name,
                       changeInputState: setName,
                     }}
+                    handleErrorState={{
+                      inputState: nameError,
+                      changeInputState: setNameError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -178,6 +184,10 @@ const SignUp: NextPage = () => {
                     handleState={{
                       inputState: email,
                       changeInputState: setEmail,
+                    }}
+                    handleErrorState={{
+                      inputState: emailError,
+                      changeInputState: setEmailError,
                     }}
                     disabled={registerUser_isLoading}
                   />
@@ -193,6 +203,10 @@ const SignUp: NextPage = () => {
                       inputState: password,
                       changeInputState: setPassword,
                     }}
+                    handleErrorState={{
+                      inputState: passwordError,
+                      changeInputState: setPasswordError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -205,6 +219,10 @@ const SignUp: NextPage = () => {
                     handleState={{
                       inputState: confirmPassword,
                       changeInputState: setConfirmPassword,
+                    }}
+                    handleErrorState={{
+                      inputState: confirmPasswordError,
+                      changeInputState: setConfirmPasswordError,
                     }}
                     disabled={registerUser_isLoading}
                   />
@@ -222,6 +240,10 @@ const SignUp: NextPage = () => {
                       inputState: dob,
                       changeInputState: setDob,
                     }}
+                    handleErrorState={{
+                      inputState: dobError,
+                      changeInputState: setDobError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -234,6 +256,10 @@ const SignUp: NextPage = () => {
                     handleState={{
                       inputState: userNameTag,
                       changeInputState: setUserNameTag,
+                    }}
+                    handleErrorState={{
+                      inputState: userNameTagError,
+                      changeInputState: setUserNameTagError,
                     }}
                     disabled={registerUser_isLoading}
                   />
@@ -251,8 +277,12 @@ const SignUp: NextPage = () => {
                   rows={4}
                   className="rounded-lg border-2 px-4 py-3"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    setDescriptionError([]);
+                  }}
                 />
+                <InputErrorText errorArray={descriptionError}/>
               </div>
 
               <div className="my-4">
@@ -261,8 +291,14 @@ const SignUp: NextPage = () => {
                   them!
                 </span>
                 <AsyncCreatableSelectComponent
-                  selectedTags={selectedTags}
-                  setSelectedTags={setSelectedTags}
+                  handleFieldState={{
+                    inputState: selectedTags,
+                    setInputState: setSelectedTags,
+                  }}
+                  handleErrorState={{
+                    errorState: selectedTagsError,
+                    setErrorState: setSelectedTagsError,
+                  }}
                 />
               </div>
 
@@ -299,6 +335,7 @@ const SignUp: NextPage = () => {
                     </span>
                   </span>
                 </label>
+                <InputErrorText errorArray={userImageError} />
               </div>
 
               <div className="my-4">

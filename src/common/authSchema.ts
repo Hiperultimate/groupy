@@ -18,10 +18,10 @@ export const signUpSchema = loginSchema
       .min(3, { message: "You must select at least 3 tags." }),
   })
   .refine((schema) => schema.nameTag.indexOf(" ") <= 0, {
-    message: "@Tag-name cannot have blank spaces.", path : ["nameTag"],
+    message: "Input cannot have blank spaces.", path : ["nameTag"],
   })
   .refine((schema) => schema.password === schema.confirmPassword, {
-    message: "Passwords do not match", path: ["password", "confirmPassword"],
+    message: "Passwords do not match", path: ["confirmPassword"],
   })
   .refine(
     (schema) => {
