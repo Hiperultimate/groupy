@@ -5,9 +5,28 @@ export const loginSchema = z.object({
   password: z.string().min(8).max(16),
 });
 
-export const signUpSchema = loginSchema.extend({
-  name: z.string().min(3)
-})
+export const signUpSchema = loginSchema
+  .extend({
+    name: z.string().min(3),
+    confirmPassword: z.string().min(8).max(16),
+    dob: z.date(),
+    nameTag: z.string().min(3).max(30),
+    description: z.string().optional(),
+    image: z.string().optional(),
+    userTags: z.array(z.object({ value: z.string(), label: z.string() })),
+  })
+  .refine((schema) => schema.nameTag.indexOf(" ") < 0, {
+    message: "@Tag-name cannot have blank spaces."
+  })
+  .refine((schema) => schema.password === schema.confirmPassword, {
+    message: "Passwords do not match",
+  })
+  .refine((schema) => {
+    const dob = new Date(schema.dob);
+    const now = new Date();
+    return dob < now;
+  }, { message: "Birth date must be in the past" })
 
 export type ILogin = z.infer<typeof loginSchema>;
 export type ISignUp = z.infer<typeof signUpSchema>;
+// .refine(check => check.dob >== new Date, {message: "You cannot be from the future"}),
