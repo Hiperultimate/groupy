@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 
 import { signUpSchema } from "~/common/authSchema";
 import { api } from "~/utils/api";
-import { type ZodError } from "zod";
 
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
@@ -18,6 +17,10 @@ import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "./components/InputCreatableSelect";
 import Image from "next/image";
+
+type FieldSetErrorMap = {
+  [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
+};
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -37,6 +40,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const SignUp: NextPage = () => {
   const router = useRouter();
+  const { mutate: signUpUser, isLoading: registerUser_isLoading } =
+    api.account.signup.useMutation();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -45,12 +50,33 @@ const SignUp: NextPage = () => {
   const [dob, setDob] = useState<string>(new Date().toLocaleString());
   const [userNameTag, setUserNameTag] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const { mutate: signUpUser, isLoading: registerUser_isLoading } =
-    api.account.signup.useMutation();
   const [userImage, setUserImage] = useState<string | undefined>();
-
   // This state is for the AsyncCreatableSelectComponent component
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+
+  const [nameError, setNameError] = useState<string[]>([]);
+  const [emailError, setEmailError] = useState<string[]>([]);
+  const [passwordError, setPasswordError] = useState<string[]>([]);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string[]>(
+    []
+  );
+  const [dobError, setDobError] = useState<string[]>([]);
+  const [userNameTagError, setUserNameTagError] = useState<string[]>([]);
+  const [descriptionError, setDescriptionError] = useState<string[]>([]);
+  const [userImageError, setUserImageError] = useState<string[]>([]);
+  const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
+
+  const fieldSetErrorMap: FieldSetErrorMap = {
+    name: setNameError,
+    email: setEmailError,
+    password: setPasswordError,
+    confirmPassword: setConfirmPasswordError,
+    dob: setDobError,
+    nameTag: setUserNameTagError,
+    description: setDescriptionError,
+    userTags: setSelectedTagsError,
+    image: setUserImageError,
+  };
 
   const submitHandler = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -67,7 +93,6 @@ const SignUp: NextPage = () => {
       image: userImage,
     });
 
-    console.log("Details : " , checkDetails);
     // Retrieve error message ==> console.log(JSON.parse(checkDetails.error.message)[0].message); // Make sure you typecase "as ZodError"
 
     if (checkDetails.success) {
@@ -82,8 +107,20 @@ const SignUp: NextPage = () => {
         },
       });
     } else {
-      const wrongInputError: ZodError = checkDetails.error;
-      console.log(wrongInputError);
+      // Error message generated
+      const formatErrors = checkDetails.error.format();
+      console.log("ERROR JSON :", formatErrors); // Creates objects with key value pair of all the errors
+      const fieldNames = Object.keys(formatErrors);
+      fieldNames.forEach((fieldName) => {
+        if (fieldSetErrorMap[fieldName]) {
+          const key = fieldName as keyof typeof formatErrors & keyof typeof fieldSetErrorMap;
+          const setErrorStateField = fieldSetErrorMap[key];
+          const fieldError = formatErrors[key];
+          if( fieldError && "_errors" in fieldError && setErrorStateField){
+            setErrorStateField(fieldError._errors);
+          }
+        }
+      });
     }
   };
 
@@ -209,7 +246,7 @@ const SignUp: NextPage = () => {
                 </label>
                 {/* Set character or word limit to the textarea */}
                 <textarea
-                  id="describe"
+                  id="description"
                   placeholder="Something about you..."
                   rows={4}
                   className="rounded-lg border-2 px-4 py-3"
