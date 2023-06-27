@@ -3,7 +3,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 
 import { useQuery } from "@tanstack/react-query";
 
