@@ -2,10 +2,11 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 
-type PageType = "signin" | "home" | "chat" | "settings";
+type PageType = "signin" | "home" | "chat" | "settings" | "signup";
 
 export const pageStates = {
   SIGNIN: "signin",
+  SIGNUP: "signup",
   HOME: "home",
   CHAT: "chat",
   SETTINGS: "settings",
@@ -24,6 +25,9 @@ const NavBar = () => {
     case "/":
       selectedPage = pageStates.SIGNIN;
       onlyLogo = true;
+      break;
+    case "/sign-up":
+      selectedPage = pageStates.SIGNUP;
       break;
     case "/home":
       selectedPage = pageStates.HOME;
