@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
 
-import { signUpSchema } from "~/common/authSchema";
+import { signUpSchema, type ISignUp } from "~/common/authSchema";
 import { api } from "~/utils/api";
-import { type ZodError } from "zod";
 
 import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
@@ -12,10 +11,22 @@ import { type GetServerSideProps } from "next";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import SvgUploadIcon from "public/SvgUploadIcon";
 import SvgCamera from "public/SvgCamera";
-import InputField from "./components/InputField";
-import BackgroundContainer from "./components/BackgroundContainer";
-import AsyncCreatableSelectComponent from "./components/InputCreatableSelect";
+import InputField from "../components/InputField";
+import BackgroundContainer from "../components/BackgroundContainer";
+import ErrorNotification from "~/components/ErrorNotification";
+import AsyncCreatableSelectComponent, {
+  type TagOption,
+} from "../components/InputCreatableSelect";
 import Image from "next/image";
+import InputErrorText from "../components/InputErrorText";
+import imageValidation from "~/common/imageValidation";
+import { supabase } from "~/utils/storageBucket";
+import { encodeImageToBase64 } from "~/common/imageConversion";
+import { StringValidation } from "zod";
+
+type FieldSetErrorMap = {
+  [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
+};
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -35,35 +46,112 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 const SignUp: NextPage = () => {
   const router = useRouter();
+  const { mutate: signUpUser, isLoading: registerUser_isLoading } =
+    api.account.signup.useMutation();
 
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { mutate: signUpUser, isLoading: registerUser_isLoading } =
-    api.account.signup.useMutation();
-
-  const giveOptions = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
-  ];
-
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [dob, setDob] = useState<string>(new Date().toLocaleString());
+  const [userNameTag, setUserNameTag] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [userImage, setUserImage] = useState<string | undefined>();
   // This state is for the AsyncCreatableSelectComponent component
-  const [tagOptions, setTagOptions] =
-    useState<{ value: string; label: string }[]>(giveOptions);
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [userImageFile, setUserImageFile] = useState<File | null>(null);
 
-  const submitHandler = (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  const [nameError, setNameError] = useState<string[]>([]);
+  const [emailError, setEmailError] = useState<string[]>([]);
+  const [passwordError, setPasswordError] = useState<string[]>([]);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string[]>(
+    []
+  );
+  const [dobError, setDobError] = useState<string[]>([]);
+  const [userNameTagError, setUserNameTagError] = useState<string[]>([]);
+  const [descriptionError, setDescriptionError] = useState<string[]>([]);
+  const [userImageError, setUserImageError] = useState<string[]>([]);
+  const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
+  const [serverError, setServerError] = useState<string>("");
 
-    const checkDetails = signUpSchema.safeParse({ name, email, password });
+  const fieldSetErrorMap: FieldSetErrorMap = {
+    name: setNameError,
+    email: setEmailError,
+    password: setPasswordError,
+    confirmPassword: setConfirmPasswordError,
+    dob: setDobError,
+    nameTag: setUserNameTagError,
+    description: setDescriptionError,
+    userTags: setSelectedTagsError,
+    image: setUserImageError,
+  };
 
-    console.log(checkDetails);
+  const formDataCheck = (): ISignUp | null => {
+    const checkDetails = signUpSchema.safeParse({
+      name: name,
+      email: email,
+      password: password,
+      confirmPassword: confirmPassword,
+      dob: new Date(dob),
+      nameTag: userNameTag,
+      description: description,
+      userTags: selectedTags,
+      image: userImage,
+    });
     // Retrieve error message ==> console.log(JSON.parse(checkDetails.error.message)[0].message); // Make sure you typecase "as ZodError"
 
-    if (checkDetails.success) {
-      signUpUser(checkDetails.data, {
+    if (!checkDetails.success) {
+      const formatErrors = checkDetails.error.format(); // Creates objects with key value pair of all the errors
+      const fieldNames = Object.keys(formatErrors);
+      fieldNames.forEach((fieldName) => {
+        if (fieldSetErrorMap[fieldName]) {
+          const key = fieldName as keyof typeof formatErrors &
+            keyof typeof fieldSetErrorMap;
+          const setErrorStateField = fieldSetErrorMap[key];
+          const fieldError = formatErrors[key];
+          if (fieldError && "_errors" in fieldError && setErrorStateField) {
+            setErrorStateField(fieldError._errors);
+          }
+        }
+      });
+      return null;
+    } else {
+      return checkDetails.data;
+    }
+  };
+
+  const isValidFormData = (): boolean => {
+    const errorFields = [
+      nameError,
+      emailError,
+      passwordError,
+      confirmPasswordError,
+      dobError,
+      userNameTagError,
+      descriptionError,
+      userImageError,
+      selectedTagsError,
+    ];
+
+    return errorFields.every((errors) => errors.length === 0);
+  };
+
+  const submitHandler = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const userData: ISignUp | null = formDataCheck();
+    const isValid: boolean = isValidFormData();
+
+    if (isValid && userData) {
+      // Transform image to base64 and overwrite image to userData
+      if (userImageFile) {
+        const base64Image = await encodeImageToBase64(userImageFile);
+        userData.image = base64Image;
+      }
+
+      // Create user
+      signUpUser(userData, {
         onError: (error) => {
-          console.log(error.message);
+          setServerError(error.message);
         },
         onSuccess: (data) => {
           console.log("Success!");
@@ -71,21 +159,44 @@ const SignUp: NextPage = () => {
           router.push("/");
         },
       });
-    } else {
-      const wrongInputError: ZodError = checkDetails.error;
-      console.log(wrongInputError);
     }
+  };
+
+  // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions.
+  //                 Using this function to keep same logic at both areas.
+  const imageErrorSetter = (file: File) => {
+    const promise = encodeImageToBase64(file);
+    promise
+      .then((base64String) => {
+        const imageUploadError: string[] = imageValidation(file);
+        setUserImageError(imageUploadError);
+        if (imageUploadError.length === 0) {
+          setUserImage(base64String);
+          setUserImageFile(file);
+        }
+      })
+      .catch((error) => {
+        console.log("Error occured : ", error);
+      });
   };
 
   const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
+    setUserImageError([]);
     const file = e.dataTransfer.files[0];
-    // do something with the dropped file
-    console.log(file);
+    if (file) {
+      imageErrorSetter(file);
+    } else {
+      console.log("Error occured while loading file");
+    }
   };
 
   return (
     <>
+      <ErrorNotification
+        errorMessage={serverError}
+        setErrorMessage={setServerError}
+      />
       <BackgroundContainer>
         <div className="flex items-center py-60">
           <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white px-12 pt-12 font-poppins shadow-lg">
@@ -98,7 +209,7 @@ const SignUp: NextPage = () => {
               </div>
               <div className="m-2 text-xl text-grey">Start your journey</div>
             </div>
-            <form onSubmit={submitHandler}>
+            <form onSubmit={(event) => void submitHandler(event)}>
               <div className="my-4 flex w-full flex-row">
                 <div className="mr-6 w-1/2">
                   <InputField
@@ -108,6 +219,10 @@ const SignUp: NextPage = () => {
                     handleState={{
                       inputState: name,
                       changeInputState: setName,
+                    }}
+                    handleErrorState={{
+                      inputState: nameError,
+                      changeInputState: setNameError,
                     }}
                     disabled={registerUser_isLoading}
                   />
@@ -121,6 +236,10 @@ const SignUp: NextPage = () => {
                       inputState: email,
                       changeInputState: setEmail,
                     }}
+                    handleErrorState={{
+                      inputState: emailError,
+                      changeInputState: setEmailError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -129,11 +248,16 @@ const SignUp: NextPage = () => {
                 <div className="mr-6 w-1/2">
                   <InputField
                     title="Password"
+                    type="password"
                     isRequired={true}
                     placeholder="Enter password"
                     handleState={{
                       inputState: password,
                       changeInputState: setPassword,
+                    }}
+                    handleErrorState={{
+                      inputState: passwordError,
+                      changeInputState: setPasswordError,
                     }}
                     disabled={registerUser_isLoading}
                   />
@@ -142,12 +266,17 @@ const SignUp: NextPage = () => {
                 <div className="w-1/2">
                   <InputField
                     title="Confirm Password"
+                    type="password"
                     isRequired={true}
                     placeholder="Re-enter password"
-                    // handleState={{
-                    //   inputState: password,
-                    //   changeInputState: setPassword,
-                    // }}
+                    handleState={{
+                      inputState: confirmPassword,
+                      changeInputState: setConfirmPassword,
+                    }}
+                    handleErrorState={{
+                      inputState: confirmPasswordError,
+                      changeInputState: setConfirmPasswordError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -160,10 +289,14 @@ const SignUp: NextPage = () => {
                     type="date"
                     isRequired={true}
                     placeholder="Enter your DOB"
-                    // handleState={{
-                    //   inputState: password,
-                    //   changeInputState: setPassword,
-                    // }}
+                    handleState={{
+                      inputState: dob,
+                      changeInputState: setDob,
+                    }}
+                    handleErrorState={{
+                      inputState: dobError,
+                      changeInputState: setDobError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -173,10 +306,14 @@ const SignUp: NextPage = () => {
                     title="@Tag-name"
                     isRequired={true}
                     placeholder="ExampleName25"
-                    // handleState={{
-                    //   inputState: password,
-                    //   changeInputState: setPassword,
-                    // }}
+                    handleState={{
+                      inputState: userNameTag,
+                      changeInputState: setUserNameTag,
+                    }}
+                    handleErrorState={{
+                      inputState: userNameTagError,
+                      changeInputState: setUserNameTagError,
+                    }}
                     disabled={registerUser_isLoading}
                   />
                 </div>
@@ -184,18 +321,21 @@ const SignUp: NextPage = () => {
 
               <div className="my-2 flex w-full flex-col">
                 <label htmlFor="describe" className="hover:cursor-pointer">
-                  Describe Yourself*
+                  Describe Yourself
                 </label>
                 {/* Set character or word limit to the textarea */}
                 <textarea
-                  id="describe"
+                  id="description"
                   placeholder="Something about you..."
                   rows={4}
-                  required
                   className="rounded-lg border-2 px-4 py-3"
-                  // value={}
-                  // onChange={}
+                  value={description}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    setDescriptionError([]);
+                  }}
                 />
+                <InputErrorText errorArray={descriptionError} />
               </div>
 
               <div className="my-4">
@@ -203,14 +343,37 @@ const SignUp: NextPage = () => {
                   Choose tags which resonates with you the most, or just create
                   them!
                 </span>
-                <AsyncCreatableSelectComponent />
+                <AsyncCreatableSelectComponent
+                  handleFieldState={{
+                    inputState: selectedTags,
+                    setInputState: setSelectedTags,
+                  }}
+                  handleErrorState={{
+                    errorState: selectedTagsError,
+                    setErrorState: setSelectedTagsError,
+                  }}
+                />
               </div>
 
               {/* Image will be optional */}
               <div className="flex flex-col">
                 <span>Upload your profile picture</span>
                 {/* Handle file submit with on drag and imageUpload to update state to a single useState */}
-                <input className="hidden" type="file" id="imageUpload" />
+                <input
+                  className="hidden"
+                  type="file"
+                  id="imageUpload"
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setUserImageError([]);
+                    const file = e.target.files ? e.target.files[0] : undefined;
+                    if (file) {
+                      imageErrorSetter(file);
+                    } else {
+                      console.log("Error occured while loading file");
+                    }
+                  }}
+                />
                 <label
                   htmlFor="imageUpload"
                   onDrop={handleDrop}
@@ -228,44 +391,62 @@ const SignUp: NextPage = () => {
                     </span>
                   </span>
                 </label>
+                <InputErrorText errorArray={userImageError} />
               </div>
 
               <div className="my-4">
                 <span>Your Profile Picture</span>
                 {/* if no image, export this */}
                 <div className="flex items-end">
-                  <div className="m-4 flex h-48 w-48 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
-                    <SvgCamera />
+                  <div className="relative m-4 flex h-48 w-48 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                    {userImage === undefined ? (
+                      <SvgCamera />
+                    ) : (
+                      <Image
+                        className="rounded-full"
+                        src={userImage}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
                   </div>
-                  <div className="m-4 flex h-32 w-32 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
-                    <SvgCamera />
+                  <div className="relative m-4 flex h-32 w-32 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                    {userImage === undefined ? (
+                      <SvgCamera />
+                    ) : (
+                      <Image
+                        className="rounded-full"
+                        src={userImage}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
                   </div>
-                  <div className="m-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
-                    <SvgCamera />
+                  <div className="relative m-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#d9d9d9] shadow-md">
+                    {userImage === undefined ? (
+                      <SvgCamera />
+                    ) : (
+                      <Image
+                        className="rounded-full"
+                        src={userImage}
+                        alt=""
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    )}
                   </div>
                 </div>
-
-                {/* Else this, include image */}
-                {/* <div className="flex items-end">
-                <div className="flex h-48 w-48 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
-                  <Image src="" alt="" />
-                </div>
-                <div className="flex h-32 w-32 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
-                  <Image src="" alt="" />
-                </div>
-                <div className="flex h-20 w-20 m-4 items-center justify-center shadow-md rounded-full bg-[#d9d9d9]">
-                  <Image src="" alt="" />
-                </div>
-              </div> */}
               </div>
 
               <button
-                className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white"
+                className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white disabled:bg-[#ff9e3e]"
                 type="submit"
+                disabled={registerUser_isLoading}
               >
                 Submit
               </button>
-              {registerUser_isLoading && <span>Loading...</span>}
             </form>
           </div>
         </div>
