@@ -12,6 +12,7 @@ import { TRPCError } from "@trpc/server";
 import { base64ToImageData } from "~/common/imageConversion";
 import { supabase } from "~/utils/storageBucket";
 import { v4 as uuidv4 } from "uuid";
+import { hashPassword } from "~/utils/passwordUtils";
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
@@ -88,11 +89,13 @@ export const authRouter = createTRPCRouter({
       // TODO: userTags should fetch data from the server
       // TODO: Hash password here and pass to result like password : hashed_password
 
+      const hashedPassword = hashPassword(password);
+
       const result = await ctx.prisma.user.create({
         data: {
           name: name,
           email: email,
-          password: password,
+          password: hashedPassword,
           dateOfBirth: dob,
           atTag: nameTag,
           description: description,

@@ -9,6 +9,7 @@ import {
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "~/server/db";
+import { comparePassword } from "~/utils/passwordUtils";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -90,7 +91,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Maybe add password hashing here
-        if (user.password !== creds.password) {
+        if(!comparePassword(user.password,creds.password)){
           return null;
         }
 
