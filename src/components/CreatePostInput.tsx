@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import DisplayUserImage from "./DisplayUserImage";
 import CreatePostForm from "./CreatePostForm";
+import SvgCrossIcon from "public/SvgCrossIcon";
 
 interface DialogElement extends HTMLDialogElement {
   showModal: () => void;
@@ -31,19 +32,25 @@ const CreatePostInput = ({
 
   return (
     <div>
-      <dialog className="w-3/6 max-w-[720px] rounded-lg" ref={dialogRef} onClick={(e) => outsideModalClickHandler(e)}>
-          <div className="p-4">
-            <CreatePostForm />
-            <button
-              onClick={() => {
-                dialogRef.current?.close();
-              }}
-            >
-              Close
-            </button>
-          </div>
-
+      
+      <dialog
+        className="w-3/6 max-w-[720px] rounded-lg"
+        ref={dialogRef}
+        onClick={(e) => outsideModalClickHandler(e)}
+      >
+        <span
+          className="flex flex-row-reverse hover:cursor-pointer"
+          onClick={() => {
+            dialogRef.current?.close();
+          }}
+        >
+          <SvgCrossIcon />
+        </span>
+        <div className="p-4">
+          <CreatePostForm />
+        </div>
       </dialog>
+
       <div className="mx-3 flex rounded-lg bg-white p-3 font-poppins shadow-md">
         <div>
           <DisplayUserImage userImage={userImage} sizeOption="small" />
