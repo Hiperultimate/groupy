@@ -52,7 +52,6 @@ function CreatePostForm() {
     5: `5`,
   });
 
-  
   return (
     <form className="font-poppins">
       <div className="flex items-center justify-center">
@@ -82,7 +81,8 @@ function CreatePostForm() {
 
       <div className="my-4">
         <span>
-          Choose tags which resonates with you the most, or just create them!
+          Choose tags which resonates with your post the most, or just create
+          them!
         </span>
         <AsyncCreatableSelectComponent
           handleFieldState={{
