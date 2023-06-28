@@ -28,14 +28,14 @@ export const DisplayPost = ({ postData }: { postData: Post }) => {
             <div className="mx-3 mt-3 text-grey">June 22</div>
           </div>
           <div className="ml-3 flex flex-wrap">
-            <div className="my-0.5 mr-1 h-7 rounded-full bg-orange px-3 py-0.5 text-sm text-white">
-              Tag1
+            <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
+              #Tag1
             </div>
-            <div className="my-0.5 mr-1 h-7 rounded-full bg-orange px-3 py-0.5 text-sm text-white">
-              Tag2
+            <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
+              #Tag2
             </div>
-            <div className="my-0.5 mr-1 h-7 rounded-full bg-orange px-3 py-0.5 text-sm text-white">
-              Tag3
+            <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
+              #Tag3
             </div>
           </div>
         </div>
@@ -46,6 +46,17 @@ export const DisplayPost = ({ postData }: { postData: Post }) => {
         dignissimos nulla laudantium dolores nihil nisi consectetur tempora id
         deserunt optio necessitatibus eligendi a maxime reprehenderit sapiente
         impedit nemo officia.
+      </div>
+      <div className="ml-3 flex flex-wrap justify-center py-2">
+        <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
+          #Tag1
+        </div>
+        <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
+          #Tag2
+        </div>
+        <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
+          #Tag3
+        </div>
       </div>
       <div className="relative flex justify-center bg-slate-100">
         <Image

@@ -5,6 +5,7 @@ import { type Session } from "next-auth";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { tags } from "./tags";
 
 export async function getPosts(prisma : PrismaClient, session : Session){
   if(!session){
@@ -18,6 +19,9 @@ export async function getPosts(prisma : PrismaClient, session : Session){
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      tags: true,
+    }
   });
 }
 
