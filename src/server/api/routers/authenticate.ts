@@ -2,19 +2,18 @@ import { z } from "zod";
 
 import { signUpSchema } from "../../../common/authSchema";
 
+import { TRPCError } from "@trpc/server";
 import {
   createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
+  publicProcedure
 } from "~/server/api/trpc";
-import { TRPCError } from "@trpc/server";
 
-import { base64ToImageData } from "~/common/imageConversion";
-import { supabase } from "~/utils/storageBucket";
 import { v4 as uuidv4 } from "uuid";
+import { base64ToImageData } from "~/common/imageConversion";
 import { hashPassword } from "~/utils/passwordUtils";
+import { supabase } from "~/utils/storageBucket";
 
-export const authRouter = createTRPCRouter({
+export const accountRouter = createTRPCRouter({
   signup: publicProcedure
     .input(signUpSchema)
     .output(

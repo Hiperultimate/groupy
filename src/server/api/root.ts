@@ -1,8 +1,8 @@
-import { createTRPCRouter } from "~/server/api/trpc";
 import { exampleRouter } from "~/server/api/routers/example";
-import { authRouter } from "./routers/authenticate";
-import { tags } from "./routers/tags";
+import { createTRPCRouter } from "~/server/api/trpc";
+import { accountRouter } from "./routers/authenticate";
 import { postRouter } from "./routers/posts";
+import { tags } from "./routers/tags";
 
 /**
  * This is the primary router for your server.
@@ -11,7 +11,7 @@ import { postRouter } from "./routers/posts";
  */
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
-  account: authRouter,
+  account: accountRouter,
   tags: tags,
   post: postRouter,
 });

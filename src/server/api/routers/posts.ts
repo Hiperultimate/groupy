@@ -2,11 +2,15 @@
 import { type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
-import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { tags } from "./tags";
 
+/**
+ * 
+ * @param prismaClient
+ * @param session 
+ * @returns [{post} * 10] array of 10 latest posts 
+ */
 export async function getPosts(prisma : PrismaClient, session : Session){
   if(!session){
     throw new TRPCError({
