@@ -21,7 +21,7 @@ import FriendList from "~/components/FriendList";
 import UserDetails from "~/components/UserDetails";
 import { type Tag } from "@prisma/client";
 
-type SerializablePost = {
+export type SerializablePost = {
   id: string;
   content: string;
   image: string | null;
@@ -106,11 +106,13 @@ const Home: NextPage<
   const postData = posts.map((post) => {
     const convertedCreatedAt = new Date(post.createdAt);
     const convertedUpdatedAt = new Date(post.updatedAt);
+    const convertedAuthorDOB = new Date(post.authorDOB);
 
     return {
       ...post,
       createdAt: convertedCreatedAt,
       updatedAt: convertedUpdatedAt,
+      authorDOB: convertedAuthorDOB
     };
   });
 

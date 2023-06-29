@@ -1,11 +1,16 @@
-import { type Post } from "@prisma/client";
 import Image from "next/image";
 import SvgMessageIcon from "public/SvgMessageIcon";
 import SvgPeopleIcon from "public/SvgPeopleIcon";
 import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
 import DisplayUserImage from "./DisplayUserImage";
+import { type SerializablePost } from "~/pages/home";
 
-export const DisplayPost = ({ postData }: { postData: Post }) => {
+type DeserializablePost = Omit<
+  SerializablePost,
+  "createdAt" | "updatedAt" | "authorDOB"
+> & { createdAt: Date; updatedAt: Date; authorDOB: Date };
+
+export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
   // TODO:
   // From author ID, get all the required details about the author to add in the post
   // From UserLikedPost table, use id to get all the number of users who liked the post
@@ -13,11 +18,16 @@ export const DisplayPost = ({ postData }: { postData: Post }) => {
   // From id fetch comments from posts, on Comment btn click fetch comments and display 10 comments (add fetch more)
   // Add suspense to while loading images
 
+  console.log(postData);
+
   return (
     <div className="m-3 flex flex-col rounded-lg bg-white font-poppins shadow-md">
       <div className="flex px-3 pt-3">
         <div>
-          <DisplayUserImage sizeOption="medium" />
+          <DisplayUserImage
+            userImage={postData.authorProfilePicture}
+            sizeOption="medium"
+          />
         </div>
         <div className="flex w-full flex-col">
           <div className="flex justify-between">
