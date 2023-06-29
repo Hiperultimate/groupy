@@ -1,6 +1,6 @@
 import { exampleRouter } from "~/server/api/routers/example";
 import { createTRPCRouter } from "~/server/api/trpc";
-import { accountRouter } from "./routers/authenticate";
+import { accountRouter } from "./routers/account";
 import { postRouter } from "./routers/posts";
 import { tags } from "./routers/tags";
 
