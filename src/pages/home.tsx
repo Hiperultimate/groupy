@@ -4,7 +4,9 @@ import {
   type NextPage,
 } from "next";
 
+import { getUserByID } from "~/server/api/routers/account";
 import { getPosts } from "~/server/api/routers/posts";
+
 import { prisma } from "~/server/db";
 import { getServerAuthSession } from "../server/auth";
 
@@ -14,9 +16,10 @@ import { useEffect } from "react";
 
 import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
-import UserDetails from "~/components/UserDetails";
 import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
+import UserDetails from "~/components/UserDetails";
+import { type Tag } from "@prisma/client";
 
 type SerializablePost = {
   id: string;
@@ -25,6 +28,13 @@ type SerializablePost = {
   authorId: string;
   createdAt: string;
   updatedAt: string;
+  authorName: string;
+  authorDOB: string;
+  authorEmail: string;
+  authorAtTag: string | null;
+  authorDescription: string | null;
+  authorProfilePicture: string | null;
+  authorTags: Tag[];
 };
 
 type ServerSideProps = {
@@ -47,16 +57,29 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
 
   const posts = await getPosts(prisma, session);
 
-  const serializablePosts = posts.map((post) => {
+  const serializablePosts = await Promise.all(posts.map(async (post) => {
+    const authorID = post.authorId;
+    const authorInfo = await getUserByID(prisma, session, authorID);
+    const filteredAuthorData = {
+      authorName: authorInfo.name,
+      authorDOB: authorInfo.dateOfBirth.toString(),
+      authorEmail: authorInfo.email,
+      authorAtTag: authorInfo.atTag,
+      authorDescription: authorInfo.description,
+      authorProfilePicture: authorInfo.image,
+      authorTags: authorInfo.tags,
+    };
+
     const convertedCreatedAt = post.createdAt.toString();
     const convertedUpdatedAt = post.updatedAt.toString();
 
     return {
       ...post,
+      ...filteredAuthorData,
       createdAt: convertedCreatedAt,
       updatedAt: convertedUpdatedAt,
     };
-  });
+  }));
 
   return {
     props: { posts: serializablePosts },

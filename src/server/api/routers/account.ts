@@ -5,13 +5,45 @@ import { signUpSchema } from "../../../common/authSchema";
 import { TRPCError } from "@trpc/server";
 import {
   createTRPCRouter,
-  publicProcedure
+  protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 
+import { type PrismaClient } from "@prisma/client";
+import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
 import { hashPassword } from "~/utils/passwordUtils";
 import { supabase } from "~/utils/storageBucket";
+
+export async function getUserByID(
+  prisma: PrismaClient,
+  session: Session,
+  input: string
+) {
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid user session",
+    });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { id: input },
+    include: { tags: true },
+  });
+  if (!user) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  const { id, name, email, dateOfBirth, atTag, description, image, tags } =
+    user;
+    
+  return { id, name, email, dateOfBirth, atTag, description, image, tags };
+}
 
 export const accountRouter = createTRPCRouter({
   signup: publicProcedure
@@ -114,4 +146,8 @@ export const accountRouter = createTRPCRouter({
         result: result.email,
       };
     }),
+
+  getPosts: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
+    return getUserByID(ctx.prisma, ctx.session, input);
+  }),
 });
