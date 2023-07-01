@@ -41,8 +41,24 @@ export async function getUserByID(
 
   const { id, name, email, dateOfBirth, atTag, description, image, tags } =
     user;
-    
-  return { id, name, email, dateOfBirth, atTag, description, image, tags };
+
+  let imageURL = image;
+
+  if (image) {
+    const { data } = supabase.storage.from("images").getPublicUrl(`${image}`);
+    imageURL = data.publicUrl;
+  }
+
+  return {
+    id,
+    name,
+    email,
+    dateOfBirth,
+    atTag,
+    description,
+    image: imageURL,
+    tags,
+  };
 }
 
 export const accountRouter = createTRPCRouter({

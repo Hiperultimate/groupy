@@ -24,7 +24,7 @@ export async function getPosts(prisma : PrismaClient, session : Session){
       createdAt: "desc",
     },
     include: {
-      tags: true,
+      tags: true, 
     }
   });
 }

@@ -28,6 +28,7 @@ export type SerializablePost = {
   authorId: string;
   createdAt: string;
   updatedAt: string;
+  tags: Tag[];
   authorName: string;
   authorDOB: string;
   authorEmail: string;

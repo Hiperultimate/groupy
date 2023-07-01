@@ -19,64 +19,77 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
   // Add suspense to while loading images
 
   console.log(postData);
-
+  const {
+    id : postID,
+    createdAt,
+    content: postContent,
+    image: postImage,
+    tags: postTags,
+    authorId, // Will be used to redirect to author specific page
+    authorName,
+    authorAtTag,
+    authorProfilePicture,
+    authorTags,
+  } = postData;
   return (
-    <div className="m-3 flex flex-col rounded-lg bg-white font-poppins shadow-md">
+    <div key={postID} className="m-3 flex flex-col rounded-lg bg-white font-poppins shadow-md">
       <div className="flex px-3 pt-3">
         <div>
           <DisplayUserImage
-            userImage={postData.authorProfilePicture}
+            userImage={authorProfilePicture}
             sizeOption="medium"
           />
         </div>
         <div className="flex w-full flex-col">
           <div className="flex justify-between">
             <div className="mx-3 mt-3 flex flex-wrap">
-              <div className="font-bold">Author Name</div>
-              <div className="ml-1 text-grey">@AuthorTag</div>
+              <div className="font-bold">{authorName}</div>
+              <div className="ml-1 text-grey">{authorAtTag}</div>
             </div>
-            <div className="mx-3 mt-3 text-grey">June 22</div>
+            <div className="mx-3 mt-3 text-grey">
+              {createdAt.toLocaleDateString()}
+            </div>
+            {/* <div className="mx-3 mt-3 text-grey">June 22</div> */}
           </div>
           <div className="ml-3 flex flex-wrap">
-            <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
-              #Tag1
-            </div>
-            <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
-              #Tag2
-            </div>
-            <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
-              #Tag3
-            </div>
+            {authorTags.map((tag) => {
+              return (
+                <div
+                  key={tag.id}
+                  className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white"
+                >
+                  {`#${tag.name}`}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
       <div className={`relative my-2 border-t-2 border-light-grey`} />
-      <div className="px-3">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia, aliquam
-        dignissimos nulla laudantium dolores nihil nisi consectetur tempora id
-        deserunt optio necessitatibus eligendi a maxime reprehenderit sapiente
-        impedit nemo officia.
-      </div>
+      <div className="px-3">{postContent}</div>
       <div className="ml-3 flex flex-wrap justify-center py-2">
-        <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
-          #Tag1
-        </div>
-        <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
-          #Tag2
-        </div>
-        <div className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white">
-          #Tag3
-        </div>
+        {postTags.map((tag) => {
+          return (
+            <div
+              key={tag.id}
+              className="my-0.5 mr-1 rounded-full bg-orange px-3 py-1 text-white"
+            >
+              {`#${tag.name}`}
+            </div>
+          );
+        })}
       </div>
       <div className="relative flex justify-center bg-slate-100">
-        <Image
-          src="https://images.unsplash.com/photo-1685454578722-a0cc29a302c7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1287&q=80"
-          width={0}
-          height={0}
-          sizes="100vw"
-          style={{ width: "auto", height: "auto", maxHeight: "600px" }}
-          alt={"An error occured while loading the image."}
-        />
+        {postImage && (
+          <Image
+            src={postImage}
+            width={0}
+            height={0}
+            sizes="100vw"
+            style={{ width: "auto", height: "auto", maxHeight: "600px" }}
+            alt={"An error occured while loading the image."}
+          />
+        )}
       </div>
       <button className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange">
         Join up &rarr;
