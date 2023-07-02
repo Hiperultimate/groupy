@@ -18,7 +18,6 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
   // From id fetch comments from posts, on Comment btn click fetch comments and display 10 comments (add fetch more)
   // Add suspense to while loading images
 
-  console.log(postData);
   const {
     id : postID,
     createdAt,
@@ -26,6 +25,8 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
     image: postImage,
     tags: postTags,
     authorId, // Will be used to redirect to author specific page
+    likeCount,
+    commentCount,
     authorName,
     authorAtTag,
     authorProfilePicture,
@@ -100,13 +101,13 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
             <div className="relative bottom-[2px] mx-2">
               <SvgThumbsUpIcon />
             </div>
-            110
+            {likeCount}
           </div>
           <div className="flex">
             <div className="mx-2">
               <SvgMessageIcon />
             </div>
-            21
+            {commentCount}
           </div>
         </div>
         <div className="flex">

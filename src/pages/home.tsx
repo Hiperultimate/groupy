@@ -29,6 +29,8 @@ export type SerializablePost = {
   createdAt: string;
   updatedAt: string;
   tags: Tag[];
+  likeCount: number;
+  commentCount: number;
   authorName: string;
   authorDOB: string;
   authorEmail: string;
@@ -73,7 +75,6 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
 
     const convertedCreatedAt = post.createdAt.toString();
     const convertedUpdatedAt = post.updatedAt.toString();
-
     return {
       ...post,
       ...filteredAuthorData,
