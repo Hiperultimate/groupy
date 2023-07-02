@@ -1,8 +1,10 @@
 import { type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
+import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { getUserByID } from "./account";
 
 /**
  *
@@ -49,4 +51,31 @@ export const postRouter = createTRPCRouter({
   getPosts: protectedProcedure.query(({ ctx }) => {
     return getPosts(ctx.prisma, ctx.session);
   }),
+  getPostComments: protectedProcedure
+    .input(z.object({ postID: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const allComments = await ctx.prisma.comment.findMany({
+        where: { postId: input.postID },
+      });
+      const commentWithUserData = await Promise.all(
+        allComments.map(async (comment) => {
+          // Get user data for each comment and add it to the existing allComments object
+          const getUser = await getUserByID(
+            ctx.prisma,
+            ctx.session,
+            comment.authorId
+          );
+
+          return {
+            id: comment.id,
+            content: comment.content,
+            authorId: comment.authorId,
+            createdAt: comment.createdAt,
+            authorName: getUser.name,
+            authorImage: getUser.image,
+          };
+        })
+      );
+      return commentWithUserData;
+    }),
 });

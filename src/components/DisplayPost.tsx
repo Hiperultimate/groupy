@@ -4,6 +4,7 @@ import SvgPeopleIcon from "public/SvgPeopleIcon";
 import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
 import DisplayUserImage from "./DisplayUserImage";
 import { type SerializablePost } from "~/pages/home";
+import { api } from "~/utils/api";
 
 type DeserializablePost = Omit<
   SerializablePost,
@@ -18,8 +19,19 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
   // From id fetch comments from posts, on Comment btn click fetch comments and display 10 comments (add fetch more)
   // Add suspense to while loading images
 
+  // Handle states for number of comments received and number of comments that needs to be fetched
+  async function handleComments() {
+    await refetchComments();
+  }
+
+  const { data: getComments, refetch: refetchComments } =
+    api.post.getPostComments.useQuery(
+      { postID: postData.id },
+      { enabled: false }
+    );
+
   const {
-    id : postID,
+    id: postID,
     createdAt,
     content: postContent,
     image: postImage,
@@ -33,7 +45,10 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
     authorTags,
   } = postData;
   return (
-    <div key={postID} className="m-3 flex flex-col rounded-lg bg-white font-poppins shadow-md">
+    <div
+      key={postID}
+      className="m-3 flex flex-col rounded-lg bg-white font-poppins shadow-md"
+    >
       <div className="flex px-3 pt-3">
         <div>
           <DisplayUserImage
@@ -133,51 +148,47 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
           }}
         />
       </div>
-      <div className={`relative border-t-2 border-light-grey`} />
-      <div className="mb-4 flex flex-col">
-        <div className="px-4 py-3 text-grey">Comments</div>
-        <div className="flex">
-          {/* Use map to render multiple comments here */}
-          <div className="px-3 py-2">
-            <DisplayUserImage sizeOption="small" />
-          </div>
-          <div>
-            <div className="mx-1 mt-2 flex flex-wrap">
-              <div className="font-bold">Author Name</div>
-              <span className="relative bottom-1 font-bold text-grey">
-                &nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;
-              </span>
-              <div className="ml-1 text-grey">June 2022</div>
-            </div>
-            <p className="ml-1 mr-6">
-              I like the lights that turn up in the night I like the lights that
-              turn up in the night I like the lights that turn up in the night I
-              like the lights that turn up in the night I like the lights that
-              turn up in the night I like the lights that turn up in the night
-            </p>
-          </div>
-        </div>
-        <div className="flex">
-          {/* Use map to render multiple comments here */}
-          <div className="px-3 py-2">
-            <DisplayUserImage sizeOption="small" />
-          </div>
-          <div>
-            <div className="mx-1 mt-2 flex flex-wrap">
-              <div className="font-bold">Author Name</div>
-              <span className="relative bottom-1 font-bold text-grey">
-                &nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;
-              </span>
-              <div className="ml-1 text-grey">June 2022</div>
-            </div>
-            <p className="ml-1 mr-6">
-              I like the lights that turn up in the night
-            </p>
-          </div>
-        </div>
+      {getComments && (
+        <div className={`relative border-t-2 border-light-grey`} />
+      )}
+      <div className="flex flex-col">
+        {getComments && <div className="px-4 py-3 text-grey">Comments</div>}
+        {getComments &&
+          getComments.map((comment) => {
+            return (
+              <div key={comment.id} className="flex">
+                {/* Use map to render multiple comments here */}
+                <div className="px-3 py-2">
+                  <DisplayUserImage
+                    userImage={comment.authorImage}
+                    sizeOption="small"
+                  />
+                </div>
+                <div>
+                  <div className="mx-1 mt-2 flex flex-wrap">
+                    <div className="font-bold">{comment.authorName}</div>
+                    <span className="relative bottom-1 font-bold text-grey">
+                      &nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;
+                    </span>
+                    <div className="ml-1 text-grey">
+                      {comment.createdAt.toLocaleDateString()}
+                    </div>
+                  </div>
+                  <p className="ml-1 mr-6">{comment.content}</p>
+                </div>
+              </div>
+            );
+          })}
       </div>
-      <div className={`relative border-t-2 border-light-grey`} />
-      <button className="rounded-b-lg py-4 text-grey transition duration-300 ease-in-out hover:bg-light-grey hover:text-white">
+      <div
+        className={`relative border-t-2 ${
+          getComments ? "mt-4" : ""
+        } border-light-grey`}
+      />
+      <button
+        onClick={() => void handleComments()}
+        className="rounded-b-lg py-4 text-grey transition duration-300 ease-in-out hover:bg-light-grey hover:text-white"
+      >
         Load Comments
       </button>
     </div>

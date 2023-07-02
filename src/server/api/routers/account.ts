@@ -162,8 +162,4 @@ export const accountRouter = createTRPCRouter({
         result: result.email,
       };
     }),
-
-  getPosts: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
-    return getUserByID(ctx.prisma, ctx.session, input);
-  }),
 });
