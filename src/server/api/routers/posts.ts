@@ -78,4 +78,36 @@ export const postRouter = createTRPCRouter({
       );
       return commentWithUserData;
     }),
+  addCommentToPost: protectedProcedure
+    .input(z.object({ postId: z.string(), addComment: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      console.log("Will create mutataion :", input.postId, input.addComment);
+      if (input.addComment.length > 300) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Character limit exceeded",
+        });
+      }
+
+      const getPost = await ctx.prisma.post.findFirst({
+        where: { id: input.postId },
+      });
+
+      if (getPost === null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Post not found",
+        });
+      }
+
+      const newComment = await ctx.prisma.comment.create({
+        data: {
+          content: input.addComment,
+          postId: input.postId,
+          authorId: ctx.session.user.id,
+        },
+      });
+  
+      return newComment;
+    }),
 });

@@ -5,6 +5,7 @@ import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
 import DisplayUserImage from "./DisplayUserImage";
 import { type SerializablePost } from "~/pages/home";
 import { api } from "~/utils/api";
+import { useState } from "react";
 
 type DeserializablePost = Omit<
   SerializablePost,
@@ -20,15 +21,23 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
   // Add suspense to while loading images
 
   // Handle states for number of comments received and number of comments that needs to be fetched
+
+  const [comment, setComment] = useState("");
+
   async function handleComments() {
     await refetchComments();
   }
 
-  const { data: getComments, refetch: refetchComments } =
-    api.post.getPostComments.useQuery(
-      { postID: postData.id },
-      { enabled: false }
-    );
+  const {
+    data: getComments,
+    refetch: refetchComments,
+    isFetching: isCommentsFetching,
+  } = api.post.getPostComments.useQuery(
+    { postID: postData.id },
+    { enabled: false }
+  );
+  const { mutate: addComment, isLoading: isAddingComment } =
+    api.post.addCommentToPost.useMutation();
 
   const {
     id: postID,
@@ -141,10 +150,28 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
           className="ml-3 w-full rounded-full border-2 pl-5 pr-6"
           type="text"
           name="createPostInput"
-          value=""
+          value={comment}
           placeholder="Write a comment..."
-          onChange={() => {
-            console.log("Placeholder");
+          onChange={(e) => {
+            setComment(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.repeat) {
+              return;
+            }
+            if (e.key === "Enter") {
+              console.log("Add comment saying : ", comment);
+              addComment({postId : postID, addComment: comment}, {
+                onError: (error) => {
+                  console.log(error.message);
+                },
+                onSuccess: (data) => {
+                  console.log("Success!");
+                  console.log("New comment : ", data);
+                },
+              })
+              setComment("");
+            }
           }}
         />
       </div>
@@ -186,8 +213,9 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
         } border-light-grey`}
       />
       <button
+        disabled={isCommentsFetching}
         onClick={() => void handleComments()}
-        className="rounded-b-lg py-4 text-grey transition duration-300 ease-in-out hover:bg-light-grey hover:text-white"
+        className="rounded-b-lg py-4 text-grey transition duration-300 ease-in-out hover:cursor-pointer hover:bg-light-grey hover:text-white disabled:bg-loading-grey disabled:text-white"
       >
         Load Comments
       </button>
