@@ -20,6 +20,7 @@ import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
 import UserDetails from "~/components/UserDetails";
 import { type Tag } from "@prisma/client";
+import { type Session } from "next-auth";
 
 export type SerializablePost = {
   id: string;
@@ -42,6 +43,11 @@ export type SerializablePost = {
 
 type ServerSideProps = {
   posts: SerializablePost[];
+};
+
+export type CurrentUser = Session["user"] & {
+  name: string;
+  image: string | null;
 };
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
@@ -129,7 +135,7 @@ const Home: NextPage<
             <div className="min-w-[545px] lg:w-[825px]">
               <CreatePostInput userImage={userSession.user.image} />
               {postData.map((post) => {
-                return <DisplayPost key={post.id} postData={post} />;
+                return <DisplayPost key={post.id} postData={post} currentUser={userSession.user as CurrentUser}/>;
               })}
             </div>
             <FriendList />

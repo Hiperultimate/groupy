@@ -4,6 +4,7 @@ import SvgPeopleIcon from "public/SvgPeopleIcon";
 import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
 import DisplayUserImage from "./DisplayUserImage";
 import { type SerializablePost } from "~/pages/home";
+import { type CurrentUser } from "~/pages/home";
 import { api } from "~/utils/api";
 import { useState } from "react";
 
@@ -12,7 +13,23 @@ type DeserializablePost = Omit<
   "createdAt" | "updatedAt" | "authorDOB"
 > & { createdAt: Date; updatedAt: Date; authorDOB: Date };
 
-export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
+type PostComment = {
+  id: string;
+  content: string;
+  authorId: string;
+  createdAt: Date;
+  authorName: string;
+  authorImage: string | null;
+  postId: string;
+};
+
+export const DisplayPost = ({
+  postData,
+  currentUser,
+}: {
+  postData: DeserializablePost;
+  currentUser: CurrentUser;
+}) => {
   // TODO:
   // From author ID, get all the required details about the author to add in the post
   // From UserLikedPost table, use id to get all the number of users who liked the post
@@ -23,9 +40,16 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
   // Handle states for number of comments received and number of comments that needs to be fetched
 
   const [comment, setComment] = useState("");
+  const [postComments, setPostComments] = useState<PostComment[]>([]);
 
   async function handleComments() {
-    await refetchComments();
+    const fetchedComments = await refetchComments();
+    if (fetchedComments.data) {
+      const dbComments = fetchedComments.data.map((comment) => {
+        return { postId: postData.id, ...comment };
+      });
+      setPostComments(dbComments);
+    }
   }
 
   const {
@@ -152,6 +176,7 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
           name="createPostInput"
           value={comment}
           placeholder="Write a comment..."
+          disabled={isAddingComment}
           onChange={(e) => {
             setComment(e.target.value);
           }}
@@ -161,27 +186,36 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
             }
             if (e.key === "Enter") {
               console.log("Add comment saying : ", comment);
-              addComment({postId : postID, addComment: comment}, {
-                onError: (error) => {
-                  console.log(error.message);
-                },
-                onSuccess: (data) => {
-                  console.log("Success!");
-                  console.log("New comment : ", data);
-                },
-              })
+              addComment(
+                { postId: postID, addComment: comment },
+                {
+                  onError: (error) => {
+                    console.log(error.message);
+                  },
+                  onSuccess: (data) => {
+                    const newComment = {
+                      authorName: currentUser.name,
+                      authorImage: currentUser.image,
+                      ...data,
+                    };
+                    setPostComments([...postComments, newComment]);
+                  },
+                }
+              );
               setComment("");
             }
           }}
         />
       </div>
-      {getComments && (
+      {postComments.length > 0 && (
         <div className={`relative border-t-2 border-light-grey`} />
       )}
       <div className="flex flex-col">
-        {getComments && <div className="px-4 py-3 text-grey">Comments</div>}
-        {getComments &&
-          getComments.map((comment) => {
+        {postComments.length > 0 && (
+          <div className="px-4 py-3 text-grey">Comments</div>
+        )}
+        {postComments.length > 0 &&
+          postComments.map((comment) => {
             return (
               <div key={comment.id} className="flex">
                 {/* Use map to render multiple comments here */}
@@ -209,7 +243,7 @@ export const DisplayPost = ({ postData }: { postData: DeserializablePost }) => {
       </div>
       <div
         className={`relative border-t-2 ${
-          getComments ? "mt-4" : ""
+          postComments.length > 0 ? "mt-4" : ""
         } border-light-grey`}
       />
       <button
