@@ -53,7 +53,6 @@ export const DisplayPost = ({
   }
 
   const {
-    data: getComments,
     refetch: refetchComments,
     isFetching: isCommentsFetching,
   } = api.post.getPostComments.useQuery(

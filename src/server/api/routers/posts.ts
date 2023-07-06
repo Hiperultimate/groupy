@@ -56,6 +56,7 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const allComments = await ctx.prisma.comment.findMany({
         where: { postId: input.postID },
+        orderBy: { createdAt :"desc"}
       });
       const commentWithUserData = await Promise.all(
         allComments.map(async (comment) => {
@@ -81,7 +82,6 @@ export const postRouter = createTRPCRouter({
   addCommentToPost: protectedProcedure
     .input(z.object({ postId: z.string(), addComment: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log("Will create mutataion :", input.postId, input.addComment);
       if (input.addComment.length > 300) {
         throw new TRPCError({
           code: "FORBIDDEN",
