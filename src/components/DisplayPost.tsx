@@ -76,6 +76,9 @@ export const DisplayPost = ({
     authorProfilePicture,
     authorTags,
   } = postData;
+
+  const [likeCounter, setLikeCounter] = useState(likeCount);
+  const [commentCounter, setCommentCounter] = useState(commentCount);
   return (
     <div
       key={postID}
@@ -148,13 +151,13 @@ export const DisplayPost = ({
             <div className="relative bottom-[2px] mx-2">
               <SvgThumbsUpIcon />
             </div>
-            {likeCount}
+            {likeCounter}
           </div>
           <div className="flex">
             <div className="mx-2">
               <SvgMessageIcon />
             </div>
-            {commentCount}
+            {commentCounter}
           </div>
         </div>
         <div className="flex">
@@ -196,6 +199,7 @@ export const DisplayPost = ({
                       authorImage: currentUser.image,
                       ...data,
                     };
+                    setCommentCounter(commentCounter + 1);
                     setPostComments([newComment, ...postComments]);
                   },
                 }
