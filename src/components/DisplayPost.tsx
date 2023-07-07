@@ -184,7 +184,6 @@ export const DisplayPost = ({
               return;
             }
             if (e.key === "Enter") {
-              console.log("Add comment saying : ", comment);
               addComment(
                 { postId: postID, addComment: comment },
                 {
@@ -197,7 +196,7 @@ export const DisplayPost = ({
                       authorImage: currentUser.image,
                       ...data,
                     };
-                    setPostComments([...postComments, newComment]);
+                    setPostComments([newComment, ...postComments]);
                   },
                 }
               );
