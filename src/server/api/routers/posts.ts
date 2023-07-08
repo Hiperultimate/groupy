@@ -56,7 +56,7 @@ export const postRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const allComments = await ctx.prisma.comment.findMany({
         where: { postId: input.postID },
-        orderBy: { createdAt :"desc"}
+        orderBy: { createdAt: "desc" },
       });
       const commentWithUserData = await Promise.all(
         allComments.map(async (comment) => {
@@ -79,6 +79,7 @@ export const postRouter = createTRPCRouter({
       );
       return commentWithUserData;
     }),
+
   addCommentToPost: protectedProcedure
     .input(z.object({ postId: z.string(), addComment: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -107,7 +108,38 @@ export const postRouter = createTRPCRouter({
           authorId: ctx.session.user.id,
         },
       });
-      
+
       return newComment;
+    }),
+
+  likeDislikePost: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .output(z.object({ isPostLiked: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      // existance of isPostLikedByUser means user already liked the post
+      const isPostLikedByUser = await ctx.prisma.userLikedPost.findFirst({
+        where: { userId: ctx.session.user.id, postId: input.postId },
+      });
+
+      // Delete the record from userLikedPost table
+      if (isPostLikedByUser) {
+        const uniqueId = await ctx.prisma.userLikedPost.findFirst({
+          where: { postId: input.postId, userId: ctx.session.user.id },
+        });
+        if (uniqueId) {
+          await ctx.prisma.userLikedPost.delete({ where: { id: uniqueId.id } });
+          return { isPostLiked: false };
+        }
+      }
+
+      const response = await ctx.prisma.userLikedPost.create({
+        data: { userId: ctx.session.user.id, postId: input.postId },
+      });
+      if (response) {
+        return { isPostLiked: true };
+      }
+
+      // Fallback
+      return { isPostLiked: false };
     }),
 });
