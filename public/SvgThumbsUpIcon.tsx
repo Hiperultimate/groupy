@@ -1,12 +1,21 @@
 const SvgThumbsUpIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} fill="none">
-    <path
-      stroke="#536471"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="m7 11 4-9a3 3 0 0 1 3 3v4h5.66a2 2 0 0 1 2 2.3l-1.38 9a2 2 0 0 1-2 1.7H7m0-11v11m0-11H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"
-    />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={28}
+    height={28}
+    fill="none"
+  >
+    <g clipPath="url(#a)">
+      <path
+        fill="#536471"
+        d="M17.033 9.333H24.5a2.333 2.333 0 0 1 2.333 2.334v2.454c0 .305-.059.607-.175.89l-3.61 8.767a1.167 1.167 0 0 1-1.08.722H2.333a1.167 1.167 0 0 1-1.166-1.167V11.667A1.167 1.167 0 0 1 2.333 10.5h4.063a1.167 1.167 0 0 0 .953-.493L13.71.992a.584.584 0 0 1 .737-.186l2.116 1.058a2.917 2.917 0 0 1 1.523 3.329l-1.054 4.14Zm-8.866 3.02v9.814h13.02L24.5 14.12v-2.454h-7.467a2.332 2.332 0 0 1-2.26-2.909l1.053-4.14a.583.583 0 0 0-.305-.665l-.77-.385-5.496 7.784a3.518 3.518 0 0 1-1.088 1Zm-2.334.48H3.5v9.334h2.333v-9.334Z"
+      />
+    </g>
+    <defs>
+      <clipPath id="a">
+        <path fill="#fff" d="M0 0h28v28H0z" />
+      </clipPath>
+    </defs>
   </svg>
 );
 export default SvgThumbsUpIcon;

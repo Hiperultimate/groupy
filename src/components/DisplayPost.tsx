@@ -2,6 +2,7 @@ import Image from "next/image";
 import SvgMessageIcon from "public/SvgMessageIcon";
 import SvgPeopleIcon from "public/SvgPeopleIcon";
 import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
+import SvgThumbsUpIconFill from "public/SvgThumbsUpIconFill";
 import DisplayUserImage from "./DisplayUserImage";
 import { type SerializablePost } from "~/pages/home";
 import { type CurrentUser } from "~/pages/home";
@@ -165,7 +166,11 @@ export const DisplayPost = ({
               }
               className="relative bottom-[2px] mx-2 hover:cursor-pointer"
             >
-              <SvgThumbsUpIcon />
+              {isPostLikedByUser ? (
+                <SvgThumbsUpIconFill />
+              ) : (
+                <SvgThumbsUpIcon />
+              )}
             </div>
             {likeCounter}
           </div>
