@@ -39,27 +39,6 @@ export const DisplayPost = ({
 
   // Handle states for number of comments received and number of comments that needs to be fetched
 
-  const [comment, setComment] = useState("");
-  const [postComments, setPostComments] = useState<PostComment[]>([]);
-
-  async function handleComments() {
-    const fetchedComments = await refetchComments();
-    if (fetchedComments.data) {
-      const dbComments = fetchedComments.data.map((comment) => {
-        return { postId: postData.id, ...comment };
-      });
-      setPostComments(dbComments);
-    }
-  }
-
-  const { refetch: refetchComments, isFetching: isCommentsFetching } =
-    api.post.getPostComments.useQuery(
-      { postID: postData.id },
-      { enabled: false }
-    );
-  const { mutate: addComment, isLoading: isAddingComment } =
-    api.post.addCommentToPost.useMutation();
-
   const {
     id: postID,
     createdAt,
@@ -76,9 +55,20 @@ export const DisplayPost = ({
     authorTags,
   } = postData;
 
+  const [comment, setComment] = useState("");
+  const [postComments, setPostComments] = useState<PostComment[]>([]);
   const [likeCounter, setLikeCounter] = useState(likeCount);
   const [commentCounter, setCommentCounter] = useState(commentCount);
   const [isPostLikedByUser, setIsPostLikedByUser] = useState(isUserLikePost);
+
+  const { refetch: refetchComments, isFetching: isCommentsFetching } =
+    api.post.getPostComments.useQuery(
+      { postID: postData.id },
+      { enabled: false }
+    );
+
+  const { mutate: addComment, isLoading: isAddingComment } =
+    api.post.addCommentToPost.useMutation();
 
   const { mutate: userLikePostMutate, isLoading: isUserLikePostLoading } =
     api.post.likeDislikePost.useMutation({
@@ -89,6 +79,16 @@ export const DisplayPost = ({
           : setLikeCounter(likeCounter - 1);
       },
     });
+
+  async function handleComments() {
+    const fetchedComments = await refetchComments();
+    if (fetchedComments.data) {
+      const dbComments = fetchedComments.data.map((comment) => {
+        return { postId: postData.id, ...comment };
+      });
+      setPostComments(dbComments);
+    }
+  }
 
   return (
     <div
@@ -186,7 +186,7 @@ export const DisplayPost = ({
       <div className={`relative border-t-2 border-light-grey`} />
       <div className="flex rounded-lg bg-white p-3">
         <div>
-          <DisplayUserImage sizeOption="small" />
+          <DisplayUserImage userImage={currentUser.image} sizeOption="small" />
         </div>
         <input
           className="ml-3 w-full rounded-full border-2 pl-5 pr-6"
