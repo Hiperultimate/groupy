@@ -83,7 +83,7 @@ export const postRouter = createTRPCRouter({
     }),
 
   addCommentToPost: protectedProcedure
-    .input(z.object({ postId: z.string(), addComment: z.string() }))
+    .input(z.object({ postId: z.string(), addComment: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       if (input.addComment.length > 300) {
         throw new TRPCError({

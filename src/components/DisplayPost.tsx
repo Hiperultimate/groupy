@@ -207,7 +207,7 @@ export const DisplayPost = ({
             if (e.repeat) {
               return;
             }
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && comment.length > 0) {
               addComment(
                 { postId: postID, addComment: comment },
                 {
