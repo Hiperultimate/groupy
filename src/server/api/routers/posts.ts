@@ -32,6 +32,7 @@ export async function getPosts(prisma: PrismaClient, session: Session) {
   });
 
   const finalPostData = postData.map((post) => {
+    const currentUserLikePost = post.likedBy.some(checkUser => checkUser.id === session.user.id);
     const likeCount = post.likedBy.length;
     const commentCount = post.comments.length;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -39,6 +40,7 @@ export async function getPosts(prisma: PrismaClient, session: Session) {
     const editedPost = {
       ...requiredFields,
       likeCount: likeCount,
+      isUserLikePost: currentUserLikePost,
       commentCount: commentCount,
     };
     return editedPost;

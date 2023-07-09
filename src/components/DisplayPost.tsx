@@ -52,13 +52,11 @@ export const DisplayPost = ({
     }
   }
 
-  const {
-    refetch: refetchComments,
-    isFetching: isCommentsFetching,
-  } = api.post.getPostComments.useQuery(
-    { postID: postData.id },
-    { enabled: false }
-  );
+  const { refetch: refetchComments, isFetching: isCommentsFetching } =
+    api.post.getPostComments.useQuery(
+      { postID: postData.id },
+      { enabled: false }
+    );
   const { mutate: addComment, isLoading: isAddingComment } =
     api.post.addCommentToPost.useMutation();
 
@@ -69,6 +67,7 @@ export const DisplayPost = ({
     image: postImage,
     tags: postTags,
     authorId, // Will be used to redirect to author specific page
+    isUserLikePost,
     likeCount,
     commentCount,
     authorName,
@@ -79,6 +78,18 @@ export const DisplayPost = ({
 
   const [likeCounter, setLikeCounter] = useState(likeCount);
   const [commentCounter, setCommentCounter] = useState(commentCount);
+  const [isPostLikedByUser, setIsPostLikedByUser] = useState(isUserLikePost);
+
+  const { mutate: userLikePostMutate, isLoading: isUserLikePostLoading } =
+    api.post.likeDislikePost.useMutation({
+      onSuccess: ({ isPostLiked }) => {
+        setIsPostLikedByUser(isPostLiked);
+        isPostLiked
+          ? setLikeCounter(likeCounter + 1)
+          : setLikeCounter(likeCounter - 1);
+      },
+    });
+
   return (
     <div
       key={postID}
@@ -148,7 +159,12 @@ export const DisplayPost = ({
       <div className="mx-4 my-6 flex justify-between text-grey">
         <div className="flex gap-11 ">
           <div className="flex">
-            <div className="relative bottom-[2px] mx-2">
+            <div
+              onClick={() =>
+                !isUserLikePostLoading && userLikePostMutate({ postId: postID })
+              }
+              className="relative bottom-[2px] mx-2 hover:cursor-pointer"
+            >
               <SvgThumbsUpIcon />
             </div>
             {likeCounter}

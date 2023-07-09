@@ -31,6 +31,7 @@ export type SerializablePost = {
   updatedAt: string;
   tags: Tag[];
   likeCount: number;
+  isUserLikePost: boolean;
   commentCount: number;
   authorName: string;
   authorDOB: string;
