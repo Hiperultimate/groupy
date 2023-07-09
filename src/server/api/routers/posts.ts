@@ -54,11 +54,15 @@ export const postRouter = createTRPCRouter({
     return getPosts(ctx.prisma, ctx.session);
   }),
   getPostComments: protectedProcedure
-    .input(z.object({ postID: z.string() }))
+    .input(z.object({ postID: z.string(), takenComments: z.number() }))
     .query(async ({ ctx, input }) => {
+      const commentsToTake = 5;
       const allComments = await ctx.prisma.comment.findMany({
         where: { postId: input.postID },
         orderBy: { createdAt: "desc" },
+        skip: input.takenComments,
+        take: commentsToTake,
+        
       });
       const commentWithUserData = await Promise.all(
         allComments.map(async (comment) => {

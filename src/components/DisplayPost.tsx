@@ -64,7 +64,7 @@ export const DisplayPost = ({
 
   const { refetch: refetchComments, isFetching: isCommentsFetching } =
     api.post.getPostComments.useQuery(
-      { postID: postData.id },
+      { postID: postData.id, takenComments: postComments.length },
       { enabled: false }
     );
 
@@ -87,7 +87,7 @@ export const DisplayPost = ({
       const dbComments = fetchedComments.data.map((comment) => {
         return { postId: postData.id, ...comment };
       });
-      setPostComments(dbComments);
+      setPostComments([...postComments, ...dbComments]);
     }
   }
 
