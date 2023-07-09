@@ -61,6 +61,7 @@ export const DisplayPost = ({
   const [likeCounter, setLikeCounter] = useState(likeCount);
   const [commentCounter, setCommentCounter] = useState(commentCount);
   const [isPostLikedByUser, setIsPostLikedByUser] = useState(isUserLikePost);
+  const [loadMoreComments, setLoadMoreComments] = useState(true);
 
   const { refetch: refetchComments, isFetching: isCommentsFetching } =
     api.post.getPostComments.useQuery(
@@ -83,6 +84,10 @@ export const DisplayPost = ({
 
   async function handleComments() {
     const fetchedComments = await refetchComments();
+    if (fetchedComments.data && fetchedComments.data.length === 0) {
+      setLoadMoreComments(false);
+      return;
+    }
     if (fetchedComments.data) {
       const dbComments = fetchedComments.data.map((comment) => {
         return { postId: postData.id, ...comment };
@@ -274,7 +279,7 @@ export const DisplayPost = ({
         onClick={() => void handleComments()}
         className="rounded-b-lg py-4 text-grey transition duration-300 ease-in-out hover:cursor-pointer hover:bg-light-grey hover:text-white disabled:bg-loading-grey disabled:text-white"
       >
-        Load Comments
+        {loadMoreComments ? "Load Comments" : "No Comments To Load"}
       </button>
     </div>
   );
