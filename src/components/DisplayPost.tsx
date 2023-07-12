@@ -8,6 +8,7 @@ import { type SerializablePost } from "~/pages/home";
 import { type CurrentUser } from "~/pages/home";
 import { api } from "~/utils/api";
 import { useEffect, useState } from "react";
+import { type Tag } from "@prisma/client";
 
 type PostComment = {
   id: string;
@@ -19,7 +20,27 @@ type PostComment = {
   postId: string;
 };
 
-function convertPostDateType(post: SerializablePost) {
+export type FullPostType = {
+  id: string;
+  content: string;
+  image: string | null;
+  authorId: string;
+  createdAt: string;
+  updatedAt: string;
+  tags: Tag[];
+  likeCount: number;
+  isUserLikePost: boolean;
+  commentCount: number;
+  authorName: string;
+  authorDOB: string;
+  authorEmail: string;
+  authorAtTag: string | null;
+  authorDescription: string | null;
+  authorProfilePicture: string | null;
+  authorTags: Tag[];
+};
+
+function convertPostDateType(post: FullPostType) {
   const convertedCreatedAt = new Date(post.createdAt);
   const convertedUpdatedAt = new Date(post.updatedAt);
   const convertedAuthorDOB = new Date(post.authorDOB);
@@ -88,13 +109,10 @@ export const DisplayPost = ({
     authorTags: authorInfo.tags,
   };
 
-  const convertedCreatedAt = postData.createdAt.toString();
-  const convertedUpdatedAt = postData.updatedAt.toString();
   const finalPostData = convertPostDateType({
     ...postData,
     ...filteredAuthorData,
-    createdAt: convertedCreatedAt,
-    updatedAt: convertedUpdatedAt,
+
   });
 
   const {

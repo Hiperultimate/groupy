@@ -4,7 +4,6 @@ import {
   type NextPage,
 } from "next";
 
-import { getUserByID } from "~/server/api/routers/account";
 import { getPosts } from "~/server/api/routers/posts";
 
 import { prisma } from "~/server/db";
@@ -12,7 +11,7 @@ import { getServerAuthSession } from "../server/auth";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
@@ -21,6 +20,7 @@ import FriendList from "~/components/FriendList";
 import UserDetails from "~/components/UserDetails";
 import { type Tag } from "@prisma/client";
 import { type Session } from "next-auth";
+import { api } from "~/utils/api";
 
 export type SerializablePost = {
   id: string;
@@ -33,13 +33,6 @@ export type SerializablePost = {
   likeCount: number;
   isUserLikePost: boolean;
   commentCount: number;
-  authorName: string;
-  authorDOB: string;
-  authorEmail: string;
-  authorAtTag: string | null;
-  authorDescription: string | null;
-  authorProfilePicture: string | null;
-  authorTags: Tag[];
 };
 
 type ServerSideProps = {
@@ -66,31 +59,15 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
   }
 
   const posts = await getPosts(prisma, session, 0); // Getting the first X amount of posts
-  const serializablePosts = await Promise.all(
-    posts.map(async (post) => {
-      const authorID = post.authorId;
-      const authorInfo = await getUserByID(prisma, session, authorID);
-      const filteredAuthorData = {
-        authorName: authorInfo.name,
-        authorDOB: authorInfo.dateOfBirth.toString(),
-        authorEmail: authorInfo.email,
-        authorAtTag: authorInfo.atTag,
-        authorDescription: authorInfo.description,
-        authorProfilePicture: authorInfo.image,
-        authorTags: authorInfo.tags,
-      };
-
-      const convertedCreatedAt = post.createdAt.toString();
-      const convertedUpdatedAt = post.updatedAt.toString();
-      return {
-        ...post,
-        ...filteredAuthorData,
-        createdAt: convertedCreatedAt,
-        updatedAt: convertedUpdatedAt,
-      };
-    })
-  );
-
+  const serializablePosts = posts.map((post) => {
+    const convertedCreatedAt = post.createdAt.toString();
+    const convertedUpdatedAt = post.updatedAt.toString();
+    return {
+      ...post,
+      createdAt: convertedCreatedAt,
+      updatedAt: convertedUpdatedAt,
+    };
+  });
   return {
     props: { posts: serializablePosts },
   };
@@ -101,12 +78,39 @@ const Home: NextPage<
 > = ({ posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: userSession = null } = useSession();
+  const [displayPosts, setDisplayPosts] = useState<SerializablePost[]>([...posts]);
 
   useEffect(() => {
     if (!userSession) {
       router.push("/");
     }
   }, [userSession, router]);
+
+
+  const { refetch: refetchPosts, isFetching: isPostFetching } =
+    api.post.getPosts.useQuery(
+      { takenPosts: displayPosts.length },
+      { enabled: false }
+    );
+
+  async function handlePostFetching() {
+    const getNewPosts = await refetchPosts();
+    if (!getNewPosts.data) {
+      throw Error("Error occured while fetching posts.");
+    }
+
+    const serializablePosts = getNewPosts.data.map( (post) => {
+      const convertedCreatedAt = post.createdAt.toString();
+      const convertedUpdatedAt = post.updatedAt.toString();
+      return {
+        ...post,
+        createdAt: convertedCreatedAt,
+        updatedAt: convertedUpdatedAt,
+      };
+    })
+
+    setDisplayPosts([...displayPosts, ...serializablePosts]);
+  }
 
   if (!userSession) {
     return <>Error Occured. No user found!</>;
@@ -122,7 +126,7 @@ const Home: NextPage<
             </div>
             <div className="min-w-[545px] lg:w-[825px]">
               <CreatePostInput userImage={userSession.user.image} />
-              {posts.map((post) => {
+              {displayPosts.map((post) => {
                 return (
                   <DisplayPost
                     key={post.id}
@@ -132,6 +136,10 @@ const Home: NextPage<
                 );
               })}
             </div>
+            {/* Change this button for onscroll loading */}
+            <button onClick={() => void handlePostFetching()}>
+              Get new posts (Temp)
+            </button>
             <FriendList />
           </main>
         </div>
