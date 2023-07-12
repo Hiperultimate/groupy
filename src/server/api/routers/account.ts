@@ -162,4 +162,11 @@ export const accountRouter = createTRPCRouter({
         result: result.email,
       };
     }),
+
+  getUserById: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userData = await getUserByID(ctx.prisma, ctx.session, input.userId);
+      return userData;
+    }),
 });

@@ -65,30 +65,31 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
     };
   }
 
-  const posts = await getPosts(prisma, session);
+  const posts = await getPosts(prisma, session, 0); // Getting the first X amount of posts
+  const serializablePosts = await Promise.all(
+    posts.map(async (post) => {
+      const authorID = post.authorId;
+      const authorInfo = await getUserByID(prisma, session, authorID);
+      const filteredAuthorData = {
+        authorName: authorInfo.name,
+        authorDOB: authorInfo.dateOfBirth.toString(),
+        authorEmail: authorInfo.email,
+        authorAtTag: authorInfo.atTag,
+        authorDescription: authorInfo.description,
+        authorProfilePicture: authorInfo.image,
+        authorTags: authorInfo.tags,
+      };
 
-  const serializablePosts = await Promise.all(posts.map(async (post) => {
-    const authorID = post.authorId;
-    const authorInfo = await getUserByID(prisma, session, authorID);
-    const filteredAuthorData = {
-      authorName: authorInfo.name,
-      authorDOB: authorInfo.dateOfBirth.toString(),
-      authorEmail: authorInfo.email,
-      authorAtTag: authorInfo.atTag,
-      authorDescription: authorInfo.description,
-      authorProfilePicture: authorInfo.image,
-      authorTags: authorInfo.tags,
-    };
-
-    const convertedCreatedAt = post.createdAt.toString();
-    const convertedUpdatedAt = post.updatedAt.toString();
-    return {
-      ...post,
-      ...filteredAuthorData,
-      createdAt: convertedCreatedAt,
-      updatedAt: convertedUpdatedAt,
-    };
-  }));
+      const convertedCreatedAt = post.createdAt.toString();
+      const convertedUpdatedAt = post.updatedAt.toString();
+      return {
+        ...post,
+        ...filteredAuthorData,
+        createdAt: convertedCreatedAt,
+        updatedAt: convertedUpdatedAt,
+      };
+    })
+  );
 
   return {
     props: { posts: serializablePosts },
@@ -111,20 +112,6 @@ const Home: NextPage<
     return <>Error Occured. No user found!</>;
   }
 
-  // Converting string dates to date type
-  const postData = posts.map((post) => {
-    const convertedCreatedAt = new Date(post.createdAt);
-    const convertedUpdatedAt = new Date(post.updatedAt);
-    const convertedAuthorDOB = new Date(post.authorDOB);
-
-    return {
-      ...post,
-      createdAt: convertedCreatedAt,
-      updatedAt: convertedUpdatedAt,
-      authorDOB: convertedAuthorDOB
-    };
-  });
-
   return (
     <>
       <BackgroundContainer>
@@ -135,8 +122,14 @@ const Home: NextPage<
             </div>
             <div className="min-w-[545px] lg:w-[825px]">
               <CreatePostInput userImage={userSession.user.image} />
-              {postData.map((post) => {
-                return <DisplayPost key={post.id} postData={post} currentUser={userSession.user as CurrentUser}/>;
+              {posts.map((post) => {
+                return (
+                  <DisplayPost
+                    key={post.id}
+                    postData={post}
+                    currentUser={userSession.user as CurrentUser}
+                  />
+                );
               })}
             </div>
             <FriendList />

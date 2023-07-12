@@ -7,12 +7,7 @@ import DisplayUserImage from "./DisplayUserImage";
 import { type SerializablePost } from "~/pages/home";
 import { type CurrentUser } from "~/pages/home";
 import { api } from "~/utils/api";
-import { useState } from "react";
-
-type DeserializablePost = Omit<
-  SerializablePost,
-  "createdAt" | "updatedAt" | "authorDOB"
-> & { createdAt: Date; updatedAt: Date; authorDOB: Date };
+import { useEffect, useState } from "react";
 
 type PostComment = {
   id: string;
@@ -24,44 +19,42 @@ type PostComment = {
   postId: string;
 };
 
+function convertPostDateType(post: SerializablePost) {
+  const convertedCreatedAt = new Date(post.createdAt);
+  const convertedUpdatedAt = new Date(post.updatedAt);
+  const convertedAuthorDOB = new Date(post.authorDOB);
+
+  return {
+    ...post,
+    createdAt: convertedCreatedAt,
+    updatedAt: convertedUpdatedAt,
+    authorDOB: convertedAuthorDOB,
+  };
+}
+
 export const DisplayPost = ({
   postData,
   currentUser,
 }: {
-  postData: DeserializablePost;
+  postData: SerializablePost;
   currentUser: CurrentUser;
 }) => {
-  // TODO:
-  // From author ID, get all the required details about the author to add in the post
-  // From UserLikedPost table, use id to get all the number of users who liked the post
-  // From id fetch comments from posts and keep a counter of all comments for the post
-  // From id fetch comments from posts, on Comment btn click fetch comments and display 10 comments (add fetch more)
-  // Add suspense to while loading images
-
-  // Handle states for number of comments received and number of comments that needs to be fetched
-
-  const {
-    id: postID,
-    createdAt,
-    content: postContent,
-    image: postImage,
-    tags: postTags,
-    authorId, // Will be used to redirect to author specific page
-    isUserLikePost,
-    likeCount,
-    commentCount,
-    authorName,
-    authorAtTag,
-    authorProfilePicture,
-    authorTags,
-  } = postData;
 
   const [comment, setComment] = useState("");
   const [postComments, setPostComments] = useState<PostComment[]>([]);
-  const [likeCounter, setLikeCounter] = useState(likeCount);
-  const [commentCounter, setCommentCounter] = useState(commentCount);
-  const [isPostLikedByUser, setIsPostLikedByUser] = useState(isUserLikePost);
+  const [likeCounter, setLikeCounter] = useState(0);
+  const [commentCounter, setCommentCounter] = useState(0);
+  const [isPostLikedByUser, setIsPostLikedByUser] = useState(false);
   const [loadMoreComments, setLoadMoreComments] = useState(true);
+
+  useEffect(() => {
+    setLikeCounter(postData.likeCount);
+    setCommentCounter(postData.commentCount);
+    setIsPostLikedByUser(postData.isUserLikePost);
+  }, [postData]);
+
+  const { data: authorInfo, isFetching: isUserFetching } =
+    api.account.getUserById.useQuery({ userId: postData.authorId });
 
   const { refetch: refetchComments, isFetching: isCommentsFetching } =
     api.post.getPostComments.useQuery(
@@ -81,6 +74,41 @@ export const DisplayPost = ({
           : setLikeCounter(likeCounter - 1);
       },
     });
+
+  // Send custom Error page instead
+  if (!authorInfo) return <div>Error Occured</div>;
+
+  const filteredAuthorData = {
+    authorName: authorInfo.name,
+    authorDOB: authorInfo.dateOfBirth.toString(),
+    authorEmail: authorInfo.email,
+    authorAtTag: authorInfo.atTag,
+    authorDescription: authorInfo.description,
+    authorProfilePicture: authorInfo.image,
+    authorTags: authorInfo.tags,
+  };
+
+  const convertedCreatedAt = postData.createdAt.toString();
+  const convertedUpdatedAt = postData.updatedAt.toString();
+  const finalPostData = convertPostDateType({
+    ...postData,
+    ...filteredAuthorData,
+    createdAt: convertedCreatedAt,
+    updatedAt: convertedUpdatedAt,
+  });
+
+  const {
+    id: postID,
+    createdAt,
+    content: postContent,
+    image: postImage,
+    tags: postTags,
+    authorId, // Will be used to redirect to author specific page
+    authorName,
+    authorAtTag,
+    authorProfilePicture,
+    authorTags,
+  } = finalPostData;
 
   async function handleComments() {
     const fetchedComments = await refetchComments();
@@ -117,7 +145,6 @@ export const DisplayPost = ({
             <div className="mx-3 mt-3 text-grey">
               {createdAt.toLocaleDateString()}
             </div>
-            {/* <div className="mx-3 mt-3 text-grey">June 22</div> */}
           </div>
           <div className="ml-3 flex flex-wrap">
             {authorTags.map((tag) => {
@@ -246,7 +273,6 @@ export const DisplayPost = ({
           postComments.map((comment) => {
             return (
               <div key={comment.id} className="flex">
-                {/* Use map to render multiple comments here */}
                 <div className="px-3 py-2">
                   <DisplayUserImage
                     userImage={comment.authorImage}

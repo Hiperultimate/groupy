@@ -12,7 +12,8 @@ import { getUserByID } from "./account";
  * @param session
  * @returns [{post} * 10] array of 10 latest posts
  */
-export async function getPosts(prisma: PrismaClient, session: Session) {
+export async function getPosts(prisma: PrismaClient, session: Session, takenPosts: number ) {
+  const numberOfPosts = 5 as const; // Change it to 10 later on
   if (!session) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -20,7 +21,8 @@ export async function getPosts(prisma: PrismaClient, session: Session) {
     });
   }
   const postData = await prisma.post.findMany({
-    take: 10,
+    take: numberOfPosts,
+    skip: takenPosts,
     orderBy: {
       createdAt: "desc",
     },
@@ -32,7 +34,7 @@ export async function getPosts(prisma: PrismaClient, session: Session) {
   });
 
   const finalPostData = postData.map((post) => {
-    const currentUserLikePost = post.likedBy.some(checkUser => checkUser.id === session.user.id);
+    const currentUserLikePost = post.likedBy.some(checkUser => checkUser.userId === session.user.id);
     const likeCount = post.likedBy.length;
     const commentCount = post.comments.length;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -50,8 +52,8 @@ export async function getPosts(prisma: PrismaClient, session: Session) {
 }
 
 export const postRouter = createTRPCRouter({
-  getPosts: protectedProcedure.query(({ ctx }) => {
-    return getPosts(ctx.prisma, ctx.session);
+  getPosts: protectedProcedure.input(z.object({takenPosts: z.number() })).query(({ ctx, input }) => {
+    return getPosts(ctx.prisma, ctx.session, input.takenPosts);
   }),
   getPostComments: protectedProcedure
     .input(z.object({ postID: z.string(), takenComments: z.number() }))
