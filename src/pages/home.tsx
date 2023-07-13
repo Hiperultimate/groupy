@@ -78,14 +78,9 @@ const Home: NextPage<
 > = ({ posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: userSession = null } = useSession();
-  const [displayPosts, setDisplayPosts] = useState<SerializablePost[]>([...posts]);
-
-  useEffect(() => {
-    if (!userSession) {
-      router.push("/");
-    }
-  }, [userSession, router]);
-
+  const [displayPosts, setDisplayPosts] = useState<SerializablePost[]>([
+    ...posts,
+  ]);
 
   const { refetch: refetchPosts, isFetching: isPostFetching } =
     api.post.getPosts.useQuery(
@@ -93,24 +88,56 @@ const Home: NextPage<
       { enabled: false }
     );
 
-  async function handlePostFetching() {
-    const getNewPosts = await refetchPosts();
-    if (!getNewPosts.data) {
-      throw Error("Error occured while fetching posts.");
+  useEffect(() => {
+    if (!userSession) {
+      router.push("/");
+    }
+  }, [userSession, router]);
+
+  useEffect(() => {
+    async function postFetching() {
+      const getNewPosts = await refetchPosts();
+      if (!getNewPosts.data) {
+        throw Error("Error occured while fetching posts.");
+      }
+
+      const serializablePosts = getNewPosts.data.map((post) => {
+        const convertedCreatedAt = post.createdAt.toString();
+        const convertedUpdatedAt = post.updatedAt.toString();
+        return {
+          ...post,
+          createdAt: convertedCreatedAt,
+          updatedAt: convertedUpdatedAt,
+        };
+      });
+
+      setDisplayPosts([...displayPosts, ...serializablePosts]);
     }
 
-    const serializablePosts = getNewPosts.data.map( (post) => {
-      const convertedCreatedAt = post.createdAt.toString();
-      const convertedUpdatedAt = post.updatedAt.toString();
-      return {
-        ...post,
-        createdAt: convertedCreatedAt,
-        updatedAt: convertedUpdatedAt,
-      };
-    })
+    function onScroll() {
+      const isScrollAtBottom =
+        document.documentElement.clientHeight + window.scrollY >=
+        (document.documentElement.scrollHeight ||
+          document.documentElement.clientHeight);
 
-    setDisplayPosts([...displayPosts, ...serializablePosts]);
-  }
+      if (!isPostFetching && isScrollAtBottom) {
+        (async () => {
+          await postFetching();
+        })().catch((error) => {
+          console.log(error);
+        });
+      }
+    }
+
+    if (window) {
+      window.addEventListener("scroll", onScroll);
+
+      // Clean-up
+      return () => {
+        window.removeEventListener("scroll", onScroll);
+      };
+    }
+  }, [displayPosts, setDisplayPosts, isPostFetching, refetchPosts]);
 
   if (!userSession) {
     return <>Error Occured. No user found!</>;
@@ -136,10 +163,6 @@ const Home: NextPage<
                 );
               })}
             </div>
-            {/* Change this button for onscroll loading */}
-            <button onClick={() => void handlePostFetching()}>
-              Get new posts (Temp)
-            </button>
             <FriendList />
           </main>
         </div>

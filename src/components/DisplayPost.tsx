@@ -60,7 +60,6 @@ export const DisplayPost = ({
   postData: SerializablePost;
   currentUser: CurrentUser;
 }) => {
-
   const [comment, setComment] = useState("");
   const [postComments, setPostComments] = useState<PostComment[]>([]);
   const [likeCounter, setLikeCounter] = useState(0);
@@ -112,7 +111,6 @@ export const DisplayPost = ({
   const finalPostData = convertPostDateType({
     ...postData,
     ...filteredAuthorData,
-
   });
 
   const {
