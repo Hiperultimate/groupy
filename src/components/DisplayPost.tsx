@@ -9,6 +9,7 @@ import { type CurrentUser } from "~/pages/home";
 import { api } from "~/utils/api";
 import { useEffect, useState } from "react";
 import { type Tag } from "@prisma/client";
+import { Discuss } from "react-loader-spinner";
 
 type PostComment = {
   id: string;
@@ -96,7 +97,20 @@ export const DisplayPost = ({
     });
 
   // Send custom Error page instead
-  if (!authorInfo) return <div>Error Occured</div>;
+  if (!authorInfo)
+    return (
+      <div className="h-60 bg-white flex m-2 justify-center items-center rounded-lg shadow-lg">
+        <Discuss
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="comment-loading"
+          wrapperStyle={{}}
+          wrapperClass="text-green"
+          colors={['#ff853e', '#ff853e']}
+        />
+      </div>
+    );
 
   const filteredAuthorData = {
     authorName: authorInfo.name,
