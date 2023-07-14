@@ -14,12 +14,27 @@ import Image from "next/image";
 type TScrollMark = { [key: string]: string | ReactElement };
 
 function CreatePostForm() {
+  const [content, setContent] = useState("");
+  const [isGroup, setIsGroup] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [ageSpectrum, setAgeSpectrum] = useState<{
+    minAge: number;
+    maxAge: number;
+  }>({ minAge: 15, maxAge: 30 });
+  const [groupSize, setGroupSize] = useState(1);
+  const [isInstantJoin, setIsInstantJoin] = useState(false);
   const [userImage, setUserImage] = useState<string | undefined>();
   const [userImageFile, setUserImageFile] = useState<File | null>(null);
-  const [userImageError, setUserImageError] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
 
   // These states are temporary until frontend is completed.
-  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [contentError, setContentError] = useState<string[]>([]);
+  const [isGroupError, setIsGroupError] = useState<string[]>([]);
+  const [groupNameError, setGroupNameError] = useState<string[]>([]);
+  const [ageSpectrumError, setAgeSpectrumError] = useState<string[]>([]);
+  const [groupSizeError, setGroupSizeError] = useState<string[]>([]);
+  const [isInstantJoinError, setIsInstantJoinError] = useState<string[]>([]);
+  const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
 
   // UI states
@@ -69,12 +84,11 @@ function CreatePostForm() {
           placeholder="What do you want to talk about?"
           rows={4}
           className="rounded-lg border-2 px-4 py-3"
-          value={""}
-          //   value={description}
-          //   onChange={(e) => {
-          //     setDescription(e.target.value);
-          //     setDescriptionError([]);
-          //   }}
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setContentError([]);
+          }}
         />
         {/* <InputErrorText errorArray={descriptionError} /> */}
       </div>
@@ -100,12 +114,30 @@ function CreatePostForm() {
         <div className="pr-2">Create a group: </div>
         <div className="flex gap-4">
           <div>
-            <input type="radio" value="false" className="relative top-[1px]" />
-            <span className="pl-1">No</span>
+            <input
+              id="group_no"
+              type="radio"
+              checked={isGroup === false}
+              className="relative top-[1px] hover:cursor-pointer"
+              onClick={() => {
+                setIsGroup(false);
+              }}
+            />
+            <label htmlFor="group_no" className="pl-1 hover:cursor-pointer">
+              No
+            </label>
           </div>
           <div>
-            <input type="radio" value="true" className="relative top-[1px]" />
-            <span className="pl-1">Yes</span>
+            <input
+              id="group_yes"
+              type="radio"
+              checked={isGroup === true}
+              className="relative top-[1px] hover:cursor-pointer"
+              onClick={() => setIsGroup(true)}
+            />
+            <label htmlFor="group_yes" className="pl-1 hover:cursor-pointer">
+              Yes
+            </label>
           </div>
         </div>
       </div>
@@ -113,7 +145,18 @@ function CreatePostForm() {
       <div className="rounded-lg border-2 border-dashed border-light-grey p-6">
         <div className="my-2 items-center">
           <span className="pr-2">Group Name:</span>
-          <InputField isRequired={true} placeholder="Name of your group" />
+          <InputField
+            isRequired={true}
+            placeholder="Name of your group"
+            handleState={{
+              inputState: groupName,
+              changeInputState: setGroupName,
+            }}
+            handleErrorState={{
+              inputState: groupNameError,
+              changeInputState: setGroupNameError,
+            }}
+          />
         </div>
         <div className="my-2">
           <span>
@@ -132,12 +175,18 @@ function CreatePostForm() {
               max={160}
               onChange={(ageArr) => {
                 if (Array.isArray(ageArr)) {
-                  const startAge = ageArr[0] as number;
-                  const endAge = ageArr[1] as number;
-                  const newMark: TScrollMark = scrollAgeMarkScale;
-                  newMark[startAge] = `${startAge}`;
-                  newMark[endAge] = `${endAge}`;
-                  setScrollAgeMark(newMark);
+                  const startAge = ageArr[0];
+                  const endAge = ageArr[1];
+                  if (
+                    typeof startAge === "number" &&
+                    typeof endAge === "number"
+                  ) {
+                    const newMark: TScrollMark = scrollAgeMarkScale;
+                    newMark[startAge] = `${startAge}`;
+                    newMark[endAge] = `${endAge}`;
+                    setScrollAgeMark(newMark);
+                    setAgeSpectrum({ minAge: startAge, maxAge: endAge });
+                  }
                 }
               }}
               defaultValue={[15, 30]}
@@ -165,10 +214,13 @@ function CreatePostForm() {
               max={100}
               onChange={(ageArr) => {
                 if (Number.isInteger(ageArr)) {
-                  const peopleAmtMost = ageArr as number;
-                  const newMark: TScrollMark = scrollGroupMarkScale;
-                  newMark[peopleAmtMost] = `${peopleAmtMost}`;
-                  setGroupMark(newMark);
+                  const peopleAmtMost = ageArr;
+                  if (typeof peopleAmtMost === "number") {
+                    const newMark: TScrollMark = scrollGroupMarkScale;
+                    newMark[peopleAmtMost] = `${peopleAmtMost}`;
+                    setGroupMark(newMark);
+                    setGroupSize(peopleAmtMost);
+                  }
                 }
               }}
               defaultValue={5}
@@ -186,15 +238,31 @@ function CreatePostForm() {
           <div className="flex gap-4">
             <div>
               <input
+                id="join_no"
                 type="radio"
-                value="false"
-                className="relative top-[1px]"
+                checked={isInstantJoin === false}
+                className="relative top-[1px] hover:cursor-pointer"
+                onClick={() => {
+                  setIsInstantJoin(false);
+                }}
               />
-              <span className="pl-1">No</span>
+              <label htmlFor="join_no" className="pl-1 hover:cursor-pointer">
+                No
+              </label>
             </div>
             <div>
-              <input type="radio" value="true" className="relative top-[1px]" />
-              <span className="pl-1">Yes</span>
+              <input
+                id="join_yes"
+                type="radio"
+                checked={isInstantJoin === true}
+                className="relative top-[1px] hover:cursor-pointer"
+                onClick={() => {
+                  setIsInstantJoin(true);
+                }}
+              />
+              <label htmlFor="join_yes" className="pl-1 hover:cursor-pointer">
+                Yes
+              </label>
             </div>
           </div>
         </div>
