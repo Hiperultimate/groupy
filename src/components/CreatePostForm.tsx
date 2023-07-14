@@ -37,6 +37,20 @@ function CreatePostForm() {
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
 
+  function handleFormSubmit() {
+    console.log({
+      content,
+      isGroup,
+      groupName,
+      ageSpectrum,
+      groupSize,
+      isInstantJoin,
+      userImage,
+      userImageFile,
+      selectedTags,
+    });
+  }
+
   // UI states
   const scrollAgeMarkScale = {
     1: (
@@ -142,12 +156,17 @@ function CreatePostForm() {
         </div>
       </div>
 
-      <div className="rounded-lg border-2 border-dashed border-light-grey p-6">
+      <div
+        className={`rounded-lg border-2 border-dashed border-light-grey p-6 ${
+          !isGroup ? `blur-sm` : ``
+        } `}
+      >
         <div className="my-2 items-center">
           <span className="pr-2">Group Name:</span>
           <InputField
             isRequired={true}
             placeholder="Name of your group"
+            disabled={!isGroup}
             handleState={{
               inputState: groupName,
               changeInputState: setGroupName,
@@ -171,6 +190,7 @@ function CreatePostForm() {
               marks={scrollAgeMark}
               range={true}
               allowCross={false}
+              disabled={!isGroup}
               min={1}
               max={160}
               onChange={(ageArr) => {
@@ -212,6 +232,7 @@ function CreatePostForm() {
               marks={groupMark}
               min={1}
               max={100}
+              disabled={!isGroup}
               onChange={(ageArr) => {
                 if (Number.isInteger(ageArr)) {
                   const peopleAmtMost = ageArr;
@@ -242,6 +263,7 @@ function CreatePostForm() {
                 type="radio"
                 checked={isInstantJoin === false}
                 className="relative top-[1px] hover:cursor-pointer"
+                disabled={!isGroup}
                 onClick={() => {
                   setIsInstantJoin(false);
                 }}
@@ -256,6 +278,7 @@ function CreatePostForm() {
                 type="radio"
                 checked={isInstantJoin === true}
                 className="relative top-[1px] hover:cursor-pointer"
+                disabled={!isGroup}
                 onClick={() => {
                   setIsInstantJoin(true);
                 }}
@@ -287,7 +310,6 @@ function CreatePostForm() {
             </div>
           ) : (
             <Image
-              className=""
               src={userImage}
               width={0}
               height={0}
@@ -302,7 +324,7 @@ function CreatePostForm() {
       <button
         type="button"
         className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
-        // onClick={() => router.push("/sign-up")}
+        onClick={handleFormSubmit}
         // disabled={signInFetching}
       >
         Create
