@@ -14,7 +14,7 @@ export const postSchema = z
     .array(z.object({ value: z.string(), label: z.string() }))
     .min(3, { message: "You must select at least 3 tags." }),
     isGroup: z.boolean(),
-    groupName: z.string().min(1).max(25).optional(),
+    groupName: z.string().min(1).max(25).optional().or(z.literal('')),
     ageSpectrum: z.object({ minAge: z.number(), maxAge: z.number()}).optional(),
     groupSize: z.number().min(1).optional(),
     instantJoin: z.boolean().optional(),

@@ -2,14 +2,16 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useState, type ReactElement } from "react";
 
+import Image from "next/image";
+import SvgCamera from "public/SvgCamera";
+import { postSchema, type IPost } from "~/common/postSchema";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
 import HoverDisplayMessage from "./HoverDisplayMessage";
+import InputErrorText from "./InputErrorText";
 import InputField from "./InputField";
 import StyledImageInput from "./StyledImageInput";
-import SvgCamera from "public/SvgCamera";
-import Image from "next/image";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
@@ -37,18 +39,80 @@ function CreatePostForm() {
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
 
-  function handleFormSubmit() {
-    console.log({
-      content,
-      isGroup,
-      groupName,
-      ageSpectrum,
-      groupSize,
-      isInstantJoin,
-      userImage,
-      userImageFile,
-      selectedTags,
+  type FieldSetErrorMap = {
+    [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
+  };
+
+  const fieldSetErrorMap: FieldSetErrorMap = {
+    content: setContentError,
+    tags: setSelectedTagsError,
+    isGroup: setIsGroupError,
+    groupName: setGroupNameError,
+    ageSpectrum: setAgeSpectrumError,
+    groupSize: setGroupSizeError,
+    instantJoin: setIsInstantJoinError,
+    image: setUserImageError,
+  };
+
+  function postFormDataCheck() {
+    const checkDetails = postSchema.safeParse({
+      content: content,
+      tags: selectedTags,
+      isGroup: isGroup,
+      groupName: groupName,
+      ageSpectrum: ageSpectrum,
+      groupSize: groupSize,
+      instantJoin: isInstantJoin,
+      image: userImage,
     });
+
+    if (!checkDetails.success) {
+      const formatErrors = checkDetails.error.format(); // Creates objects with key value pair of all the errors
+      const fieldNames = Object.keys(formatErrors);
+      fieldNames.forEach((fieldName) => {
+        if (fieldSetErrorMap[fieldName]) {
+          const key = fieldName as keyof typeof formatErrors &
+            keyof typeof fieldSetErrorMap;
+          const setErrorStateField = fieldSetErrorMap[key];
+          const fieldError = formatErrors[key];
+          if (fieldError && "_errors" in fieldError && setErrorStateField) {
+            setErrorStateField(fieldError._errors);
+          }
+        }
+      });
+      return null;
+    } else {
+      return checkDetails.data;
+    }
+  }
+
+  const isValidFormData = (): boolean => {
+    const errorFields = [
+      contentError,
+      isGroupError,
+      groupNameError,
+      ageSpectrumError,
+      groupSizeError,
+      isInstantJoinError,
+      userImageError,
+      selectedTagsError,
+    ];
+
+    return errorFields.every((errors) => errors.length === 0);
+  };
+
+  function handleFormSubmit(e: React.SyntheticEvent) {
+    e.preventDefault();
+    console.log("Control reaching here");
+
+    const postData: IPost | null = postFormDataCheck();
+    console.log("Control post Data :" ,postData );
+
+    const isFormValid: boolean = isValidFormData();
+
+    if (postData && isFormValid){
+      console.log("Valid Form :" , postData);
+    }
   }
 
   // UI states
@@ -82,7 +146,7 @@ function CreatePostForm() {
   });
 
   return (
-    <form className="font-poppins">
+    <form className="font-poppins" onSubmit={handleFormSubmit}>
       <div className="flex items-center justify-center">
         <div className="m-2 text-3xl font-bold text-dark-blue">
           Create your post
@@ -104,7 +168,7 @@ function CreatePostForm() {
             setContentError([]);
           }}
         />
-        {/* <InputErrorText errorArray={descriptionError} /> */}
+        <InputErrorText errorArray={contentError} />
       </div>
 
       <div className="my-4">
@@ -164,7 +228,7 @@ function CreatePostForm() {
         <div className="my-2 items-center">
           <span className="pr-2">Group Name:</span>
           <InputField
-            isRequired={true}
+            isRequired={false}
             placeholder="Name of your group"
             disabled={!isGroup}
             handleState={{
@@ -322,9 +386,9 @@ function CreatePostForm() {
       </div>
 
       <button
-        type="button"
+        type="submit"
         className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
-        onClick={handleFormSubmit}
+
         // disabled={signInFetching}
       >
         Create
