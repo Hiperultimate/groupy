@@ -6,20 +6,27 @@ import {
 } from "./imageValidation";
 import { base64ToImageData } from "./imageConversion";
 
-
 export const postSchema = z
   .object({
     content: z.string().min(1).max(300),
     tags: z
-    .array(z.object({ value: z.string(), label: z.string() }))
-    .min(3, { message: "You must select at least 3 tags." }),
+      .array(z.object({ value: z.string(), label: z.string() }))
+      .min(3, { message: "You must select at least 3 tags." }),
     isGroup: z.boolean(),
-    groupName: z.string().min(1).max(25).optional().or(z.literal('')),
-    ageSpectrum: z.object({ minAge: z.number(), maxAge: z.number()}).optional(),
+    groupName: z.string().min(1).max(25).optional().or(z.literal("")),
+    ageSpectrum: z
+      .object({ minAge: z.number(), maxAge: z.number() })
+      .optional(),
     groupSize: z.number().min(1).optional(),
     instantJoin: z.boolean().optional(),
     image: z.string().optional(),
   })
+  .refine((schema) => {
+    if (schema.isGroup) {
+      return schema.groupName ? schema.groupName?.trim().length > 0 : false;
+    }
+    return true;
+  }, { message: "Group name cannot be empty", path: ["groupName"] })
   .superRefine((schema, ctx) => {
     // Image is an optional field. Skip image validation if no image is passed.
     if (schema.image !== undefined) {
