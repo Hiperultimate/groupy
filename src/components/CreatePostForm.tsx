@@ -1,6 +1,6 @@
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { useState, type ReactElement } from "react";
+import { useState, type ReactElement, type RefObject } from "react";
 
 import Image from "next/image";
 import SvgCamera from "public/SvgCamera";
@@ -10,6 +10,7 @@ import { api } from "~/utils/api";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
+import { type DialogElement } from "./CreatePostInput";
 import ErrorNotification from "./ErrorNotification";
 import HoverDisplayMessage from "./HoverDisplayMessage";
 import InputErrorText from "./InputErrorText";
@@ -18,7 +19,11 @@ import StyledImageInput from "./StyledImageInput";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
-function CreatePostForm() {
+function CreatePostForm({
+  dialogRef,
+}: {
+  dialogRef: RefObject<DialogElement>;
+}) {
   const [content, setContent] = useState("");
   const [isGroup, setIsGroup] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -127,6 +132,8 @@ function CreatePostForm() {
         onSuccess: (data) => {
           console.log("Success!");
           console.log("New post created : ", data);
+          // Add post to top of the current list
+          dialogRef.current?.close();
         },
       });
     }
@@ -411,9 +418,8 @@ function CreatePostForm() {
 
       <button
         type="submit"
-        className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
-
-        // disabled={signInFetching}
+        className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e] disabled:bg-[#ff9e3e]"
+        disabled={isCreatePostLoading}
       >
         Create
       </button>

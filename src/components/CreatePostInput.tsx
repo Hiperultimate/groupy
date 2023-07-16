@@ -3,7 +3,7 @@ import DisplayUserImage from "./DisplayUserImage";
 import CreatePostForm from "./CreatePostForm";
 import SvgCrossIcon from "public/SvgCrossIcon";
 
-interface DialogElement extends HTMLDialogElement {
+export interface DialogElement extends HTMLDialogElement {
   showModal: () => void;
   close: () => void;
   // Add any additional properties or methods specific to your dialog
@@ -47,7 +47,7 @@ const CreatePostInput = ({
           <SvgCrossIcon />
         </span>
         <div className="p-4">
-          <CreatePostForm />
+          <CreatePostForm dialogRef={dialogRef}/>
         </div>
       </dialog>
 
