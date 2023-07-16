@@ -4,10 +4,13 @@ import { useState, type ReactElement } from "react";
 
 import Image from "next/image";
 import SvgCamera from "public/SvgCamera";
+import { encodeImageToBase64 } from "~/common/imageConversion";
 import { postSchema, type IPost } from "~/common/postSchema";
+import { api } from "~/utils/api";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
+import ErrorNotification from "./ErrorNotification";
 import HoverDisplayMessage from "./HoverDisplayMessage";
 import InputErrorText from "./InputErrorText";
 import InputField from "./InputField";
@@ -38,6 +41,10 @@ function CreatePostForm() {
   const [isInstantJoinError, setIsInstantJoinError] = useState<string[]>([]);
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
+  const [serverError, setServerError] = useState<string>("");
+
+  const { mutate: createPost, isLoading: isCreatePostLoading } =
+    api.post.createPost.useMutation();
 
   type FieldSetErrorMap = {
     [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -101,17 +108,27 @@ function CreatePostForm() {
     return errorFields.every((errors) => errors.length === 0);
   };
 
-  function handleFormSubmit(e: React.SyntheticEvent) {
+  async function handleFormSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
-    console.log("Control reaching here");
 
     const postData: IPost | null = postFormDataCheck();
-    console.log("Control post Data :" ,postData );
-
     const isFormValid: boolean = isValidFormData();
 
-    if (postData && isFormValid){
-      console.log("Valid Form :" , postData);
+    if (postData && isFormValid) {
+      if (userImageFile) {
+        const base64Image = await encodeImageToBase64(userImageFile);
+        postData.image = base64Image;
+      }
+
+      createPost(postData, {
+        onError: (error) => {
+          setServerError(error.message);
+        },
+        onSuccess: (data) => {
+          console.log("Success!");
+          console.log("New post created : ", data);
+        },
+      });
     }
   }
 
@@ -146,7 +163,14 @@ function CreatePostForm() {
   });
 
   return (
-    <form className="font-poppins" onSubmit={handleFormSubmit}>
+    <form
+      className="font-poppins"
+      onSubmit={(event) => void handleFormSubmit(event)}
+    >
+      <ErrorNotification
+        errorMessage={serverError}
+        setErrorMessage={setServerError}
+      />
       <div className="flex items-center justify-center">
         <div className="m-2 text-3xl font-bold text-dark-blue">
           Create your post

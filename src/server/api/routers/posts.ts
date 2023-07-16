@@ -1,9 +1,13 @@
 import { type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { type Session } from "next-auth";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
+import { base64ToImageData } from "~/common/imageConversion";
+import { postSchema } from "~/common/postSchema";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { supabase } from "~/utils/storageBucket";
 import { getUserByID } from "./account";
 
 /**
@@ -12,7 +16,11 @@ import { getUserByID } from "./account";
  * @param session
  * @returns [{post} * 10] array of 10 latest posts
  */
-export async function getPosts(prisma: PrismaClient, session: Session, takenPosts: number ) {
+export async function getPosts(
+  prisma: PrismaClient,
+  session: Session,
+  takenPosts: number
+) {
   const numberOfPosts = 5 as const; // Change it to 10 later on
   if (!session) {
     throw new TRPCError({
@@ -34,9 +42,18 @@ export async function getPosts(prisma: PrismaClient, session: Session, takenPost
   });
 
   const finalPostData = postData.map((post) => {
-    const currentUserLikePost = post.likedBy.some(checkUser => checkUser.userId === session.user.id);
+    const currentUserLikePost = post.likedBy.some(
+      (checkUser) => checkUser.userId === session.user.id
+    );
     const likeCount = post.likedBy.length;
     const commentCount = post.comments.length;
+    if (post.image) {
+      const { data: getImageData } = supabase.storage
+        .from("images")
+        .getPublicUrl(`${post.image}`);
+
+      post.image = getImageData.publicUrl;
+    }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { likedBy, comments, ...requiredFields } = post;
     const editedPost = {
@@ -52,9 +69,11 @@ export async function getPosts(prisma: PrismaClient, session: Session, takenPost
 }
 
 export const postRouter = createTRPCRouter({
-  getPosts: protectedProcedure.input(z.object({takenPosts: z.number() })).query(({ ctx, input }) => {
-    return getPosts(ctx.prisma, ctx.session, input.takenPosts);
-  }),
+  getPosts: protectedProcedure
+    .input(z.object({ takenPosts: z.number() }))
+    .query(({ ctx, input }) => {
+      return getPosts(ctx.prisma, ctx.session, input.takenPosts);
+    }),
   getPostComments: protectedProcedure
     .input(z.object({ postID: z.string(), takenComments: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -64,7 +83,6 @@ export const postRouter = createTRPCRouter({
         orderBy: { createdAt: "desc" },
         skip: input.takenComments,
         take: commentsToTake,
-        
       });
       const commentWithUserData = await Promise.all(
         allComments.map(async (comment) => {
@@ -86,6 +104,79 @@ export const postRouter = createTRPCRouter({
         })
       );
       return commentWithUserData;
+    }),
+
+  createPost: protectedProcedure
+    .input(postSchema)
+    .mutation(async ({ input, ctx }) => {
+      // isGroup, groupName, groupSize, instantJoin fields will be used when creating group chat functionality
+      const {
+        content,
+        isGroup,
+        groupName,
+        ageSpectrum,
+        groupSize,
+        tags,
+        instantJoin,
+        image,
+      } = input;
+
+      let imageHolder = image;
+      // Image is already validated through schema validation, upload image to supabase and get url then save the url to image
+      if (image !== undefined) {
+        const { imageBuffer, imageMime, imageFormat } =
+          base64ToImageData(image);
+
+        if (!imageMime || !imageFormat) {
+          throw new TRPCError({
+            message: "Error occured while handling image",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+
+        // This successfully uploads the image to supabase storage bucket
+        const { data: getImageURL, error } = await supabase.storage
+          .from("images")
+          .upload(`postPicture/${uuidv4()}.${imageFormat}`, imageBuffer, {
+            contentType: `${imageMime}`,
+          });
+
+        if (error) {
+          throw new TRPCError({
+            message: "Error occured while generating image URL",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        } else {
+          imageHolder = getImageURL.path;
+        }
+      }
+
+      try {
+        const result = await ctx.prisma.post.create({
+          data: {
+            content,
+            tags: {
+              connectOrCreate: tags.map((tag) => ({
+                where: { name: tag.value },
+                create: { name: tag.value },
+              })),
+            },
+            authorId: ctx.session.user.id,
+            image: imageHolder,
+          },
+        });
+
+        return {
+          message: "Post created successfully",
+          status: 201,
+          result: result,
+        };
+      } catch (e) {
+        throw new TRPCError({
+          message: "Error occured while creating post, please try again.",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
     }),
 
   addCommentToPost: protectedProcedure
