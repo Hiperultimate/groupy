@@ -1,26 +1,157 @@
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { useState, type ReactElement } from "react";
+import { useState, type ReactElement, type RefObject } from "react";
 
+import Image from "next/image";
+import SvgCamera from "public/SvgCamera";
+import { encodeImageToBase64 } from "~/common/imageConversion";
+import { postSchema, type IPost } from "~/common/postSchema";
+import { api } from "~/utils/api";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
+import { type DialogElement } from "./CreatePostInput";
+import ErrorNotification from "./ErrorNotification";
 import HoverDisplayMessage from "./HoverDisplayMessage";
+import InputErrorText from "./InputErrorText";
 import InputField from "./InputField";
 import StyledImageInput from "./StyledImageInput";
-import SvgCamera from "public/SvgCamera";
-import Image from "next/image";
+import { useSetRecoilState } from "recoil";
+import { postsState } from "~/pages/home";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
-function CreatePostForm() {
+function CreatePostForm({
+  dialogRef,
+}: {
+  dialogRef: RefObject<DialogElement>;
+}) {
+  const setPosts = useSetRecoilState(postsState);
+
+  const [content, setContent] = useState("");
+  const [isGroup, setIsGroup] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [ageSpectrum, setAgeSpectrum] = useState<{
+    minAge: number;
+    maxAge: number;
+  }>({ minAge: 15, maxAge: 30 });
+  const [groupSize, setGroupSize] = useState(1);
+  const [isInstantJoin, setIsInstantJoin] = useState(false);
   const [userImage, setUserImage] = useState<string | undefined>();
   const [userImageFile, setUserImageFile] = useState<File | null>(null);
-  const [userImageError, setUserImageError] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
 
   // These states are temporary until frontend is completed.
-  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [contentError, setContentError] = useState<string[]>([]);
+  const [isGroupError, setIsGroupError] = useState<string[]>([]);
+  const [groupNameError, setGroupNameError] = useState<string[]>([]);
+  const [ageSpectrumError, setAgeSpectrumError] = useState<string[]>([]);
+  const [groupSizeError, setGroupSizeError] = useState<string[]>([]);
+  const [isInstantJoinError, setIsInstantJoinError] = useState<string[]>([]);
+  const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
+  const [serverError, setServerError] = useState<string>("");
+
+  const { mutate: createPost, isLoading: isCreatePostLoading } =
+    api.post.createPost.useMutation();
+
+  type FieldSetErrorMap = {
+    [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
+  };
+
+  const fieldSetErrorMap: FieldSetErrorMap = {
+    content: setContentError,
+    tags: setSelectedTagsError,
+    isGroup: setIsGroupError,
+    groupName: setGroupNameError,
+    ageSpectrum: setAgeSpectrumError,
+    groupSize: setGroupSizeError,
+    instantJoin: setIsInstantJoinError,
+    image: setUserImageError,
+  };
+
+  function postFormDataCheck() {
+    const checkDetails = postSchema.safeParse({
+      content: content,
+      tags: selectedTags,
+      isGroup: isGroup,
+      groupName: groupName,
+      ageSpectrum: ageSpectrum,
+      groupSize: groupSize,
+      instantJoin: isInstantJoin,
+      image: userImage,
+    });
+
+    if (!checkDetails.success) {
+      const formatErrors = checkDetails.error.format(); // Creates objects with key value pair of all the errors
+      const fieldNames = Object.keys(formatErrors);
+      fieldNames.forEach((fieldName) => {
+        if (fieldSetErrorMap[fieldName]) {
+          const key = fieldName as keyof typeof formatErrors &
+            keyof typeof fieldSetErrorMap;
+          const setErrorStateField = fieldSetErrorMap[key];
+          const fieldError = formatErrors[key];
+          if (fieldError && "_errors" in fieldError && setErrorStateField) {
+            setErrorStateField(fieldError._errors);
+          }
+        }
+      });
+      return null;
+    } else {
+      return checkDetails.data;
+    }
+  }
+
+  const isValidFormData = (): boolean => {
+    const errorFields = [
+      contentError,
+      isGroupError,
+      groupNameError,
+      ageSpectrumError,
+      groupSizeError,
+      isInstantJoinError,
+      userImageError,
+      selectedTagsError,
+    ];
+
+    return errorFields.every((errors) => errors.length === 0);
+  };
+
+  async function handleFormSubmit(e: React.SyntheticEvent) {
+    e.preventDefault();
+
+    const postData: IPost | null = postFormDataCheck();
+    const isFormValid: boolean = isValidFormData();
+
+    if (postData && isFormValid) {
+      if (userImageFile) {
+        const base64Image = await encodeImageToBase64(userImageFile);
+        postData.image = base64Image;
+      }
+
+      createPost(postData, {
+        onError: (error) => {
+          setServerError(error.message);
+        },
+        onSuccess: (data) => {
+          console.log("New post created successfully!");
+          setContent("");
+          setIsGroup(false);
+          setGroupName("");
+          setAgeSpectrum({ minAge: 15, maxAge: 30 });
+          setGroupSize(1);
+          setIsInstantJoin(false);
+          setUserImage(undefined);
+          setUserImageFile(null);
+          setSelectedTags([]);
+          setPosts((oldPosts) => {
+            return [data.result, ...oldPosts];
+          });
+          dialogRef.current?.close();
+        },
+      });
+    }
+  }
 
   // UI states
   const scrollAgeMarkScale = {
@@ -53,7 +184,14 @@ function CreatePostForm() {
   });
 
   return (
-    <form className="font-poppins">
+    <form
+      className="font-poppins"
+      onSubmit={(event) => void handleFormSubmit(event)}
+    >
+      <ErrorNotification
+        errorMessage={serverError}
+        setErrorMessage={setServerError}
+      />
       <div className="flex items-center justify-center">
         <div className="m-2 text-3xl font-bold text-dark-blue">
           Create your post
@@ -69,14 +207,13 @@ function CreatePostForm() {
           placeholder="What do you want to talk about?"
           rows={4}
           className="rounded-lg border-2 px-4 py-3"
-          value={""}
-          //   value={description}
-          //   onChange={(e) => {
-          //     setDescription(e.target.value);
-          //     setDescriptionError([]);
-          //   }}
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setContentError([]);
+          }}
         />
-        {/* <InputErrorText errorArray={descriptionError} /> */}
+        <InputErrorText errorArray={contentError} />
       </div>
 
       <div className="my-4">
@@ -100,20 +237,54 @@ function CreatePostForm() {
         <div className="pr-2">Create a group: </div>
         <div className="flex gap-4">
           <div>
-            <input type="radio" value="false" className="relative top-[1px]" />
-            <span className="pl-1">No</span>
+            <input
+              id="group_no"
+              type="radio"
+              checked={isGroup === false}
+              className="relative top-[1px] hover:cursor-pointer"
+              onClick={() => {
+                setIsGroup(false);
+              }}
+            />
+            <label htmlFor="group_no" className="pl-1 hover:cursor-pointer">
+              No
+            </label>
           </div>
           <div>
-            <input type="radio" value="true" className="relative top-[1px]" />
-            <span className="pl-1">Yes</span>
+            <input
+              id="group_yes"
+              type="radio"
+              checked={isGroup === true}
+              className="relative top-[1px] hover:cursor-pointer"
+              onClick={() => setIsGroup(true)}
+            />
+            <label htmlFor="group_yes" className="pl-1 hover:cursor-pointer">
+              Yes
+            </label>
           </div>
         </div>
       </div>
 
-      <div className="rounded-lg border-2 border-dashed border-light-grey p-6">
+      <div
+        className={`rounded-lg border-2 border-dashed border-light-grey p-6 ${
+          !isGroup ? `blur-sm` : ``
+        } `}
+      >
         <div className="my-2 items-center">
           <span className="pr-2">Group Name:</span>
-          <InputField isRequired={true} placeholder="Name of your group" />
+          <InputField
+            isRequired={false}
+            placeholder="Name of your group"
+            disabled={!isGroup}
+            handleState={{
+              inputState: groupName,
+              changeInputState: setGroupName,
+            }}
+            handleErrorState={{
+              inputState: groupNameError,
+              changeInputState: setGroupNameError,
+            }}
+          />
         </div>
         <div className="my-2">
           <span>
@@ -128,16 +299,23 @@ function CreatePostForm() {
               marks={scrollAgeMark}
               range={true}
               allowCross={false}
+              disabled={!isGroup}
               min={1}
               max={160}
               onChange={(ageArr) => {
                 if (Array.isArray(ageArr)) {
-                  const startAge = ageArr[0] as number;
-                  const endAge = ageArr[1] as number;
-                  const newMark: TScrollMark = scrollAgeMarkScale;
-                  newMark[startAge] = `${startAge}`;
-                  newMark[endAge] = `${endAge}`;
-                  setScrollAgeMark(newMark);
+                  const startAge = ageArr[0];
+                  const endAge = ageArr[1];
+                  if (
+                    typeof startAge === "number" &&
+                    typeof endAge === "number"
+                  ) {
+                    const newMark: TScrollMark = scrollAgeMarkScale;
+                    newMark[startAge] = `${startAge}`;
+                    newMark[endAge] = `${endAge}`;
+                    setScrollAgeMark(newMark);
+                    setAgeSpectrum({ minAge: startAge, maxAge: endAge });
+                  }
                 }
               }}
               defaultValue={[15, 30]}
@@ -163,12 +341,16 @@ function CreatePostForm() {
               marks={groupMark}
               min={1}
               max={100}
+              disabled={!isGroup}
               onChange={(ageArr) => {
                 if (Number.isInteger(ageArr)) {
-                  const peopleAmtMost = ageArr as number;
-                  const newMark: TScrollMark = scrollGroupMarkScale;
-                  newMark[peopleAmtMost] = `${peopleAmtMost}`;
-                  setGroupMark(newMark);
+                  const peopleAmtMost = ageArr;
+                  if (typeof peopleAmtMost === "number") {
+                    const newMark: TScrollMark = scrollGroupMarkScale;
+                    newMark[peopleAmtMost] = `${peopleAmtMost}`;
+                    setGroupMark(newMark);
+                    setGroupSize(peopleAmtMost);
+                  }
                 }
               }}
               defaultValue={5}
@@ -186,15 +368,33 @@ function CreatePostForm() {
           <div className="flex gap-4">
             <div>
               <input
+                id="join_no"
                 type="radio"
-                value="false"
-                className="relative top-[1px]"
+                checked={isInstantJoin === false}
+                className="relative top-[1px] hover:cursor-pointer"
+                disabled={!isGroup}
+                onClick={() => {
+                  setIsInstantJoin(false);
+                }}
               />
-              <span className="pl-1">No</span>
+              <label htmlFor="join_no" className="pl-1 hover:cursor-pointer">
+                No
+              </label>
             </div>
             <div>
-              <input type="radio" value="true" className="relative top-[1px]" />
-              <span className="pl-1">Yes</span>
+              <input
+                id="join_yes"
+                type="radio"
+                checked={isInstantJoin === true}
+                className="relative top-[1px] hover:cursor-pointer"
+                disabled={!isGroup}
+                onClick={() => {
+                  setIsInstantJoin(true);
+                }}
+              />
+              <label htmlFor="join_yes" className="pl-1 hover:cursor-pointer">
+                Yes
+              </label>
             </div>
           </div>
         </div>
@@ -219,7 +419,6 @@ function CreatePostForm() {
             </div>
           ) : (
             <Image
-              className=""
               src={userImage}
               width={0}
               height={0}
@@ -232,10 +431,9 @@ function CreatePostForm() {
       </div>
 
       <button
-        type="button"
-        className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
-        // onClick={() => router.push("/sign-up")}
-        // disabled={signInFetching}
+        type="submit"
+        className="h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e] disabled:bg-[#ff9e3e]"
+        disabled={isCreatePostLoading}
       >
         Create
       </button>

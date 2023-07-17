@@ -11,15 +11,16 @@ import { getServerAuthSession } from "../server/auth";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { atom, useRecoilState } from "recoil";
 
+import { type Tag } from "@prisma/client";
+import { type Session } from "next-auth";
 import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
 import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
 import UserDetails from "~/components/UserDetails";
-import { type Tag } from "@prisma/client";
-import { type Session } from "next-auth";
 import { api } from "~/utils/api";
 
 export type SerializablePost = {
@@ -73,14 +74,22 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
   };
 };
 
+export const postsState = atom({
+  key: "postsState",
+  default: [] as SerializablePost[],
+});
+
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const { data: userSession = null } = useSession();
-  const [displayPosts, setDisplayPosts] = useState<SerializablePost[]>([
-    ...posts,
-  ]);
+  const [displayPosts, setDisplayPosts] =
+    useRecoilState<SerializablePost[]>(postsState);
+
+  useEffect(() => {
+    setDisplayPosts(posts);
+  }, [setDisplayPosts, posts]);
 
   const { refetch: refetchPosts, isFetching: isPostFetching } =
     api.post.getPosts.useQuery(
