@@ -9,7 +9,7 @@ import { type CurrentUser } from "~/pages/home";
 import { api } from "~/utils/api";
 import { useEffect, useState } from "react";
 import { type Tag } from "@prisma/client";
-import { Discuss } from "react-loader-spinner";
+import { ColorRing, Discuss } from "react-loader-spinner";
 
 type PostComment = {
   id: string;
@@ -67,6 +67,7 @@ export const DisplayPost = ({
   const [commentCounter, setCommentCounter] = useState(0);
   const [isPostLikedByUser, setIsPostLikedByUser] = useState(false);
   const [loadMoreComments, setLoadMoreComments] = useState(true);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   useEffect(() => {
     setLikeCounter(postData.likeCount);
@@ -99,7 +100,7 @@ export const DisplayPost = ({
   // Send custom Error page instead
   if (!authorInfo)
     return (
-      <div className="h-60 bg-white flex m-2 justify-center items-center rounded-lg shadow-lg">
+      <div className="m-2 flex h-60 items-center justify-center rounded-lg bg-white shadow-lg">
         <Discuss
           visible={true}
           height="80"
@@ -107,7 +108,7 @@ export const DisplayPost = ({
           ariaLabel="comment-loading"
           wrapperStyle={{}}
           wrapperClass="text-green"
-          colors={['#ff853e', '#ff853e']}
+          colors={["#ff853e", "#ff853e"]}
         />
       </div>
     );
@@ -206,14 +207,39 @@ export const DisplayPost = ({
       </div>
       <div className="relative flex justify-center bg-slate-100">
         {postImage && (
-          <Image
-            src={postImage}
-            width={0}
-            height={0}
-            sizes="100vw"
-            style={{ width: "auto", height: "auto", maxHeight: "600px" }}
-            alt={"An error occured while loading the image."}
-          />
+          <div>
+            {isImageLoading && (
+              <div className="h-72 flex justify-center items-center">
+                <ColorRing
+                  visible={true}
+                  height="80"
+                  width="80"
+                  ariaLabel="blocks-loading"
+                  wrapperStyle={{}}
+                  wrapperClass="blocks-wrapper"
+                  colors={[
+                    "#e15b64",
+                    "#f47e60",
+                    "#f8b26a",
+                    "#abbd81",
+                    "#849b87",
+                  ]}
+                />
+              </div>
+            )}
+            <Image
+              src={postImage}
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: "auto", height: "auto", maxHeight: "600px" }}
+              alt={"An error occured while loading the image."}
+              onLoadingComplete={() => {
+                console.log("setIsImage running : ");
+                setIsImageLoading(false);
+              }}
+            />
+          </div>
         )}
       </div>
       <button className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange">
