@@ -265,10 +265,8 @@ function CreatePostForm({
         </div>
       </div>
 
-      <div
-        className={`rounded-lg border-2 border-dashed border-light-grey p-6 ${
-          !isGroup ? `blur-sm` : ``
-        } `}
+      {isGroup && <div
+        className="rounded-lg border-2 border-dashed border-light-grey p-6"
       >
         <div className="my-2 items-center">
           <span className="pr-2">Group Name:</span>
@@ -398,7 +396,7 @@ function CreatePostForm({
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       <div className="py-4">
         <StyledImageInput
