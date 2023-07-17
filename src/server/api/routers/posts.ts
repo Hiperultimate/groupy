@@ -166,10 +166,38 @@ export const postRouter = createTRPCRouter({
           },
         });
 
+        const properTag = tags.map((tag, index) => {
+          return {
+            id: index.toString(),
+            name: tag.value,
+          };
+        });
+
+        if (result.image) {
+          const { data: getImageData } = supabase.storage
+            .from("images")
+            .getPublicUrl(`${result.image}`);
+
+          result.image = getImageData.publicUrl;
+        }
+
+        const newPostSerialized = {
+          id: result.id,
+          content: result.content,
+          image: result.image,
+          authorId: result.authorId,
+          tags: properTag,
+          createdAt: result.createdAt.toString(),
+          updatedAt: result.updatedAt.toString(),
+          likeCount: 0,
+          isUserLikePost: false,
+          commentCount: 0,
+        };
+
         return {
           message: "Post created successfully",
           status: 201,
-          result: result,
+          result: newPostSerialized,
         };
       } catch (e) {
         throw new TRPCError({

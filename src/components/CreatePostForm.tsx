@@ -16,6 +16,8 @@ import HoverDisplayMessage from "./HoverDisplayMessage";
 import InputErrorText from "./InputErrorText";
 import InputField from "./InputField";
 import StyledImageInput from "./StyledImageInput";
+import { useSetRecoilState } from "recoil";
+import { postsState } from "~/pages/home";
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
@@ -24,6 +26,8 @@ function CreatePostForm({
 }: {
   dialogRef: RefObject<DialogElement>;
 }) {
+  const setPosts = useSetRecoilState(postsState);
+
   const [content, setContent] = useState("");
   const [isGroup, setIsGroup] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -130,9 +134,19 @@ function CreatePostForm({
           setServerError(error.message);
         },
         onSuccess: (data) => {
-          console.log("Success!");
-          console.log("New post created : ", data);
-          // Add post to top of the current list
+          console.log("New post created successfully!");
+          setContent("");
+          setIsGroup(false);
+          setGroupName("");
+          setAgeSpectrum({ minAge: 15, maxAge: 30 });
+          setGroupSize(1);
+          setIsInstantJoin(false);
+          setUserImage(undefined);
+          setUserImageFile(null);
+          setSelectedTags([]);
+          setPosts((oldPosts) => {
+            return [data.result, ...oldPosts];
+          });
           dialogRef.current?.close();
         },
       });
