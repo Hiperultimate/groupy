@@ -235,7 +235,6 @@ export const DisplayPost = ({
               style={{ width: "auto", height: "auto", maxHeight: "600px" }}
               alt={"An error occured while loading the image."}
               onLoadingComplete={() => {
-                console.log("setIsImage running : ");
                 setIsImageLoading(false);
               }}
             />
