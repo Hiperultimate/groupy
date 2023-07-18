@@ -61,6 +61,51 @@ export async function getUserByID(
   };
 }
 
+export async function getUserByTag(
+  prisma: PrismaClient,
+  session: Session,
+  userTag: string
+) {
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid user session",
+    });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { atTag: userTag },
+    include: { tags: true },
+  });
+  if (!user) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  const { id, name, email, dateOfBirth, atTag, description, image, tags } =
+    user;
+
+  let imageURL = image;
+
+  if (image) {
+    const { data } = supabase.storage.from("images").getPublicUrl(`${image}`);
+    imageURL = data.publicUrl;
+  }
+
+  return {
+    id,
+    name,
+    email,
+    dateOfBirth,
+    atTag,
+    description,
+    image: imageURL,
+    tags,
+  };
+}
+
 export const accountRouter = createTRPCRouter({
   signup: publicProcedure
     .input(signUpSchema)
@@ -167,6 +212,13 @@ export const accountRouter = createTRPCRouter({
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const userData = await getUserByID(ctx.prisma, ctx.session, input.userId);
+      return userData;
+    }),
+
+  getUserByTag: protectedProcedure
+    .input(z.object({ atTag: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userData = await getUserByTag(ctx.prisma, ctx.session, input.atTag);
       return userData;
     }),
 });
