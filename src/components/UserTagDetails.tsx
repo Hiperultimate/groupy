@@ -1,14 +1,15 @@
+import { useSession } from "next-auth/react";
 import { ColorRing } from "react-loader-spinner";
 import { api } from "~/utils/api";
 import DisplayUserImage from "./DisplayUserImage";
 
 const UserTagDetails = ({ userTag }: { userTag: string }) => {
-  // Fetch user data
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
 
-  // Populate user data to states
+  const currentUser = useSession();
+  const currentUserTag = currentUser.data?.user.atTag;
 
   const userImage = data?.image;
   const userName = data?.name;
@@ -18,10 +19,9 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
 
   const tailwindComponentWidth = "w-[350px]";
 
-  // Manage loading
   return (
     <div
-      className={`p-4 ${tailwindComponentWidth} rounded-lg bg-white font-poppins shadow-md`}
+      className={`p-4 pt-2 ${tailwindComponentWidth} rounded-lg bg-white font-poppins shadow-md`}
     >
       {isError && <div>An error occured</div>}
       {isLoading ? (
@@ -38,6 +38,15 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
         </div>
       ) : (
         <div>
+          {currentUser.data && currentUserTag !== userNameTag ? (
+            <div className="flex justify-end ">
+              <button className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey">
+                + Add friend
+              </button>
+            </div>
+          ) : (
+            <div className="my-2" />
+          )}
           <div className="mb-6 flex justify-center">
             <DisplayUserImage userImage={userImage} sizeOption="big" />
           </div>
