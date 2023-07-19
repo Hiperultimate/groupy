@@ -181,8 +181,16 @@ export const DisplayPost = ({
               className="mx-3 mt-3 flex flex-wrap hover:cursor-pointer"
               onClick={redirectToSelectedUser}
             >
-              <div className="font-bold">{authorName}</div>
-              <div className="ml-1 text-grey">@{authorAtTag}</div>
+              <div className="font-bold">
+                <span className=" underline-offset-4 hover:underline">
+                  {authorName}
+                </span>
+              </div>
+              <div className="ml-1 text-grey">
+                <span className=" underline-offset-4 hover:underline">
+                  @{authorAtTag}
+                </span>
+              </div>
             </div>
             <div className="mx-3 mt-3 text-grey">
               {createdAt.toLocaleDateString()}
