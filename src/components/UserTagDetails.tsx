@@ -25,17 +25,17 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
     >
       {isError && <div>An error occured</div>}
       {isLoading ? (
-      <div className="flex items-center justify-center">
-        <ColorRing
-          visible={true}
-          height="80"
-          width="80"
-          ariaLabel="blocks-loading"
-          wrapperStyle={{}}
-          wrapperClass="blocks-wrapper"
-          colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
-        />
-      </div>
+        <div className="flex items-center justify-center">
+          <ColorRing
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="blocks-loading"
+            wrapperStyle={{}}
+            wrapperClass="blocks-wrapper"
+            colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+          />
+        </div>
       ) : (
         <div>
           <div className="mb-6 flex justify-center">
@@ -63,7 +63,7 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
               <div
                 className={`relative right-4 my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
               />
-              <div className="text-grey">Your Summary</div>
+              <div className="text-grey">About</div>
               <div>{userSummary}</div>
             </div>
           )}
