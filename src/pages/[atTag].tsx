@@ -163,7 +163,7 @@ const UserSpecificPage: NextPage<
             <div>
               <UserTagDetails userTag={userTag} />
             </div>
-            <div className="min-w-[545px] lg:w-[825px]">
+            <div className="min-w-[545px] lg:w-[825px] relative top-[-12px]">
               {displayPosts.length === 0 ? (
                 <div>Too quiet here </div>
               ) : (
