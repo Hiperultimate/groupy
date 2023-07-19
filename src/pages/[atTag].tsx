@@ -15,12 +15,12 @@ import { atom, useRecoilState } from "recoil";
 
 import { type Tag } from "@prisma/client";
 import { type Session } from "next-auth";
+import type { ParsedUrlQuery } from "querystring";
 import BackgroundContainer from "~/components/BackgroundContainer";
 import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
-import UserDetails from "~/components/UserDetails";
+import UserTagDetails from "~/components/UserTagDetails";
 import { api } from "~/utils/api";
-import type { ParsedUrlQuery } from "querystring";
 
 export type SerializablePost = {
   id: string;
@@ -161,7 +161,7 @@ const UserSpecificPage: NextPage<
         <div className="pt-[80px]">
           <main className="my-8 flex justify-center">
             <div>
-              <UserDetails userData={userSession} />
+              <UserTagDetails userTag={userTag} />
             </div>
             <div className="min-w-[545px] lg:w-[825px]">
               {displayPosts.length === 0 ? (
