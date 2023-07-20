@@ -21,19 +21,37 @@ model Example {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String
-    email         String    @unique
-    password      String   
-    dateOfBirth   DateTime  
-    atTag         String    @unique
-    description   String?
-    tags          Tag[]
-    posts         Post[]
-    friendList    Friendship[]
-    image         String? 
-    postsLiked    UserLikedPost[]
-    userComments  Comment[]
+    id                  String    @id @default(cuid())
+    name                String
+    email               String    @unique
+    password            String   
+    dateOfBirth         DateTime  
+    atTag               String    @unique
+    description         String?
+    tags                Tag[]
+    posts               Post[]
+    friendList          Friendship[]
+    image               String? 
+    postsLiked          UserLikedPost[]
+    userComments        Comment[]
+    userNotifications   Notification[]
+}
+
+enum NotificationType {
+    MESSAGE
+    FRIENDREQUEST
+}
+
+model Notification{
+    id          String              @id @default(cuid())
+    type        NotificationType    @default(MESSAGE)
+    message     String 
+
+    user        User?               @relation(fields: [userId], references: [id])
+    userId      String? 
+
+    createdAt   DateTime            @default(now())
+
 }
 
 model Friendship {
