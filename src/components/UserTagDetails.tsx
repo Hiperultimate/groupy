@@ -7,6 +7,7 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
+  const { mutate: friendRequest, isLoading: isSendingFriendRequest } = api.account.sendFriendRequestNotification.useMutation()
 
   const currentUser = useSession();
   const currentUserTag = currentUser.data?.user.atTag;
@@ -18,6 +19,11 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const userSummary = data?.description;
 
   const tailwindComponentWidth = "w-[350px]";
+
+  function sendFriendRequestNotification() {
+    // data?.id will return user Id everytime
+    friendRequest({toUserId : data?.id as string});
+  }
 
   return (
     <div
@@ -40,7 +46,7 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
         <div>
           {currentUser.data && currentUserTag !== userNameTag ? (
             <div className="flex justify-end ">
-              <button className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey">
+              <button onClick={sendFriendRequestNotification} className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey">
                 + Add friend
               </button>
             </div>

@@ -9,7 +9,10 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-import { type PrismaClient } from "@prisma/client";
+import {
+  NotificationType,
+  type PrismaClient,
+} from "@prisma/client";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
@@ -221,4 +224,58 @@ export const accountRouter = createTRPCRouter({
       const userData = await getUserByTag(ctx.prisma, ctx.session, input.atTag);
       return userData;
     }),
+
+  sendFriendRequestNotification: protectedProcedure
+    .input(z.object({ toUserId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userSendingFR = ctx.session.user.id;
+      const userReceivingFR = input.toUserId;
+
+      const toUser = await ctx.prisma.user.findFirst({
+        where: { id: userReceivingFR },
+        select: {
+          userNotifications: true,
+          id: true,
+        },
+      });
+
+      if (!toUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      if(userSendingFR === input.toUserId){
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Cannot send friend request to yourself",
+        });
+      }
+
+      // Creating notification in DB
+      const newNotification = await ctx.prisma.notification.create({
+        data: {
+          type: NotificationType.FRIENDREQUEST,
+          message: `${ctx.session.user.atTag} has sent you a friend request`,
+          userId: userSendingFR,
+        },
+      });
+
+      // Connecting notification to the receiving user field
+      const userUpdate = await ctx.prisma.user.update({
+        where: {
+          id: userReceivingFR,
+        },
+        data: {
+          userNotifications: {
+            connect: {
+              id: newNotification.id,
+            },
+          },
+        },
+      });
+      return userUpdate;
+    }),
+    
 });
