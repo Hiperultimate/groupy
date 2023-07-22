@@ -1,13 +1,17 @@
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { api } from "~/utils/api";
 import DisplayUserImage from "./DisplayUserImage";
+import ErrorNotification from "./ErrorNotification";
 
 const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
-  const { mutate: friendRequest, isLoading: isSendingFriendRequest } = api.account.sendFriendRequestNotification.useMutation()
+  const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
+    api.account.sendFriendRequestNotification.useMutation();
+  const [friendReqMsg, setFriendReqMsg] = useState("");
 
   const currentUser = useSession();
   const currentUserTag = currentUser.data?.user.atTag;
@@ -22,7 +26,14 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
 
   function sendFriendRequestNotification() {
     // data?.id will return user Id everytime
-    friendRequest({toUserId : data?.id as string});
+    friendRequest(
+      { toUserId: data?.id as string },
+      {
+        onError: (error) => {
+          setFriendReqMsg(error.message);
+        },
+      }
+    );
   }
 
   return (
@@ -30,6 +41,11 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
       className={`p-4 pt-2 ${tailwindComponentWidth} rounded-lg bg-white font-poppins shadow-md`}
     >
       {isError && <div>An error occured</div>}
+
+      <ErrorNotification
+        errorMessage={friendReqMsg}
+        setErrorMessage={setFriendReqMsg}
+      />
       {isLoading ? (
         <div className="flex items-center justify-center">
           <ColorRing
@@ -46,7 +62,11 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
         <div>
           {currentUser.data && currentUserTag !== userNameTag ? (
             <div className="flex justify-end ">
-              <button onClick={sendFriendRequestNotification} className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey">
+              <button
+                disabled={isSendingFriendRequest}
+                onClick={sendFriendRequestNotification}
+                className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200"
+              >
                 + Add friend
               </button>
             </div>
