@@ -30,12 +30,17 @@ model User {
     description         String?
     tags                Tag[]
     posts               Post[]
-    friendList          Friendship[]
     image               String? 
     postsLiked          UserLikedPost[]
     userComments        Comment[]
     myNotifications     Notification[]      @relation(name: "notificationReceived")
     sentNotifications   Notification[]      @relation(name: "notificationSent") 
+    
+    friendList          User[]              @relation(name: "UserFriends") 
+
+    // This second "side" of the UserFriends relation exists solely 
+    // to satisfy prisma's requirements; we won't access it directly.     
+    symmetricFriends    User[]              @relation(name: "UserFriends")      
 }
 
 enum NotificationType {
@@ -58,14 +63,14 @@ model Notification{
 
 }
 
-model Friendship {
-    id          String    @id @default(cuid())
+// model Friendship {
+//     id          String    @id @default(cuid())
 
-    user        User      @relation(fields: [friendId], references: [id])
-    friendId    String 
+//     user        User      @relation(fields: [friendId], references: [id])
+//     friendId    String 
 
-    createdAt   DateTime  @default(now())
-}
+//     createdAt   DateTime  @default(now())
+// }
 
 model Tag {
     id        String   @id @default(uuid())

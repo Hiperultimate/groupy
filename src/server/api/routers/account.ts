@@ -15,7 +15,6 @@ import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
 import { hashPassword } from "~/utils/passwordUtils";
 import { supabase } from "~/utils/storageBucket";
-import { createTRPCNext } from "@trpc/next";
 
 export async function getUserByID(
   prisma: PrismaClient,
@@ -283,12 +282,19 @@ export const accountRouter = createTRPCRouter({
       const isTargetUserFriend = await ctx.prisma.user.findFirst({
         where : {
           id : currentUserId,
-          friendList : {
+          friendList: {
             some : {
-              friendId : currentUserId
+              id: input.targetUser,
             }
           }
         },
+        select: {
+          friendList: {
+            select :{
+              id: true,
+            }
+          }
+        }
       })
 
       console.log("Checking friend request :", isTargetUserFriend);
