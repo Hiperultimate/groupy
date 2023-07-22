@@ -9,6 +9,7 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
+  const {data : isFriend} = api.account.isFriend.useQuery({targetUser : data?.id as string})
   const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
     api.account.sendFriendRequestNotification.useMutation();
   const [friendReqMsg, setFriendReqMsg] = useState("");

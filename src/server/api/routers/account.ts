@@ -276,4 +276,22 @@ export const accountRouter = createTRPCRouter({
 
       return { success: true, message: "Friend request sent" };
     }),
+
+    isFriend: protectedProcedure.input(z.object({ targetUser: z.string() })).query( async ({ctx, input}) => {
+      const currentUserId = ctx.session.user.id;
+      
+      const isTargetUserFriend = await ctx.prisma.user.findFirst({
+        where : {
+          id : currentUserId,
+          friendList : {
+            some : {
+              friendId : currentUserId
+            }
+          }
+        },
+      })
+
+      console.log("Checking friend request :", isTargetUserFriend);
+
+    })
 });
