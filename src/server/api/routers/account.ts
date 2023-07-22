@@ -9,15 +9,13 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-import {
-  NotificationType,
-  type PrismaClient,
-} from "@prisma/client";
+import { NotificationType, type PrismaClient } from "@prisma/client";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
 import { hashPassword } from "~/utils/passwordUtils";
 import { supabase } from "~/utils/storageBucket";
+import { createTRPCNext } from "@trpc/next";
 
 export async function getUserByID(
   prisma: PrismaClient,
@@ -234,7 +232,6 @@ export const accountRouter = createTRPCRouter({
       const toUser = await ctx.prisma.user.findFirst({
         where: { id: userReceivingFR },
         select: {
-          userNotifications: true,
           id: true,
         },
       });
@@ -246,36 +243,37 @@ export const accountRouter = createTRPCRouter({
         });
       }
 
-      if(userSendingFR === input.toUserId){
+      if (userSendingFR === input.toUserId) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Cannot send friend request to yourself",
         });
       }
 
-      // Creating notification in DB
-      const newNotification = await ctx.prisma.notification.create({
-        data: {
-          type: NotificationType.FRIENDREQUEST,
-          message: `${ctx.session.user.atTag} has sent you a friend request`,
-          userId: userSendingFR,
+      const isExistingFR = await ctx.prisma.notification.findFirst({
+        where: {
+          sendingUserId: userSendingFR,
+          receivingUserId: userReceivingFR,
         },
       });
 
-      // Connecting notification to the receiving user field
-      const userUpdate = await ctx.prisma.user.update({
-        where: {
-          id: userReceivingFR,
-        },
+      if (isExistingFR) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Friend request already sent",
+        });
+      }
+
+      // Creating notification in DB
+      await ctx.prisma.notification.create({
         data: {
-          userNotifications: {
-            connect: {
-              id: newNotification.id,
-            },
-          },
+          type: NotificationType.FRIENDREQUEST,
+          message: `${ctx.session.user.atTag} has sent you a friend request`,
+          receivingUser: { connect: { id: userReceivingFR } },
+          sendingUser: { connect: { id: userSendingFR } },
         },
       });
-      return userUpdate;
+
+      return { success: true, message: "Friend request sent" };
     }),
-    
 });
