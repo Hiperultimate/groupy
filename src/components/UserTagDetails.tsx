@@ -9,12 +9,19 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
-  const { data: isFriend } = api.account.isFriend.useQuery({
-    targetUser: data?.id as string,
-  });
+  const userId = data?.id;
+
+  const { status: isFriendStatus, data: isFriend } =
+    api.account.isFriend.useQuery(
+      {
+        targetUser: userId as string,
+      },
+      {
+        enabled: !!userId,
+      }
+    );
   const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
     api.account.sendFriendRequestNotification.useMutation();
-  
 
   const [friendReqMsg, setFriendReqMsg] = useState("");
 
@@ -65,12 +72,14 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
         </div>
       ) : (
         <div>
-          {currentUser.data && currentUserTag !== userNameTag ? (
+          {currentUser.data &&
+          currentUserTag !== userNameTag &&
+          isFriendStatus === "success" ? (
             <div className="flex justify-end ">
               {isFriend ? (
-                <button
-                className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200"
-                >- Unfriend</button>
+                <button className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200">
+                  - Unfriend
+                </button>
               ) : (
                 <button
                   disabled={isSendingFriendRequest}
