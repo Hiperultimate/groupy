@@ -9,9 +9,13 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
-  const {data : isFriend} = api.account.isFriend.useQuery({targetUser : data?.id as string})
+  const { data: isFriend } = api.account.isFriend.useQuery({
+    targetUser: data?.id as string,
+  });
   const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
     api.account.sendFriendRequestNotification.useMutation();
+  
+
   const [friendReqMsg, setFriendReqMsg] = useState("");
 
   const currentUser = useSession();
@@ -63,13 +67,19 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
         <div>
           {currentUser.data && currentUserTag !== userNameTag ? (
             <div className="flex justify-end ">
-              <button
-                disabled={isSendingFriendRequest}
-                onClick={sendFriendRequestNotification}
+              {isFriend ? (
+                <button
                 className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200"
-              >
-                + Add friend
-              </button>
+                >- Unfriend</button>
+              ) : (
+                <button
+                  disabled={isSendingFriendRequest}
+                  onClick={sendFriendRequestNotification}
+                  className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200"
+                >
+                  + Add friend
+                </button>
+              )}
             </div>
           ) : (
             <div className="my-2" />

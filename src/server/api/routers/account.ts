@@ -299,5 +299,9 @@ export const accountRouter = createTRPCRouter({
 
       console.log("Checking friend request :", isTargetUserFriend);
 
+      return {
+        isFriend : isTargetUserFriend ? true : false,
+      }
+
     })
 });
