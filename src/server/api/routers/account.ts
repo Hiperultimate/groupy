@@ -276,32 +276,46 @@ export const accountRouter = createTRPCRouter({
       return { success: true, message: "Friend request sent" };
     }),
 
-    isFriend: protectedProcedure.input(z.object({ targetUser: z.string() })).query( async ({ctx, input}) => {
+  isFriend: protectedProcedure
+    .input(z.object({ targetUser: z.string() }))
+    .query(async ({ ctx, input }) => {
       const currentUserId = ctx.session.user.id;
-      
+
       const isTargetUserFriend = await ctx.prisma.user.findFirst({
-        where : {
-          id : currentUserId,
+        where: {
+          id: currentUserId,
           friendList: {
-            some : {
+            some: {
               id: input.targetUser,
-            }
-          }
+            },
+          },
         },
         select: {
           friendList: {
-            select :{
+            select: {
               id: true,
-            }
-          }
-        }
-      })
-
-      console.log("Checking friend request :", isTargetUserFriend);
+            },
+          },
+        },
+      });
 
       return {
-        isFriend : isTargetUserFriend ? true : false,
-      }
+        isFriend: isTargetUserFriend ? true : false,
+      };
+    }),
 
-    })
+  getUserNotifications: protectedProcedure.query(async ({ ctx }) => {
+    const currentUserId = ctx.session.user.id;
+    const userNotifications = await ctx.prisma.user.findUnique({
+      where: {
+        id: currentUserId,
+      },
+      select: {
+        myNotifications: true,
+      },
+    });
+
+    console.log("User notifications : " , userNotifications);
+    return {userNotifications}
+  }),
 });

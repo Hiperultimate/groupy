@@ -22,6 +22,7 @@ import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
 import UserDetails from "~/components/UserDetails";
 import { api } from "~/utils/api";
+import NotificationFeed from "~/components/NotificationFeed";
 
 export type SerializablePost = {
   id: string;
@@ -172,7 +173,10 @@ const Home: NextPage<
                 );
               })}
             </div>
-            <FriendList />
+            <div className="flex flex-col gap-2">
+              <NotificationFeed />
+              <FriendList />
+            </div>
           </main>
         </div>
       </BackgroundContainer>

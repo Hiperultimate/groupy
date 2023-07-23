@@ -76,7 +76,7 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
           currentUserTag !== userNameTag &&
           isFriendStatus === "success" ? (
             <div className="flex justify-end ">
-              {isFriend ? (
+              {isFriend.isFriend ? (
                 <button className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200">
                   - Unfriend
                 </button>
