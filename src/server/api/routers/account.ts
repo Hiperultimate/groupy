@@ -222,6 +222,28 @@ export const accountRouter = createTRPCRouter({
       return userData;
     }),
 
+  getUserTagById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userTag = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          atTag: true,
+        },
+      });
+
+      if (!userTag) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      return { userTag: userTag.atTag };
+    }),
+
   sendFriendRequestNotification: protectedProcedure
     .input(z.object({ toUserId: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -315,7 +337,6 @@ export const accountRouter = createTRPCRouter({
       },
     });
 
-    console.log("User notifications : " , userNotifications);
-    return {userNotifications}
+    return { userNotifications };
   }),
 });

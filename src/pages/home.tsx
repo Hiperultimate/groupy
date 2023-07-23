@@ -20,9 +20,9 @@ import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
 import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
+import NotificationFeed from "~/components/NotificationComponent/NotificationFeed";
 import UserDetails from "~/components/UserDetails";
 import { api } from "~/utils/api";
-import NotificationFeed from "~/components/NotificationFeed";
 
 export type SerializablePost = {
   id: string;

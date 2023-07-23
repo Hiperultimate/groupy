@@ -2,6 +2,7 @@ import type { Notification } from "@prisma/client";
 import { useState } from "react";
 import { api } from "~/utils/api";
 import { ColorRing } from "react-loader-spinner";
+import FriendRequstMessage from "./FriendRequestMessage";
 
 const NotificationFeed = () => {
   const {
@@ -49,9 +50,15 @@ const NotificationFeed = () => {
               {userNotification.length !== 0 ? (
                 <div>
                   {userNotification.map((notification) => {
-                    return (
-                      <div key={notification.id}>{notification.message}</div>
-                    );
+                    console.log("CHECK : " , notification);
+                    if (notification.type === "FRIENDREQUEST") {
+                      return (
+                        <div key={notification.id}>
+                          <FriendRequstMessage notification={notification} />
+                        </div>
+                      );
+                    }
+                    
                   })}
                 </div>
               ) : (
