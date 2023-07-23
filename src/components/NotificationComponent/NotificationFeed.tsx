@@ -50,7 +50,6 @@ const NotificationFeed = () => {
               {userNotification.length !== 0 ? (
                 <div>
                   {userNotification.map((notification) => {
-                    console.log("CHECK : " , notification);
                     if (notification.type === "FRIENDREQUEST") {
                       return (
                         <div key={notification.id}>

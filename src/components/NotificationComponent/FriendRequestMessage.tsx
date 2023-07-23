@@ -31,7 +31,7 @@ const FriendRequstMessage = ({
               >
                 @{userTag.userTag}
               </span>{" "}
-              has sent you a friend request.
+              sent you a friend request.
             </div>
           ) : (
             <div>Loading...</div>
