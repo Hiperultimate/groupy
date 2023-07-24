@@ -21,18 +21,22 @@ const NotificationFeed = () => {
       setNotification([...notifications]);
     }
   }
+  
+  const tailwindComponentWidth = "w-72";
 
   return (
-    <div
-      onClick={() => void fetchUserNotifications()}
-      className="rounded-lg bg-white py-2 shadow-md "
-    >
-      <span className="flex justify-center font-bold hover:cursor-pointer">
+    <div className="rounded-lg bg-white py-2 shadow-md ">
+      <span
+        className="flex justify-center font-bold hover:cursor-pointer"
+        onClick={() => void fetchUserNotifications()}
+      >
         Notifications
       </span>
-
       {isFetched && (
         <div>
+          <div
+            className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
+          />
           {isNotificationFetching ? (
             <div className="flex items-center justify-center">
               <ColorRing
@@ -57,7 +61,6 @@ const NotificationFeed = () => {
                         </div>
                       );
                     }
-                    
                   })}
                 </div>
               ) : (
