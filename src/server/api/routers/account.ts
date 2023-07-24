@@ -326,6 +326,38 @@ export const accountRouter = createTRPCRouter({
       };
     }),
 
+  addFriend: protectedProcedure
+    .input(z.object({ firstUserId: z.string(), secondUserId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const firstUserFR = ctx.prisma.user.update({
+        where: {
+          id: input.firstUserId,
+        },
+        data: {
+          friendList: {
+            connect: {
+              id: input.secondUserId,
+            },
+          },
+        },
+      });
+
+      const secondUserFR = ctx.prisma.user.update({
+        where: {
+          id: input.secondUserId,
+        },
+        data: {
+          friendList: {
+            connect: {
+              id: input.firstUserId,
+            },
+          },
+        },
+      });
+
+      await ctx.prisma.$transaction([firstUserFR, secondUserFR]);
+    }),
+
   getUserNotifications: protectedProcedure.query(async ({ ctx }) => {
     const currentUserId = ctx.session.user.id;
     const userNotifications = await ctx.prisma.user.findUnique({
