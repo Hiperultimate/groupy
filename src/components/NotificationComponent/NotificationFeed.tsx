@@ -21,11 +21,11 @@ const NotificationFeed = () => {
       setNotification([...notifications]);
     }
   }
-  
+
   const tailwindComponentWidth = "w-72";
 
   return (
-    <div className="rounded-lg bg-white py-2 shadow-md ">
+    <div className="rounded-lg bg-white py-2 shadow-md">
       <span
         className="flex justify-center font-bold hover:cursor-pointer"
         onClick={() => void fetchUserNotifications()}
@@ -33,7 +33,7 @@ const NotificationFeed = () => {
         Notifications
       </span>
       {isFetched && (
-        <div>
+        <div className="">
           <div
             className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
           />
@@ -50,21 +50,34 @@ const NotificationFeed = () => {
               />
             </div>
           ) : (
-            <div>
+            <div className="h-72 overflow-y-auto overflow-x-hidden">
               {userNotification.length !== 0 ? (
                 <div>
-                  {userNotification.map((notification) => {
+                  {userNotification.map((notification, index) => {
                     if (notification.type === "FRIENDREQUEST") {
-                      return (
-                        <div key={notification.id}>
-                          <FriendRequstMessage notification={notification} />
-                        </div>
-                      );
+                      if (index !== 0) {
+                        return (
+                          <div key={notification.id}>
+                            <div
+                              className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
+                            />
+                            <FriendRequstMessage notification={notification} />
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div key={notification.id}>
+                            <FriendRequstMessage notification={notification} />
+                          </div>
+                        );
+                      }
                     }
                   })}
                 </div>
               ) : (
-                <span>All caught up!</span>
+                <span className="flex h-full items-center justify-center text-grey">
+                  All caught up!
+                </span>
               )}
             </div>
           )}
