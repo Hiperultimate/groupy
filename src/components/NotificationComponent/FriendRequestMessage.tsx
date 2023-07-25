@@ -13,8 +13,21 @@ const FriendRequstMessage = ({
       id: notification.sendingUserId as string,
     });
 
+  const { mutate: addFriend, isLoading: isFriendAddLoading } =
+    api.account.addFriend.useMutation();
+
   function redirectToSelectedUser(userTag: string) {
     void router.push(`/${userTag}`);
+  }
+
+  function acceptFriendRequest() {
+    // type FRIENDREQUEST will always have sendingUserId and receivingUserId
+    if (notification.type === "FRIENDREQUEST") {
+      addFriend({
+        firstUserId: notification.sendingUserId as string,
+        secondUserId: notification.receivingUserId,
+      });
+    }
   }
 
   return (
@@ -35,10 +48,14 @@ const FriendRequstMessage = ({
                 &nbsp;sent you a friend request.
               </div>
               <div className="my-2 flex justify-center gap-4">
-                <button className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey">
+                <button
+                  onClick={acceptFriendRequest}
+                  disabled={isFriendAddLoading}
+                  className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey"
+                >
                   Accept
                 </button>
-                <button className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey">
+                <button className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey">
                   Reject
                 </button>
               </div>
