@@ -8,16 +8,28 @@ const FriendRequstMessage = ({
   notification: Notification;
 }) => {
   const router = useRouter();
+
   const { data: userTag, isLoading: isUserTagLoading } =
     api.account.getUserTagById.useQuery({
       id: notification.sendingUserId as string,
     });
 
+  const { mutate: deleteNotification, isLoading: deletingNotification } =
+    api.account.deleteNotification.useMutation();
+
   const { mutate: addFriend, isLoading: isFriendAddLoading } =
-    api.account.addFriend.useMutation();
+    api.account.addFriend.useMutation({
+      onSuccess: () => {
+        deleteNotification({ notificationId: notification.id });
+      },
+    });
 
   function redirectToSelectedUser(userTag: string) {
     void router.push(`/${userTag}`);
+  }
+
+  function onClickDeleteNotification() {
+    deleteNotification({ notificationId: notification.id });
   }
 
   function acceptFriendRequest() {
@@ -55,7 +67,10 @@ const FriendRequstMessage = ({
                 >
                   Accept
                 </button>
-                <button className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey">
+                <button
+                  onClick={onClickDeleteNotification}
+                  className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey"
+                >
                   Reject
                 </button>
               </div>

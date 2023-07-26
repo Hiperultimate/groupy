@@ -9,7 +9,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-import { NotificationType, type PrismaClient } from "@prisma/client";
+import { NotificationType, Prisma, type PrismaClient } from "@prisma/client";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
@@ -371,4 +371,23 @@ export const accountRouter = createTRPCRouter({
 
     return { userNotifications };
   }),
+
+  deleteNotification: protectedProcedure
+    .input(z.object({ notificationId: z.string() }))
+    .output(z.object({ success: z.boolean(), message: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.notification.delete({
+          where: {
+            id: input.notificationId,
+          },
+        });
+        return { success: true };
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          return { success: false, message: err.code };
+        }
+      }
+      return { success: false, message: "Something went wrong" };
+    }),
 });
