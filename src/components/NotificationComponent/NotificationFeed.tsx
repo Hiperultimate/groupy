@@ -1,7 +1,7 @@
-import type { Notification } from "@prisma/client";
-import { useState } from "react";
-import { api } from "~/utils/api";
 import { ColorRing } from "react-loader-spinner";
+import { useRecoilState } from "recoil";
+import { notification } from "~/store/atoms/notification";
+import { api } from "~/utils/api";
 import FriendRequstMessage from "./FriendRequestMessage";
 
 const NotificationFeed = () => {
@@ -11,7 +11,7 @@ const NotificationFeed = () => {
     isFetched,
   } = api.account.getUserNotifications.useQuery(undefined, { enabled: false });
 
-  const [userNotification, setNotification] = useState<Notification[]>([]);
+  const [userNotification, setNotification] = useRecoilState(notification);
 
   async function fetchUserNotifications() {
     const getNotifications = await fetchNotification();

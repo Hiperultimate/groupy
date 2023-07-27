@@ -1,6 +1,8 @@
 import type { Notification } from "@prisma/client";
 import { useRouter } from "next/router";
+import { useSetRecoilState } from "recoil";
 import { api } from "~/utils/api";
+import { notification as notificationStore } from "../../store/atoms/notification";
 
 const FriendRequstMessage = ({
   notification,
@@ -8,6 +10,7 @@ const FriendRequstMessage = ({
   notification: Notification;
 }) => {
   const router = useRouter();
+  const setNotification = useSetRecoilState(notificationStore);
 
   const { data: userTag, isLoading: isUserTagLoading } =
     api.account.getUserTagById.useQuery({
@@ -21,6 +24,12 @@ const FriendRequstMessage = ({
     api.account.addFriend.useMutation({
       onSuccess: () => {
         deleteNotification({ notificationId: notification.id });
+        setNotification((currVal) => {
+          const filteredNotifications = currVal.filter((notif) => {
+            return notif.id !== notification.id;
+          });
+          return filteredNotifications;
+        });
       },
     });
 
@@ -29,7 +38,19 @@ const FriendRequstMessage = ({
   }
 
   function onClickDeleteNotification() {
-    deleteNotification({ notificationId: notification.id });
+    deleteNotification(
+      { notificationId: notification.id },
+      {
+        onSuccess: () => {
+          setNotification((currVal) => {
+            const filteredNotifications = currVal.filter((notif) => {
+              return notif.id !== notification.id;
+            });
+            return filteredNotifications;
+          });
+        },
+      }
+    );
   }
 
   function acceptFriendRequest() {
