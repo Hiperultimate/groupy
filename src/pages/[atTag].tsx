@@ -4,24 +4,22 @@ import {
   type NextPage,
 } from "next";
 
-import { getPosts } from "~/server/api/routers/posts";
+import { getPostsFromUserTag } from "~/server/api/routers/posts";
 
 import { prisma } from "~/server/db";
 import { getServerAuthSession } from "../server/auth";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
 
 import { type Tag } from "@prisma/client";
 import { type Session } from "next-auth";
+import type { ParsedUrlQuery } from "querystring";
 import BackgroundContainer from "~/components/BackgroundContainer";
-import CreatePostInput from "~/components/CreatePostInput";
 import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
-import NotificationFeed from "~/components/NotificationComponent/NotificationFeed";
-import UserDetails from "~/components/UserDetails";
+import UserTagDetails from "~/components/UserTagDetails";
 import { api } from "~/utils/api";
 
 export type SerializablePost = {
@@ -37,8 +35,13 @@ export type SerializablePost = {
   commentCount: number;
 };
 
+interface QParams extends ParsedUrlQuery {
+  atTag?: string;
+}
+
 type ServerSideProps = {
   posts: SerializablePost[];
+  userTag: string;
 };
 
 export type CurrentUser = Session["user"] & {
@@ -50,7 +53,10 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
   ctx
 ) => {
   const session = await getServerAuthSession(ctx);
-  if (!session) {
+
+  // atTag is @username
+  const { atTag } = ctx.params as QParams;
+  if (!session || !atTag) {
     // Redirect to home page
     return {
       redirect: {
@@ -60,7 +66,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
     };
   }
 
-  const posts = await getPosts(prisma, session, 0); // Getting the first X amount of posts
+  const posts = await getPostsFromUserTag(prisma, session, atTag, 0);
   const serializablePosts = posts.map((post) => {
     const convertedCreatedAt = post.createdAt.toString();
     const convertedUpdatedAt = post.updatedAt.toString();
@@ -71,38 +77,34 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
     };
   });
   return {
-    props: { posts: serializablePosts },
+    props: { posts: serializablePosts, userTag: atTag },
   };
 };
 
-export const postsState = atom({
-  key: "postsState",
+export const userPosts = atom({
+  key: "specificUserPosts",
   default: [] as SerializablePost[],
 });
 
-const Home: NextPage<
+const UserSpecificPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ posts }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const router = useRouter();
+> = ({
+  posts,
+  userTag,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data: userSession = null } = useSession();
   const [displayPosts, setDisplayPosts] =
-    useRecoilState<SerializablePost[]>(postsState);
+    useRecoilState<SerializablePost[]>(userPosts);
 
   useEffect(() => {
     setDisplayPosts(posts);
   }, [setDisplayPosts, posts]);
 
   const { refetch: refetchPosts, isFetching: isPostFetching } =
-    api.post.getPosts.useQuery(
-      { takenPosts: displayPosts.length },
+    api.post.getPostsFromUserTag.useQuery(
+      { userTag: userTag, takenPosts: displayPosts.length },
       { enabled: false }
     );
-
-  useEffect(() => {
-    if (!userSession) {
-      router.push("/");
-    }
-  }, [userSession, router]);
 
   useEffect(() => {
     async function postFetching() {
@@ -159,24 +161,24 @@ const Home: NextPage<
         <div className="pt-[80px]">
           <main className="my-8 flex justify-center">
             <div>
-              <UserDetails userData={userSession} />
+              <UserTagDetails userTag={userTag} />
             </div>
-            <div className="min-w-[545px] lg:w-[825px]">
-              <CreatePostInput userImage={userSession.user.image} />
-              {displayPosts.map((post) => {
-                return (
-                  <DisplayPost
-                    key={post.id}
-                    postData={post}
-                    currentUser={userSession.user as CurrentUser}
-                  />
-                );
-              })}
+            <div className="min-w-[545px] lg:w-[825px] relative top-[-12px]">
+              {displayPosts.length === 0 ? (
+                <div>Too quiet here </div>
+              ) : (
+                displayPosts.map((post) => {
+                  return (
+                    <DisplayPost
+                      key={post.id}
+                      postData={post}
+                      currentUser={userSession.user as CurrentUser}
+                    />
+                  );
+                })
+              )}
             </div>
-            <div className="flex flex-col gap-2">
-              <NotificationFeed />
-              <FriendList />
-            </div>
+            <FriendList />
           </main>
         </div>
       </BackgroundContainer>
@@ -184,4 +186,4 @@ const Home: NextPage<
   );
 };
 
-export default Home;
+export default UserSpecificPage;

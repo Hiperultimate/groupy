@@ -1,15 +1,15 @@
+import { type Tag } from "@prisma/client";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import SvgMessageIcon from "public/SvgMessageIcon";
 import SvgPeopleIcon from "public/SvgPeopleIcon";
 import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
 import SvgThumbsUpIconFill from "public/SvgThumbsUpIconFill";
-import DisplayUserImage from "./DisplayUserImage";
-import { type SerializablePost } from "~/pages/home";
-import { type CurrentUser } from "~/pages/home";
-import { api } from "~/utils/api";
 import { useEffect, useState } from "react";
-import { type Tag } from "@prisma/client";
 import { ColorRing, Discuss } from "react-loader-spinner";
+import { type CurrentUser, type SerializablePost } from "~/pages/home";
+import { api } from "~/utils/api";
+import DisplayUserImage from "./DisplayUserImage";
 
 type PostComment = {
   id: string;
@@ -61,6 +61,8 @@ export const DisplayPost = ({
   postData: SerializablePost;
   currentUser: CurrentUser;
 }) => {
+  const router = useRouter();
+
   const [comment, setComment] = useState("");
   const [postComments, setPostComments] = useState<PostComment[]>([]);
   const [likeCounter, setLikeCounter] = useState(0);
@@ -155,6 +157,12 @@ export const DisplayPost = ({
     }
   }
 
+  function redirectToSelectedUser() {
+    if (authorAtTag) {
+      void router.push(`/${authorAtTag}`);
+    }
+  }
+
   return (
     <div
       key={postID}
@@ -169,9 +177,20 @@ export const DisplayPost = ({
         </div>
         <div className="flex w-full flex-col">
           <div className="flex justify-between">
-            <div className="mx-3 mt-3 flex flex-wrap">
-              <div className="font-bold">{authorName}</div>
-              <div className="ml-1 text-grey">{authorAtTag}</div>
+            <div
+              className="mx-3 mt-3 flex flex-wrap hover:cursor-pointer"
+              onClick={redirectToSelectedUser}
+            >
+              <div className="font-bold">
+                <span className=" underline-offset-4 hover:underline">
+                  {authorName}
+                </span>
+              </div>
+              <div className="ml-1 text-grey">
+                <span className=" underline-offset-4 hover:underline">
+                  @{authorAtTag}
+                </span>
+              </div>
             </div>
             <div className="mx-3 mt-3 text-grey">
               {createdAt.toLocaleDateString()}
@@ -209,7 +228,7 @@ export const DisplayPost = ({
         {postImage && (
           <div>
             {isImageLoading && (
-              <div className="h-72 flex justify-center items-center">
+              <div className="flex h-72 items-center justify-center">
                 <ColorRing
                   visible={true}
                   height="80"
@@ -235,7 +254,6 @@ export const DisplayPost = ({
               style={{ width: "auto", height: "auto", maxHeight: "600px" }}
               alt={"An error occured while loading the image."}
               onLoadingComplete={() => {
-                console.log("setIsImage running : ");
                 setIsImageLoading(false);
               }}
             />

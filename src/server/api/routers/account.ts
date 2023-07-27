@@ -9,7 +9,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-import { type PrismaClient } from "@prisma/client";
+import { NotificationType, Prisma, type PrismaClient } from "@prisma/client";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
@@ -30,6 +30,51 @@ export async function getUserByID(
 
   const user = await prisma.user.findFirst({
     where: { id: input },
+    include: { tags: true },
+  });
+  if (!user) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  const { id, name, email, dateOfBirth, atTag, description, image, tags } =
+    user;
+
+  let imageURL = image;
+
+  if (image) {
+    const { data } = supabase.storage.from("images").getPublicUrl(`${image}`);
+    imageURL = data.publicUrl;
+  }
+
+  return {
+    id,
+    name,
+    email,
+    dateOfBirth,
+    atTag,
+    description,
+    image: imageURL,
+    tags,
+  };
+}
+
+export async function getUserByTag(
+  prisma: PrismaClient,
+  session: Session,
+  userTag: string
+) {
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid user session",
+    });
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { atTag: userTag },
     include: { tags: true },
   });
   if (!user) {
@@ -168,5 +213,213 @@ export const accountRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const userData = await getUserByID(ctx.prisma, ctx.session, input.userId);
       return userData;
+    }),
+
+  getUserByTag: protectedProcedure
+    .input(z.object({ atTag: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userData = await getUserByTag(ctx.prisma, ctx.session, input.atTag);
+      return userData;
+    }),
+
+  getUserTagById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const userTag = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          atTag: true,
+        },
+      });
+
+      if (!userTag) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      return { userTag: userTag.atTag };
+    }),
+
+  sendFriendRequestNotification: protectedProcedure
+    .input(z.object({ toUserId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userSendingFR = ctx.session.user.id;
+      const userReceivingFR = input.toUserId;
+
+      const toUser = await ctx.prisma.user.findFirst({
+        where: { id: userReceivingFR },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!toUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      if (userSendingFR === input.toUserId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Cannot send friend request to yourself",
+        });
+      }
+
+      const isExistingFR = await ctx.prisma.notification.findFirst({
+        where: {
+          sendingUserId: userSendingFR,
+          receivingUserId: userReceivingFR,
+        },
+      });
+
+      if (isExistingFR) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Friend request already sent",
+        });
+      }
+
+      // Creating notification in DB
+      await ctx.prisma.notification.create({
+        data: {
+          type: NotificationType.FRIENDREQUEST,
+          message: `${ctx.session.user.atTag} has sent you a friend request`,
+          receivingUser: { connect: { id: userReceivingFR } },
+          sendingUser: { connect: { id: userSendingFR } },
+        },
+      });
+
+      return { success: true, message: "Friend request sent" };
+    }),
+
+  isFriend: protectedProcedure
+    .input(z.object({ targetUser: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const currentUserId = ctx.session.user.id;
+
+      const isTargetUserFriend = await ctx.prisma.user.findFirst({
+        where: {
+          id: currentUserId,
+          friendList: {
+            some: {
+              id: input.targetUser,
+            },
+          },
+        },
+        select: {
+          friendList: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      return {
+        isFriend: isTargetUserFriend ? true : false,
+      };
+    }),
+
+  addFriend: protectedProcedure
+    .input(z.object({ firstUserId: z.string(), secondUserId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const firstUserFR = ctx.prisma.user.update({
+        where: {
+          id: input.firstUserId,
+        },
+        data: {
+          friendList: {
+            connect: {
+              id: input.secondUserId,
+            },
+          },
+        },
+      });
+
+      const secondUserFR = ctx.prisma.user.update({
+        where: {
+          id: input.secondUserId,
+        },
+        data: {
+          friendList: {
+            connect: {
+              id: input.firstUserId,
+            },
+          },
+        },
+      });
+
+      await ctx.prisma.$transaction([firstUserFR, secondUserFR]);
+    }),
+
+  unfriend: protectedProcedure
+    .input(z.object({ firstUserId: z.string(), secondUserId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const firstUserFR = ctx.prisma.user.update({
+        where: {
+          id: input.firstUserId,
+        },
+        data: {
+          friendList: {
+            disconnect: {
+              id: input.secondUserId,
+            },
+          },
+        },
+      });
+
+      const secondUserFR = ctx.prisma.user.update({
+        where: {
+          id: input.secondUserId,
+        },
+        data: {
+          friendList: {
+            disconnect: {
+              id: input.firstUserId,
+            },
+          },
+        },
+      });
+
+      await ctx.prisma.$transaction([firstUserFR, secondUserFR]);
+    }),
+
+  getUserNotifications: protectedProcedure.query(async ({ ctx }) => {
+    const currentUserId = ctx.session.user.id;
+    const userNotifications = await ctx.prisma.user.findUnique({
+      where: {
+        id: currentUserId,
+      },
+      select: {
+        myNotifications: true,
+      },
+    });
+
+    return { userNotifications };
+  }),
+
+  deleteNotification: protectedProcedure
+    .input(z.object({ notificationId: z.string() }))
+    .output(z.object({ success: z.boolean(), message: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.notification.delete({
+          where: {
+            id: input.notificationId,
+          },
+        });
+        return { success: true };
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError) {
+          return { success: false, message: err.code };
+        }
+      }
+      return { success: false, message: "Something went wrong" };
     }),
 });

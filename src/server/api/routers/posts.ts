@@ -21,7 +21,7 @@ export async function getPosts(
   session: Session,
   takenPosts: number
 ) {
-  const numberOfPosts = 5 as const; // Change it to 10 later on
+  const numberOfPosts = 5 as const;
   if (!session) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
@@ -68,12 +68,98 @@ export async function getPosts(
   return finalPostData;
 }
 
+export async function getPostsFromUserTag(
+  prisma: PrismaClient,
+  session: Session,
+  atTag: string,
+  takenPosts: number
+) {
+  const numberOfPosts = 5 as const;
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Invalid user session",
+    });
+  }
+
+  const getUser = await prisma.user.findUnique({ where: { atTag: atTag } });
+
+  if (!getUser) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  const postData = await prisma.post.findMany({
+    where: { authorId: getUser.id },
+    take: numberOfPosts,
+    skip: takenPosts,
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      tags: true,
+      _count: {
+        select: {
+          comments: true,
+          likedBy: true,
+        },
+      },
+    },
+  });
+
+  const finalPostData = await Promise.all(
+    postData.map(async (post) => {
+      const userLikePost = await prisma.post.findFirst({
+        where: { id: post.id, likedBy: { some: { userId: session.user.id } } },
+      });
+      let currentUserLikePost = false;
+      if (userLikePost !== null) {
+        currentUserLikePost = true;
+      }
+      const likeCount = post._count.likedBy;
+      const commentCount = post._count.comments;
+      if (post.image) {
+        const { data: getImageData } = supabase.storage
+          .from("images")
+          .getPublicUrl(`${post.image}`);
+
+        post.image = getImageData.publicUrl;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _count, ...requiredFields } = post;
+      const editedPost = {
+        ...requiredFields,
+        likeCount: likeCount,
+        isUserLikePost: currentUserLikePost,
+        commentCount: commentCount,
+      };
+      return editedPost;
+    })
+  );
+
+  return finalPostData;
+}
+
 export const postRouter = createTRPCRouter({
   getPosts: protectedProcedure
     .input(z.object({ takenPosts: z.number() }))
     .query(({ ctx, input }) => {
       return getPosts(ctx.prisma, ctx.session, input.takenPosts);
     }),
+
+  getPostsFromUserTag: protectedProcedure
+    .input(z.object({ userTag: z.string(), takenPosts: z.number() }))
+    .query(({ ctx, input }) => {
+      return getPostsFromUserTag(
+        ctx.prisma,
+        ctx.session,
+        input.userTag,
+        input.takenPosts
+      );
+    }),
+
   getPostComments: protectedProcedure
     .input(z.object({ postID: z.string(), takenComments: z.number() }))
     .query(async ({ ctx, input }) => {
