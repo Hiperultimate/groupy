@@ -11,17 +11,22 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   });
   const userId = data?.id;
 
-  const { status: isFriendStatus, data: isFriend } =
-    api.account.isFriend.useQuery(
-      {
-        targetUser: userId as string,
-      },
-      {
-        enabled: !!userId,
-      }
-    );
+  const {
+    status: isFriendStatus,
+    data: isFriend,
+    refetch: isFriendRefetch,
+  } = api.account.isFriend.useQuery(
+    {
+      targetUser: userId as string,
+    },
+    {
+      enabled: !!userId,
+    }
+  );
   const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
     api.account.sendFriendRequestNotification.useMutation();
+
+  const { mutate: removeFriend } = api.account.unfriend.useMutation();
 
   const [friendReqMsg, setFriendReqMsg] = useState("");
 
@@ -77,7 +82,22 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
           isFriendStatus === "success" ? (
             <div className="flex justify-end ">
               {isFriend.isFriend ? (
-                <button className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200">
+                <button
+                  onClick={() => {
+                    removeFriend(
+                      {
+                        firstUserId: userId as string,
+                        secondUserId: currentUser.data.user.id,
+                      },
+                      {
+                        onSuccess: () => {
+                          void isFriendRefetch();
+                        },
+                      }
+                    );
+                  }}
+                  className="relative left-2 rounded-md bg-slate-400 px-2 text-white transition-all hover:bg-grey disabled:bg-slate-200"
+                >
                   - Unfriend
                 </button>
               ) : (
