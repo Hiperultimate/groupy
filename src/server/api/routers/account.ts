@@ -390,6 +390,37 @@ export const accountRouter = createTRPCRouter({
       await ctx.prisma.$transaction([firstUserFR, secondUserFR]);
     }),
 
+  getUserFriends: protectedProcedure.query(async ({ ctx }) => {
+    const allUserFriends = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.session.user.id,
+      },
+      select: {
+        friendList: {
+          select: {
+            id: true,
+            name: true,
+            atTag: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    if (allUserFriends) {
+      allUserFriends.friendList.map((friend) => {
+        if (friend.image) {
+          const { data } = supabase.storage
+            .from("images")
+            .getPublicUrl(`${friend.image}`);
+          friend.image = data.publicUrl;
+        }
+      });
+    }
+
+    return allUserFriends;
+  }),
+
   getUserNotifications: protectedProcedure.query(async ({ ctx }) => {
     const currentUserId = ctx.session.user.id;
     const userNotifications = await ctx.prisma.user.findUnique({
