@@ -4,7 +4,7 @@ import { useSetRecoilState } from "recoil";
 import { api } from "~/utils/api";
 import { notification as notificationStore } from "../../store/atoms/notification";
 
-const FriendRequstMessage = ({
+const FriendRequestMessage = ({
   notification,
 }: {
   notification: Notification;
@@ -105,4 +105,4 @@ const FriendRequstMessage = ({
   );
 };
 
-export default FriendRequstMessage;
+export default FriendRequestMessage;

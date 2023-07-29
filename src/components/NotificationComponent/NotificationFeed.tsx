@@ -2,7 +2,7 @@ import { ColorRing } from "react-loader-spinner";
 import { useRecoilState } from "recoil";
 import { notification } from "~/store/atoms/notification";
 import { api } from "~/utils/api";
-import FriendRequstMessage from "./FriendRequestMessage";
+import FriendRequestMessage from "./FriendRequestMessage";
 
 const NotificationFeed = () => {
   const {
@@ -61,13 +61,13 @@ const NotificationFeed = () => {
                             <div
                               className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
                             />
-                            <FriendRequstMessage notification={notification} />
+                            <FriendRequestMessage notification={notification} />
                           </div>
                         );
                       } else {
                         return (
                           <div key={notification.id}>
-                            <FriendRequstMessage notification={notification} />
+                            <FriendRequestMessage notification={notification} />
                           </div>
                         );
                       }
