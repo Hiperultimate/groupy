@@ -6,8 +6,10 @@ import { notification as notificationStore } from "../../store/atoms/notificatio
 
 const FriendRequestMessage = ({
   notification,
+  refetchNotificationStatus,
 }: {
   notification: Notification;
+  refetchNotificationStatus: () => void;
 }) => {
   const router = useRouter();
   const setNotification = useSetRecoilState(notificationStore);
@@ -18,7 +20,11 @@ const FriendRequestMessage = ({
     });
 
   const { mutate: deleteNotification, isLoading: deletingNotification } =
-    api.account.deleteNotification.useMutation();
+    api.account.deleteNotification.useMutation({
+      onSuccess: () => {
+        refetchNotificationStatus();
+      },
+    });
 
   const { mutate: addFriend, isLoading: isFriendAddLoading } =
     api.account.addFriend.useMutation({
@@ -30,6 +36,7 @@ const FriendRequestMessage = ({
           });
           return filteredNotifications;
         });
+        refetchNotificationStatus();
       },
     });
 

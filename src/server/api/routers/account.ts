@@ -453,4 +453,26 @@ export const accountRouter = createTRPCRouter({
       }
       return { success: false, message: "Something went wrong" };
     }),
+
+  userHasNotifications: protectedProcedure.query(async ({ ctx }) => {
+    const currentUserId = ctx.session.user.id;
+    const userNotifications = await ctx.prisma.user.findUnique({
+      where: {
+        id: currentUserId,
+      },
+      select: {
+        _count: {
+          select: {
+            myNotifications: true,
+          },
+        },
+      },
+    });
+
+    return userNotifications
+      ? userNotifications._count.myNotifications > 0
+        ? true
+        : false
+      : false;
+  }),
 });

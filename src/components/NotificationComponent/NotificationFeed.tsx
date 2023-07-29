@@ -11,6 +11,9 @@ const NotificationFeed = () => {
     isFetched,
   } = api.account.getUserNotifications.useQuery(undefined, { enabled: false });
 
+  const { data: userHasNotifications, refetch: refetchUserHasNotifications } =
+    api.account.userHasNotifications.useQuery();
+
   const [userNotification, setNotification] = useRecoilState(notification);
 
   async function fetchUserNotifications() {
@@ -26,12 +29,17 @@ const NotificationFeed = () => {
 
   return (
     <div className="rounded-lg bg-white py-2 shadow-md">
-      <span
+      <div
         className="flex justify-center font-bold hover:cursor-pointer"
         onClick={() => void fetchUserNotifications()}
       >
-        Notifications
-      </span>
+        <span>Notifications</span>
+        {userHasNotifications ? (
+          <span className="relative top-2 mx-2 h-2 w-2 rounded-full bg-light-orange" />
+        ) : (
+          <span className="relative top-2 mx-2 h-2 w-2 rounded-full bg-grey" />
+        )}
+      </div>
       {isFetched && userNotification.length !== 0 && (
         <div className="">
           <div
@@ -61,13 +69,23 @@ const NotificationFeed = () => {
                             <div
                               className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
                             />
-                            <FriendRequestMessage notification={notification} />
+                            <FriendRequestMessage
+                              notification={notification}
+                              refetchNotificationStatus={
+                                refetchUserHasNotifications
+                              }
+                            />
                           </div>
                         );
                       } else {
                         return (
                           <div key={notification.id}>
-                            <FriendRequestMessage notification={notification} />
+                            <FriendRequestMessage
+                              notification={notification}
+                              refetchNotificationStatus={
+                                refetchUserHasNotifications
+                              }
+                            />
                           </div>
                         );
                       }
