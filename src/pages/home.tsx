@@ -12,7 +12,7 @@ import { getServerAuthSession } from "../server/auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { atom, useRecoilState } from "recoil";
+import { atom, useRecoilState, useSetRecoilState } from "recoil";
 
 import { type Tag } from "@prisma/client";
 import { type Session } from "next-auth";
@@ -23,6 +23,7 @@ import FriendList from "~/components/FriendList";
 import NotificationFeed from "~/components/NotificationComponent/NotificationFeed";
 import UserDetails from "~/components/UserDetails";
 import { api } from "~/utils/api";
+import { notification } from "~/store/atoms/notification";
 
 export type SerializablePost = {
   id: string;
@@ -88,6 +89,8 @@ const Home: NextPage<
   const [displayPosts, setDisplayPosts] =
     useRecoilState<SerializablePost[]>(postsState);
 
+  const setNotification = useSetRecoilState(notification);
+
   useEffect(() => {
     setDisplayPosts(posts);
   }, [setDisplayPosts, posts]);
@@ -97,6 +100,10 @@ const Home: NextPage<
       { takenPosts: displayPosts.length },
       { enabled: false }
     );
+
+  useEffect(() => {
+    setNotification([]);
+  }, [setNotification]);
 
   useEffect(() => {
     if (!userSession) {

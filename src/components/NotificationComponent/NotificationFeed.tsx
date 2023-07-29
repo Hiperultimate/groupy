@@ -32,7 +32,7 @@ const NotificationFeed = () => {
       >
         Notifications
       </span>
-      {isFetched && (
+      {isFetched && userNotification.length !== 0 && (
         <div className="">
           <div
             className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
