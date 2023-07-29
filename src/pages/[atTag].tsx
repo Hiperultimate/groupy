@@ -163,9 +163,11 @@ const UserSpecificPage: NextPage<
             <div>
               <UserTagDetails userTag={userTag} />
             </div>
-            <div className="min-w-[545px] lg:w-[825px] relative top-[-12px]">
+            <div className="relative top-[-12px] min-w-[545px] lg:w-[825px]">
               {displayPosts.length === 0 ? (
-                <div>Too quiet here </div>
+                <div className="mx-2 mt-3 flex h-full items-center justify-center rounded-lg bg-gradient-to-b  from-slate-700 bg-opacity-20">
+                  <span className="text-white">Too quiet here</span>
+                </div>
               ) : (
                 displayPosts.map((post) => {
                   return (
