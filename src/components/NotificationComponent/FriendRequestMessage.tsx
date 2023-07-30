@@ -6,13 +6,14 @@ import { notification as notificationStore } from "../../store/atoms/notificatio
 
 const FriendRequestMessage = ({
   notification,
-  refetchNotificationStatus,
 }: {
   notification: Notification;
-  refetchNotificationStatus: () => void;
 }) => {
   const router = useRouter();
   const setNotification = useSetRecoilState(notificationStore);
+
+  const { refetch: refetchUserHasNotifications } =
+    api.account.userHasNotifications.useQuery();
 
   const { data: userTag, isLoading: isUserTagLoading } =
     api.account.getUserTagById.useQuery({
@@ -21,14 +22,14 @@ const FriendRequestMessage = ({
 
   const { mutate: deleteNotification, isLoading: deletingNotification } =
     api.account.deleteNotification.useMutation({
-      onSuccess: () => {
-        refetchNotificationStatus();
+      onSuccess: async () => {
+        await refetchUserHasNotifications({queryKey : ['notifications']});
       },
     });
 
   const { mutate: addFriend, isLoading: isFriendAddLoading } =
     api.account.addFriend.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         deleteNotification({ notificationId: notification.id });
         setNotification((currVal) => {
           const filteredNotifications = currVal.filter((notif) => {
@@ -36,7 +37,7 @@ const FriendRequestMessage = ({
           });
           return filteredNotifications;
         });
-        refetchNotificationStatus();
+        await refetchUserHasNotifications();
       },
     });
 

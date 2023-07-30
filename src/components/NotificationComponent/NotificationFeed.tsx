@@ -11,7 +11,7 @@ const NotificationFeed = () => {
     isFetched,
   } = api.account.getUserNotifications.useQuery(undefined, { enabled: false });
 
-  const { data: userHasNotifications, refetch: refetchUserHasNotifications } =
+  const { data: userHasNotifications } =
     api.account.userHasNotifications.useQuery();
 
   const [userNotification, setNotification] = useRecoilState(notification);
@@ -71,9 +71,6 @@ const NotificationFeed = () => {
                             />
                             <FriendRequestMessage
                               notification={notification}
-                              refetchNotificationStatus={
-                                refetchUserHasNotifications
-                              }
                             />
                           </div>
                         );
@@ -82,9 +79,6 @@ const NotificationFeed = () => {
                           <div key={notification.id}>
                             <FriendRequestMessage
                               notification={notification}
-                              refetchNotificationStatus={
-                                refetchUserHasNotifications
-                              }
                             />
                           </div>
                         );
