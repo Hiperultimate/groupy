@@ -7,7 +7,7 @@ import {
 import { getPostsFromUserTag } from "~/server/api/routers/posts";
 
 import { prisma } from "~/server/db";
-import { getServerAuthSession } from "../server/auth";
+import { getServerAuthSession } from "../../server/auth";
 
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
