@@ -38,7 +38,7 @@ const FriendList = () => {
           </div>
         ) : (
           <div className="h-96 overflow-y-auto">
-            {friendList?.friendList ? (
+            {friendList?.friendList.length !== 0 ? (
               friendList?.friendList.map((friend) => {
                 return (
                   <div
