@@ -23,7 +23,7 @@ const FriendRequestMessage = ({
   const { mutate: deleteNotification, isLoading: deletingNotification } =
     api.account.deleteNotification.useMutation({
       onSuccess: async () => {
-        await refetchUserHasNotifications({queryKey : ['notifications']});
+        await refetchUserHasNotifications();
       },
     });
 
