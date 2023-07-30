@@ -27,6 +27,8 @@ const FriendRequestMessage = ({
       },
     });
 
+  const { refetch: refetchFriendList } = api.account.getUserFriends.useQuery();
+
   const { mutate: addFriend, isLoading: isFriendAddLoading } =
     api.account.addFriend.useMutation({
       onSuccess: async () => {
@@ -38,6 +40,7 @@ const FriendRequestMessage = ({
           return filteredNotifications;
         });
         await refetchUserHasNotifications();
+        await refetchFriendList();
       },
     });
 
@@ -45,7 +48,7 @@ const FriendRequestMessage = ({
     void router.push(`/${userTag}`);
   }
 
-  function onClickDeleteNotification() {
+  function rejectFriendRequest() {
     deleteNotification(
       { notificationId: notification.id },
       {
@@ -97,7 +100,7 @@ const FriendRequestMessage = ({
                   Accept
                 </button>
                 <button
-                  onClick={onClickDeleteNotification}
+                  onClick={rejectFriendRequest}
                   className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey"
                 >
                   Reject
