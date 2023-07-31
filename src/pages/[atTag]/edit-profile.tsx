@@ -87,7 +87,7 @@ const EditProfile: NextPage<
     userData.description ? userData.description : ""
   );
   const [userImage, setUserImage] = useState<string | undefined>(
-    userData.image ? userData.image : ""
+    userData.image ? userData.image : undefined
   );
   // This state is for the AsyncCreatableSelectComponent component
   const [selectedTags, setSelectedTags] = useState<TagOption[]>(userData.tags);

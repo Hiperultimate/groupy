@@ -307,7 +307,7 @@ export const accountRouter = createTRPCRouter({
               create: { name: tag.value },
             })),
           },
-          image: imageHolder,
+          image: imageHolder ? imageHolder.startsWith('https') ? currentUserData.image : imageHolder : null,
         },
       });
 
