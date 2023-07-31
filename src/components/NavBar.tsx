@@ -3,14 +3,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 
-type PageType = "signin" | "home" | "chat" | "settings" | "signup";
+type PageType = "signin" | "home" | "chat" | "profile" | "signup";
 
 export const pageStates = {
   SIGNIN: "signin",
   SIGNUP: "signup",
   HOME: "home",
   CHAT: "chat",
-  SETTINGS: "settings",
+  PROFILE: "profile",
 } as const;
 
 const NavBar = () => {
@@ -34,8 +34,8 @@ const NavBar = () => {
     case "/home":
       selectedPage = pageStates.HOME;
       break;
-    case "/settings":
-      selectedPage = pageStates.SETTINGS;
+    case `/${sessionData?.user.atTag as string}/edit-profile`:
+      selectedPage = pageStates.PROFILE;
       break;
     case "/chat":
       selectedPage = pageStates.CHAT;
@@ -54,7 +54,7 @@ const NavBar = () => {
       <div>
         <Link className="relative ml-5 flex font-teko text-[29px]" href="/">
           <div className="relative top-[3px] flex">
-            <div className="mx-5 h-10 w-10 relative top-[-2px]">
+            <div className="relative top-[-2px] mx-5 h-10 w-10">
               <SvgGroupyLogo />
             </div>
             <span className="relative">GROUPY</span>
@@ -88,11 +88,11 @@ const NavBar = () => {
           <li>
             <Link
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
-                selectedPage === pageStates.SETTINGS ? `underline` : ``
+                selectedPage === pageStates.PROFILE ? `underline` : ``
               }`}
-              href="#"
+              href={`${sessionData?.user.atTag}/edit-profile`}
             >
-              Settings
+              Profile
             </Link>
           </li>
 
