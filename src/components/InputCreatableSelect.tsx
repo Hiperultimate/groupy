@@ -138,7 +138,10 @@ const InputCreatableSelect = ({
           handleFieldState.setInputState(newValue as TagOption[]);
           handleErrorState.setErrorState([]);
         }}
-        onInputChange={(newValue) => setInputValue(newValue)}
+        onInputChange={(newValue) => {
+          setInputValue(newValue); 
+          handleErrorState.setErrorState([]);
+        }}
         onKeyDown={handleKeyDown}
         loadOptions={loadOptions}
         placeholder="Type something and press enter..."
