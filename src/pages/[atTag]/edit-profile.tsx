@@ -169,18 +169,7 @@ const EditProfile: NextPage<
         userData.image = base64Image;
       }
 
-      // Create user
-      // signUpUser(userData, {
-      //   onError: (error) => {
-      //     setServerError(error.message);
-      //   },
-      //   onSuccess: (data) => {
-      //     console.log("Success!");
-      //     console.log("New user data : ", data);
-      //     router.push("/");
-      //   },
-      // });
-
+      
       // Update user
       updateUser(userData, {
         onError: (error) => {

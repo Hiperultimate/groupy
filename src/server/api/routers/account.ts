@@ -218,7 +218,6 @@ export const accountRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Fix a bug where old user image URL is distrubed in DB
       const { name, email, dob, description, userTags, image } = input;
 
       const currentUserData = await ctx.prisma.user.findUnique({
