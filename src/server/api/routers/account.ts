@@ -476,3 +476,5 @@ export const accountRouter = createTRPCRouter({
       : false;
   }),
 });
+
+export type AccountRouter = typeof accountRouter;
