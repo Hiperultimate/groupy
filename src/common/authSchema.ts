@@ -31,7 +31,7 @@ export const updateUserSchema = z.object({
 )
 .superRefine((schema, ctx) => {
   // Image is an optional field. Skip image validation if no image is passed.
-  if (schema.image !== undefined) {
+  if (schema.image !== undefined && !schema.image.startsWith("https")) {
     try {
       const { imageMime, fileSizeInBytes } = base64ToImageData(schema.image);
       if (!imageMime || !fileSizeInBytes) {

@@ -60,7 +60,7 @@ export const getServerSideProps: GetServerSideProps<{
   const serializableUserData = {
     ...rest,
     dateOfBirth: rest.dateOfBirth.toString(),
-    tags : serializedTags
+    tags: serializedTags,
   };
 
   return {
@@ -74,14 +74,14 @@ const EditProfile: NextPage<
   const router = useRouter();
 
   // Instead of signUpUser write a procedure to update user data here
-  const { mutate: signUpUser, isLoading: registerUser_isLoading } =
-    api.account.signup.useMutation();
+  const { mutate: updateUser, isLoading: updateUser_isLoading } =
+    api.account.updateUser.useMutation();
 
   const [name, setName] = useState<string>(userData.name);
   const [email, setEmail] = useState<string>(userData.email);
   const [dob, setDob] = useState<string>(
-    new Date(userData.dateOfBirth).toISOString().split('T')[0] || ''
-  ); // Needs some fixing
+    new Date(userData.dateOfBirth).toISOString().split("T")[0] || ""
+  );
   const [userNameTag, setUserNameTag] = useState<string>(userData.atTag);
   const [description, setDescription] = useState<string>(
     userData.description ? userData.description : ""
@@ -101,7 +101,6 @@ const EditProfile: NextPage<
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
   const [serverError, setServerError] = useState<string>("");
-
 
   const fieldSetErrorMap: FieldSetErrorMap = {
     name: setNameError,
@@ -181,6 +180,18 @@ const EditProfile: NextPage<
       //     router.push("/");
       //   },
       // });
+
+      // Update user
+      updateUser(userData, {
+        onError: (error) => {
+          setServerError(error.message);
+        },
+        onSuccess: (data) => {
+          console.log("Success!");
+          console.log("Updated data : ", data);
+          // router.push("/");
+        },
+      });
     }
   };
 
@@ -216,7 +227,7 @@ const EditProfile: NextPage<
                       inputState: nameError,
                       changeInputState: setNameError,
                     }}
-                    disabled={registerUser_isLoading}
+                    disabled={updateUser_isLoading}
                   />
                 </div>
                 <div className="w-1/2">
@@ -232,7 +243,7 @@ const EditProfile: NextPage<
                       inputState: emailError,
                       changeInputState: setEmailError,
                     }}
-                    disabled={registerUser_isLoading}
+                    disabled={updateUser_isLoading}
                   />
                 </div>
               </div>
@@ -252,14 +263,14 @@ const EditProfile: NextPage<
                       inputState: dobError,
                       changeInputState: setDobError,
                     }}
-                    disabled={registerUser_isLoading}
+                    disabled={updateUser_isLoading}
                   />
                 </div>
 
                 <div className="w-1/2">
                   <InputField
                     title="@Tag-name"
-                    isRequired={true}
+                    isRequired={false}
                     placeholder="ExampleName25"
                     handleState={{
                       inputState: userNameTag,
@@ -269,7 +280,7 @@ const EditProfile: NextPage<
                       inputState: userNameTagError,
                       changeInputState: setUserNameTagError,
                     }}
-                    disabled={registerUser_isLoading}
+                    disabled={true}
                   />
                 </div>
               </div>
@@ -368,7 +379,7 @@ const EditProfile: NextPage<
               <button
                 className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white disabled:bg-[#ff9e3e]"
                 type="submit"
-                disabled={registerUser_isLoading}
+                disabled={updateUser_isLoading}
               >
                 Submit
               </button>

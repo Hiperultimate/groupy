@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { signUpSchema } from "../../../common/authSchema";
+import { signUpSchema, updateUserSchema } from "../../../common/authSchema";
 
 import { TRPCError } from "@trpc/server";
 import {
@@ -204,6 +204,116 @@ export const accountRouter = createTRPCRouter({
       return {
         message: "Account created successfully",
         status: 201,
+        result: result.email,
+      };
+    }),
+
+  updateUser: protectedProcedure
+    .input(updateUserSchema)
+    .output(
+      z.object({
+        message: z.string(),
+        status: z.number(),
+        result: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Fix a bug where old user image URL is distrubed in DB
+      const { name, email, dob, description, userTags, image } = input;
+
+      const currentUserData = await ctx.prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+        include: { tags: true },
+      });
+
+      if (!currentUserData) {
+        throw new TRPCError({
+          message: "Something went wrong",
+          code: "BAD_REQUEST",
+        });
+      }
+
+      const userWithNewEmail = await ctx.prisma.user.findFirst({
+        where: { email },
+        select: { email: true, atTag: true },
+      });
+
+      if (
+        userWithNewEmail &&
+        userWithNewEmail.atTag !== currentUserData.atTag
+      ) {
+        throw new TRPCError({
+          message: "User with this Email ID already exists",
+          code: "FORBIDDEN",
+        });
+      }
+
+      let imageHolder = image;
+      // Checking if image was newly uploaded or not
+      if (image !== undefined && !image.startsWith("https")) {
+        const { imageBuffer, imageMime, imageFormat } =
+          base64ToImageData(image);
+
+        if (!imageMime || !imageFormat) {
+          throw new TRPCError({
+            message: "Error occured while handling image",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+
+        // Delete users old image from the storage
+        const oldImage = currentUserData.image;
+        if (oldImage) {
+          await supabase.storage.from("images").remove([oldImage]);
+        }
+
+        // This successfully uploads the image
+        // Add name with Checking.png using npm install uuid and add format
+        const { data: getImageURL, error } = await supabase.storage
+          .from("images")
+          .upload(`displayPictures/${uuidv4()}.${imageFormat}`, imageBuffer, {
+            contentType: `${imageMime}`,
+          });
+
+        if (error) {
+          throw new TRPCError({
+            message: "Error occured while generating image URL",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        } else {
+          imageHolder = getImageURL.path;
+        }
+      }
+
+      const tagsToDisconnect = currentUserData.tags.filter((tag) => {
+        return !userTags.some((newTag) => tag.name === newTag.value);
+      });
+
+      const result = await ctx.prisma.user.update({
+        where: {
+          id: currentUserData.id,
+        },
+        data: {
+          name: name,
+          email: email,
+          dateOfBirth: dob,
+          description: description,
+          tags: {
+            disconnect: tagsToDisconnect.map((tag) => {
+              return { id: tag.id };
+            }),
+            connectOrCreate: userTags.map((tag) => ({
+              where: { name: tag.value },
+              create: { name: tag.value },
+            })),
+          },
+          image: imageHolder,
+        },
+      });
+
+      return {
+        message: "Profile Updated successfully",
+        status: 200,
         result: result.email,
       };
     }),
