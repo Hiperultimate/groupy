@@ -90,7 +90,10 @@ const NavBar = () => {
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
                 selectedPage === pageStates.PROFILE ? `underline` : ``
               }`}
-              href={`${sessionData?.user.atTag}/edit-profile`}
+              href={{
+                pathname: '/[atTag]/edit-profile',
+                query: { atTag: sessionData.user.atTag },
+              }}
             >
               Profile
             </Link>

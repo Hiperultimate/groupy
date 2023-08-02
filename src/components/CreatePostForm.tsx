@@ -409,7 +409,7 @@ function CreatePostForm({
       </div>
 
       <div className="my-4">
-        <span>Your Profile Picture</span>
+        <span>Your Uploaded Picture</span>
         <div className="flex items-center justify-center bg-[#d9d9d9]">
           {userImage === undefined ? (
             <div className="relative m-4 flex h-48 w-full items-center justify-center bg-[#d9d9d9]">
