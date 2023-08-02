@@ -82,14 +82,11 @@ const FriendRequestMessage = ({
         <div>
           {userTag ? (
             <div className="px-2">
-              <div className="flex justify-center">
-                <span
-                  onClick={() => redirectToSelectedUser(userTag.userTag)}
-                  className="font-bold hover:cursor-pointer hover:underline"
-                >
-                  @{userTag.userTag}
+              <div className="flex justify-center text-center">
+                <span onClick={() => redirectToSelectedUser(userTag.userTag)}>
+                  <span className="font-bold hover:cursor-pointer hover:underline">@{userTag.userTag}</span>
+                  &nbsp;sent you a friend request.
                 </span>
-                &nbsp;sent you a friend request.
               </div>
               <div className="my-2 flex justify-center gap-4">
                 <button

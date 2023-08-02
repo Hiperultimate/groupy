@@ -41,7 +41,7 @@ const NotificationFeed = () => {
         )}
       </div>
       {isFetched && userNotification.length !== 0 && (
-        <div className="">
+        <div className={`${tailwindComponentWidth}`}>
           <div
             className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
           />
