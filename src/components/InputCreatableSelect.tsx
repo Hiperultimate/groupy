@@ -83,14 +83,11 @@ const InputCreatableSelect = ({
   const [inputValue, setInputValue] = useState("");
   const { data: relatedTags } = api.tags.relatedTags.useQuery(inputValue);
 
-  const filterTags = (inputValue: string) => {
-    const filterRelatedTags = relatedTags?.filter((i) =>
-      i.name.includes(inputValue.toLowerCase())
-    );
-    if (!filterRelatedTags) {
+  const filterTags = () => {
+    if (!relatedTags) {
       return [];
     }
-    const convertToRequiredType: TagOption[] = filterRelatedTags.map(
+    const convertToRequiredType: TagOption[] = relatedTags.map(
       (object) => {
         return createOption(object.name);
       }
@@ -104,7 +101,7 @@ const InputCreatableSelect = ({
     callback: (options: TagOption[]) => void
   ) => {
     setTimeout(() => {
-      const gettingTagResult = filterTags(inputValue);
+      const gettingTagResult = filterTags();
       callback(gettingTagResult);
     }, 1000);
   };

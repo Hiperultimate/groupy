@@ -7,9 +7,9 @@ import {
 
 export const tags = createTRPCRouter({
   relatedTags: publicProcedure.input(z.string()).query(({ ctx, input }) => {
-    const searchString = input.toLowerCase().replace(/ /g, "");
+    const searchString = input.replace(/ /g, "");
     return ctx.prisma.tag.findMany({
-      where: { name: { contains: searchString } },
+      where: { name: { contains: searchString, mode: "insensitive" } },
       take: 5,
     });
   }),
