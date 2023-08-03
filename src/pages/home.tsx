@@ -12,7 +12,7 @@ import { getServerAuthSession } from "../server/auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { type Tag } from "@prisma/client";
 import { type Session } from "next-auth";
@@ -24,6 +24,7 @@ import NotificationFeed from "~/components/NotificationComponent/NotificationFee
 import UserDetails from "~/components/UserDetails";
 import { api } from "~/utils/api";
 import { notification } from "~/store/atoms/notification";
+import { postsState } from "~/store/atoms/posts";
 
 export type SerializablePost = {
   id: string;
@@ -75,11 +76,6 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
     props: { posts: serializablePosts },
   };
 };
-
-export const postsState = atom({
-  key: "postsState",
-  default: [] as SerializablePost[],
-});
 
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>

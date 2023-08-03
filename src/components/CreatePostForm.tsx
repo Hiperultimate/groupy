@@ -17,7 +17,8 @@ import InputErrorText from "./InputErrorText";
 import InputField from "./InputField";
 import StyledImageInput from "./StyledImageInput";
 import { useSetRecoilState } from "recoil";
-import { postsState } from "~/pages/home";
+import { postsState } from "~/store/atoms/posts";
+
 
 type TScrollMark = { [key: string]: string | ReactElement };
 
