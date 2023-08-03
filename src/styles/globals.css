@@ -33,6 +33,7 @@
 .background-design {
   position: relative;
   min-height: 100vh;
+  padding-bottom: 4em;
   background-color: #ffffff;
   background-image: linear-gradient(#bbbbbb 0.9px, transparent 0.9px),
     linear-gradient(to right, #bbbbbb 0.9px, #ffffff 0.9px);
