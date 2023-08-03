@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import { api } from "~/utils/api";
 import { notification as notificationStore } from "../../store/atoms/notification";
+import { ColorRing } from "react-loader-spinner";
 
 const FriendRequestMessage = ({
   notification,
@@ -77,14 +78,26 @@ const FriendRequestMessage = ({
   return (
     <div>
       {isUserTagLoading ? (
-        <div>Loading...</div>
+        <div className="flex items-center justify-center">
+          <ColorRing
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="blocks-loading"
+            wrapperStyle={{}}
+            wrapperClass="blocks-wrapper"
+            colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+          />
+        </div>
       ) : (
         <div>
           {userTag ? (
             <div className="px-2">
               <div className="flex justify-center text-center">
                 <span onClick={() => redirectToSelectedUser(userTag.userTag)}>
-                  <span className="font-bold hover:cursor-pointer hover:underline">@{userTag.userTag}</span>
+                  <span className="font-bold hover:cursor-pointer hover:underline">
+                    @{userTag.userTag}
+                  </span>
                   &nbsp;sent you a friend request.
                 </span>
               </div>
@@ -105,7 +118,17 @@ const FriendRequestMessage = ({
               </div>
             </div>
           ) : (
-            <div>Loading...</div>
+            <div className="flex items-center justify-center">
+              <ColorRing
+                visible={true}
+                height="80"
+                width="80"
+                ariaLabel="blocks-loading"
+                wrapperStyle={{}}
+                wrapperClass="blocks-wrapper"
+                colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+              />
+            </div>
           )}
         </div>
       )}

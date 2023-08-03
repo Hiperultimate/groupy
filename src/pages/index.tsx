@@ -1,20 +1,19 @@
-import { type FormEventHandler, useEffect, useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { type NextPage } from "next";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, type FormEventHandler } from "react";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { api } from "~/utils/api";
 import { loginSchema } from "~/common/authSchema";
 
 import SvgGroupyLogo from "public/SvgGroupyLogo";
-import InputField from "../components/InputField";
 import BackgroundContainer from "../components/BackgroundContainer";
+import InputField from "../components/InputField";
 
-import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
+import { getServerAuthSession } from "../server/auth";
 
 const INVALID_CREDENTIALS_ERROR_MESSAGE =
   "Email-ID or Password is incorrect" as const;
@@ -41,8 +40,6 @@ const SignInPage: NextPage = () => {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
   useEffect(() => {
     if (sessionData) {
@@ -116,16 +113,6 @@ const SignInPage: NextPage = () => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {/* <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-          </p>
-          <AuthShowcase />
-        </div>
-          Some text
-        
-      </main> */}
       <main className="font-poppins">
         <BackgroundContainer>
           <div className="flex h-screen w-screen items-center">
@@ -210,39 +197,3 @@ const SignInPage: NextPage = () => {
 };
 
 export default SignInPage;
-
-const AuthShowcase: React.FC = () => {
-  const router = useRouter();
-
-  const { data: sessionData } = useSession();
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
-  useEffect(() => {
-    console.log("Front-end session data : ", sessionData);
-  }, [sessionData]);
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
-
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={() => router.push("/sign-up")}
-      >
-        Sign up
-      </button>
-    </div>
-  );
-};
