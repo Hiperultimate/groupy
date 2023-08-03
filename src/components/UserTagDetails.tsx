@@ -4,11 +4,15 @@ import { ColorRing } from "react-loader-spinner";
 import { api } from "~/utils/api";
 import DisplayUserImage from "./DisplayUserImage";
 import ErrorNotification from "./ErrorNotification";
+import ClientNotification from "./ClientNotification";
 
 const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
+
+  const [successMessage, setSuccessMessage] = useState("");
+
   const userId = data?.id;
 
   const {
@@ -24,7 +28,11 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
     }
   );
   const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
-    api.account.sendFriendRequestNotification.useMutation();
+    api.account.sendFriendRequestNotification.useMutation({
+      onSuccess: () => {
+        setSuccessMessage("Friend Request Sent!");
+      },
+    });
 
   const { mutate: removeFriend } = api.account.unfriend.useMutation();
 
@@ -62,6 +70,10 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
       <ErrorNotification
         errorMessage={friendReqMsg}
         setErrorMessage={setFriendReqMsg}
+      />
+      <ClientNotification
+        message={successMessage}
+        setMessage={setSuccessMessage}
       />
       {isLoading ? (
         <div className="flex items-center justify-center">

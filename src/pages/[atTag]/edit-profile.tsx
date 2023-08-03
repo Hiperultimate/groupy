@@ -1,16 +1,18 @@
 import { type InferGetServerSidePropsType, type NextPage } from "next";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { type GetServerSideProps } from "next";
-import { type IUpdateUser, updateUserSchema } from "~/common/authSchema";
+import { updateUserSchema, type IUpdateUser } from "~/common/authSchema";
 import { api } from "~/utils/api";
 
+import type { inferRouterOutputs } from "@trpc/server";
 import Image from "next/image";
 import SvgCamera from "public/SvgCamera";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import { encodeImageToBase64 } from "~/common/imageConversion";
 import BackgroundContainer from "~/components/BackgroundContainer";
+import ClientNotification from "~/components/ClientNotification";
 import ErrorNotification from "~/components/ErrorNotification";
 import AsyncCreatableSelectComponent, {
   type TagOption,
@@ -18,10 +20,9 @@ import AsyncCreatableSelectComponent, {
 import InputErrorText from "~/components/InputErrorText";
 import InputField from "~/components/InputField";
 import StyledImageInput from "~/components/StyledImageInput";
+import { getUserByID, type AccountRouter } from "~/server/api/routers/account";
 import { getServerAuthSession } from "~/server/auth";
-import { type AccountRouter, getUserByID } from "~/server/api/routers/account";
 import { prisma } from "~/server/db";
-import type { inferRouterOutputs } from "@trpc/server";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -102,6 +103,8 @@ const EditProfile: NextPage<
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
   const [serverError, setServerError] = useState<string>("");
 
+  const [successMessage, setSuccessMessage] = useState("");
+
   const fieldSetErrorMap: FieldSetErrorMap = {
     name: setNameError,
     email: setEmailError,
@@ -169,7 +172,6 @@ const EditProfile: NextPage<
         userData.image = base64Image;
       }
 
-      
       // Update user
       updateUser(userData, {
         onError: (error) => {
@@ -178,6 +180,7 @@ const EditProfile: NextPage<
         onSuccess: (data) => {
           console.log("Success!");
           console.log("Updated data : ", data);
+          setSuccessMessage("User Profile Updated!");
           // router.push("/");
         },
       });
@@ -189,6 +192,10 @@ const EditProfile: NextPage<
       <ErrorNotification
         errorMessage={serverError}
         setErrorMessage={setServerError}
+      />
+      <ClientNotification
+        message={successMessage}
+        setMessage={setSuccessMessage}
       />
       <BackgroundContainer>
         <div className="flex items-center py-60">

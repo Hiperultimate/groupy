@@ -8,17 +8,19 @@ const ErrorNotification = ({
   errorMessage: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }) => {
-
-  
   useEffect(() => {
-    const clearError = () => {setErrorMessage("")};
-    const closeError = setTimeout(clearError , 3000)
-    return () => clearTimeout(closeError);
-  }, [errorMessage,setErrorMessage])
+    const clearError = () => {
+      setErrorMessage("");
+    };
+    const closeError = setTimeout(clearError, 3000);
+    return () => {
+      clearTimeout(closeError);
+    };
+  }, [errorMessage, setErrorMessage]);
 
-  if(errorMessage){
+  if (errorMessage) {
     return (
-      <div className="fixed bottom-0 z-50 w-full">
+      <div className="fixed left-1/4 bottom-0 z-50 w-full">
         <div className="mx-auto mb-4 max-w-lg rounded-md border border-red-500 bg-red-100">
           <span className="float-right hover:cursor-pointer">
             <div onClick={() => setErrorMessage("")} className="p-1">
@@ -33,7 +35,7 @@ const ErrorNotification = ({
     );
   }
 
-  return <></>
+  return <></>;
 };
 
 export default ErrorNotification;
