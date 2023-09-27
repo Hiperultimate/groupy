@@ -1,12 +1,18 @@
 import { prisma } from "../../server/db";
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export const config = {
-  runtime: "edge",
+type ResponseData = {
+  message: string;
 };
 
-export default async function handler() {
-  const wakingSupabase = await prisma.user.findFirst();
-  console.log("Disturbing supabase :", wakingSupabase);
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>
+) {
+  const wakingSupabase = await prisma.user.findFirst({
+    select: { atTag: true },
+  });
+  console.log("Nudging database...", wakingSupabase);
 
-  return new Response("Supabase is now woke", { status: 200 });
+  return res.status(200).json({ message: "Nudging database..." });
 }
