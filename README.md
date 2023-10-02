@@ -20,14 +20,14 @@ Groupy is built using the following technologies:
 
 ## Project Structure
 
-- `src/pages`: This directory contains the Next.js pages used to structure your application's frontend.
-- `src/components`: Inside this folder, you'll find the components that are utilized within the pages located in src/pages.
+- `src/pages`: This directory contains the Next.js pages used to structure the application's frontend.
+- `src/components`: Inside this folder, you'll find the components that are utilized within the pages located in `src/pages`.
 - `public`: This directory holds SVG files converted into TypeScript (tsx) files, as well as the fonts used throughout the project. It serves as a repository for static assets accessible to both the frontend and the backend.
-- `src/common`: Contains a collection of functions that are shared between both the frontend and the backend of your project.
+- `src/common`: Contains a collection of functions that are shared between both the frontend and the backend of the project.
 - `src/utils`: Consists of utility functions.
-- `src/store`: Contains Recoil states, which help manage the state of your React components efficiently.
-- `src/server`: This directory is dedicated to the backend of your project. It contains backend APIs and a Prisma connector for interacting with your database. Your server logic and API endpoints are implemented here.
-- `prisma`: This folder contains Prisma migrations and a **schema.prisma** file. The **schema.prisma** file serves as the blueprint for your database models, defining their structure and relationships.
+- `src/store`: Contains Recoil states, which help manage the state of the React components efficiently.
+- `src/server`: This directory is dedicated to the backend of the project. It contains backend APIs and a Prisma connector for interacting with the database. Server logic and API endpoints are implemented here.
+- `prisma`: This folder contains Prisma migrations and a **schema.prisma** file. The **schema.prisma** file serves as the blueprint for the database models, defining their structure and relationships.
 
 ## Completed Features
 
