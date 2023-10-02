@@ -165,17 +165,28 @@ const SignInPage: NextPage = () => {
                 <span className="relative top-[12px] text-red-600">
                   {errorMessage}
                 </span>
-                <button
-                  type="submit"
-                  className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
-                >
-                  Login
-                </button>
+
+                <div className="flex w-full">
+                  <button
+                    type="submit"
+                    className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                  >
+                    Login
+                  </button>
+
+                  <span className="p-2" />
+
+                  <button className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                    Auto Credentials
+                  </button>
+                </div>
+
                 <div className="flex w-full">
                   <div className="relative top-[-10px] w-full border-b-2" />
                   <span className="mx-4 text-sm text-grey">OR</span>
                   <div className="relative top-[-10px] w-full border-b-2" />
                 </div>
+
                 <span className="py-4 text-3xl font-bold text-dark-blue">
                   Join our community
                 </span>
