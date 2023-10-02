@@ -63,15 +63,6 @@ model Notification{
 
 }
 
-// model Friendship {
-//     id          String    @id @default(cuid())
-
-//     user        User      @relation(fields: [friendId], references: [id])
-//     friendId    String 
-
-//     createdAt   DateTime  @default(now())
-// }
-
 model Tag {
     id        String   @id @default(uuid())
     name      String   @unique    

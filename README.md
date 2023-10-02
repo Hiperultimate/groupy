@@ -18,6 +18,17 @@ Groupy is built using the following technologies:
 - RecoilJS: A state management library for managing and sharing the application's global state.
 - Zod: A TypeScript-first schema validation library for data validation and sanitization.
 
+## Project Structure
+
+- `src/pages`: This directory contains the Next.js pages used to structure your application's frontend.
+- `src/components`: Inside this folder, you'll find the components that are utilized within the pages located in src/pages.
+- `public`: This directory holds SVG files converted into TypeScript (tsx) files, as well as the fonts used throughout the project. It serves as a repository for static assets accessible to both the frontend and the backend.
+- `src/common`: Contains a collection of functions that are shared between both the frontend and the backend of your project.
+- `src/utils`: Consists of utility functions.
+- `src/store`: Contains Recoil states, which help manage the state of your React components efficiently.
+- `src/server`: This directory is dedicated to the backend of your project. It contains backend APIs and a Prisma connector for interacting with your database. Your server logic and API endpoints are implemented here.
+- `prisma`: This folder contains Prisma migrations and a **schema.prisma** file. The **schema.prisma** file serves as the blueprint for your database models, defining their structure and relationships.
+
 ## Completed Features
 
 So far, the following features have been implemented in Groupy:
