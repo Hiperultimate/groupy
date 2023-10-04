@@ -29,12 +29,19 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       },
     };
   }
+
+  const globalUserCredentials = {
+    email: process.env.GLOBAL_ACCOUNT_EMAIL,
+    password: process.env.GLOBAL_ACCOUNT_PASSWORD,
+  };
   return {
-    props: {},
+    props: { globalUserCredentials },
   };
 };
 
-const SignInPage: NextPage = () => {
+const SignInPage: NextPage<{
+  globalUserCredentials: { email: string; password: string };
+}> = ({ globalUserCredentials }) => {
   const router = useRouter();
   const { data: sessionData } = useSession();
   const [emailField, setEmailField] = useState("");
@@ -103,6 +110,16 @@ const SignInPage: NextPage = () => {
     setPasswordField(changeValue);
   };
 
+  const autoFillGlobalCredentials = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    if (globalUserCredentials.email && globalUserCredentials.password) {
+      setEmailField(globalUserCredentials.email);
+      setPasswordField(globalUserCredentials.password);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -165,17 +182,38 @@ const SignInPage: NextPage = () => {
                 <span className="relative top-[12px] text-red-600">
                   {errorMessage}
                 </span>
-                <button
-                  type="submit"
-                  className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
-                >
-                  Login
-                </button>
+
+                <div className="flex w-full">
+                  <button
+                    type="submit"
+                    className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                  >
+                    Login
+                  </button>
+
+                  {globalUserCredentials.email &&
+                    globalUserCredentials.password && (
+                      <>
+                        <span className="p-2" />
+
+                        <button
+                          className="background-animate relative my-6 h-12 w-full rounded-lg bg-gradient-to-r from-orange to-[#4DCCBD] text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
+                          onClick={(e) => {
+                            autoFillGlobalCredentials(e);
+                          }}
+                        >
+                          Auto Credentials
+                        </button>
+                      </>
+                    )}
+                </div>
+
                 <div className="flex w-full">
                   <div className="relative top-[-10px] w-full border-b-2" />
                   <span className="mx-4 text-sm text-grey">OR</span>
                   <div className="relative top-[-10px] w-full border-b-2" />
                 </div>
+
                 <span className="py-4 text-3xl font-bold text-dark-blue">
                   Join our community
                 </span>

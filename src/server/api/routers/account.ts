@@ -232,6 +232,14 @@ export const accountRouter = createTRPCRouter({
         });
       }
 
+      // Halts mutation for global user
+      if(currentUserData.id === process.env.GLOBAL_ACCOUNT_USER_ID){
+        throw new TRPCError({
+          message: "Cannot change details for global user.",
+          code: "FORBIDDEN"
+        })
+      }
+
       const userWithNewEmail = await ctx.prisma.user.findFirst({
         where: { email },
         select: { email: true, atTag: true },
