@@ -50,3 +50,21 @@
     rgba(247, 248, 249, 1) 100%
   );
 }
+
+.background-animate {
+  background-size: 500%;
+
+  -webkit-animation: Movement 3s ease-in-out infinite;
+  -moz-animation: Movement 3s ease-in-out infinite;
+  animation: Movement 3s ease-in-out infinite;
+}
+
+@keyframes Movement {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  75% {
+    background-position: 100% 50%;
+  }
+}

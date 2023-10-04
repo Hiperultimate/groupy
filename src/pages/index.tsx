@@ -176,7 +176,7 @@ const SignInPage: NextPage = () => {
 
                   <span className="p-2" />
 
-                  <button className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
+                  <button className="background-animate relative my-6 h-12 w-full rounded-lg bg-gradient-to-r from-orange to-[#4DCCBD] text-white transition duration-300 ease-in-out hover:bg-[#ff853e]">
                     Auto Credentials
                   </button>
                 </div>
