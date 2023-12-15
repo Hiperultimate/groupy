@@ -5,6 +5,7 @@ import { DisplayPost } from "./DisplayPost";
 import { api } from "~/utils/api";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { ColorRing } from "react-loader-spinner";
 
 export const RenderPosts = ({
   initialPosts,
@@ -86,6 +87,19 @@ export const RenderPosts = ({
           />
         );
       })}
+      <div className="mt-8 flex h-20 justify-center">
+        {isPostFetching && (
+          <ColorRing
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="blocks-loading"
+            wrapperStyle={{}}
+            wrapperClass="blocks-wrapper"
+            colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+          />
+        )}
+      </div>
     </>
   );
 };
