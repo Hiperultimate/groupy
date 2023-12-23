@@ -68,3 +68,7 @@
     background-position: 100% 50%;
   }
 }
+
+.chat-viewport-height{
+  height: calc(100vh - 80px);
+}
