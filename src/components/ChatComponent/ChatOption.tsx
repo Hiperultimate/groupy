@@ -2,34 +2,40 @@ import { useState } from "react";
 import DisplayUserImage from "../DisplayUserImage";
 import { timeDifference } from "~/utils/timeOperations";
 
-const ChatOption = () => {
-  const [unreadMessageCount, setUnreadMessageCount] = useState(1243);
+export type TChatOption = {
+  chatName: string;
+  chatImg: string | null;
+  chatLastMsg: string;
+  lastMsgSentAt: Date;
+  unreadMsgCount: number;
+};
 
-
-  // Demo data to populate last read message 
+const ChatOption = ({
+  chatName,
+  chatImg,
+  chatLastMsg,
+  lastMsgSentAt,
+  unreadMsgCount,
+}: TChatOption) => {
+  // Demo data to populate last read message
   const demoCurrentDate = new Date("2023-12-30");
-  const demoOldDate = new Date(demoCurrentDate);
-  // demoOldDate.setFullYear(demoCurrentDate.getFullYear() - 3);
-  // demoOldDate.setMonth(demoCurrentDate.getMonth() - 3);
-  // demoOldDate.setHours(demoCurrentDate.getHours() - 18);
-  demoOldDate.setSeconds(demoCurrentDate.getSeconds() - 57);
-
+  
+  const [unreadMessageCount, setUnreadMessageCount] = useState(unreadMsgCount);
+  const [lastChatMsg, setLastChatMsg] = useState(chatLastMsg);
   const [lastReadMsgTime, setLastReadMsgTime] = useState(
-    timeDifference(demoCurrentDate, demoOldDate)
+    timeDifference(demoCurrentDate, lastMsgSentAt)
   );
-
-  console.log(timeDifference(demoCurrentDate, demoOldDate));
 
   return (
     <div className="flex">
       <div className="p-2">
-        <DisplayUserImage userImage={null} sizeOption="small" />
+        <DisplayUserImage userImage={chatImg} sizeOption="small" />
       </div>
       <div className="flex min-w-[55%] flex-col justify-center text-sm">
-        <div>John Smith</div>
+        <div>{chatName}</div>
         <div className="flex w-full text-grey">
           <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-            That should be perfect, lets go with that!
+            {lastChatMsg}
           </div>
           <div>
             <div className="m-2 h-1 w-1 rounded-full bg-grey"></div>
