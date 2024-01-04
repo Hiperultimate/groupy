@@ -1,33 +1,48 @@
 import { useState } from "react";
 import DisplayUserImage from "../DisplayUserImage";
 import { timeDifference } from "~/utils/timeOperations";
-
-export type TChatOption = {
-  chatName: string;
-  chatImg: string | null;
-  chatLastMsg: string;
-  lastMsgSentAt: Date;
-  unreadMsgCount: number;
-};
+import { useSetRecoilState } from "recoil";
+import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
 
 const ChatOption = ({
+  id,
   chatName,
   chatImg,
   chatLastMsg,
   lastMsgSentAt,
   unreadMsgCount,
+  isSelected,
 }: TChatOption) => {
   // Demo data to populate last read message
   const demoCurrentDate = new Date("2023-12-30");
-  
+
   const [unreadMessageCount, setUnreadMessageCount] = useState(unreadMsgCount);
   const [lastChatMsg, setLastChatMsg] = useState(chatLastMsg);
   const [lastReadMsgTime, setLastReadMsgTime] = useState(
     timeDifference(demoCurrentDate, lastMsgSentAt)
   );
+  const setChatOptions = useSetRecoilState(chatOptionState);
+
+  function selectChatOption() {
+    setChatOptions((chatOptions) => {
+      const updatedOptions = chatOptions.map((chat) => {
+        if (chat.id === id) {
+          return { ...chat, isSelected: true };
+        }
+        return { ...chat, isSelected: false };
+      });
+
+      return updatedOptions;
+    });
+  }
 
   return (
-    <div className="flex">
+    <div
+      onClick={selectChatOption}
+      className={`flex hover:cursor-pointer hover:bg-slate-200 ${
+        isSelected ? "bg-slate-100" : ""
+      }`}
+    >
       <div className="p-2">
         <DisplayUserImage userImage={chatImg} sizeOption="small" />
       </div>
