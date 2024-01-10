@@ -5,6 +5,7 @@ import { atom } from "recoil";
 export type TChatOption = {
   id: string;
   chatName: string;
+  chatUserTag: string | null;
   chatImg: string | null;
   chatLastMsg: string;
   lastMsgSentAt: Date;
@@ -19,6 +20,7 @@ export const chatOptionState = atom({
     {
       id: "123123",
       chatName: "John Smith",
+      chatUserTag : "johnSmith",
       isSelected: false,
       chatImg: null,
       chatLastMsg: "That would be great!",

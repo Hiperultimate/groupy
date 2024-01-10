@@ -4,6 +4,8 @@ import { timeDifference } from "~/utils/timeOperations";
 import { useSetRecoilState } from "recoil";
 import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
 
+type TChatOptionComponent = Omit<TChatOption, 'chatUserTag'>
+
 const ChatOption = ({
   id,
   chatName,
@@ -12,7 +14,7 @@ const ChatOption = ({
   lastMsgSentAt,
   unreadMsgCount,
   isSelected,
-}: TChatOption) => {
+}: TChatOptionComponent) => {
   // Demo data to populate last read message
   const demoCurrentDate = new Date("2023-12-30");
 
