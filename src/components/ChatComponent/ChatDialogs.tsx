@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import DisplayUserImage from "../DisplayUserImage";
 
 type TChatMessage = {
   id: string;
@@ -30,6 +31,14 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
       message: "But ofcourse man",
       senderImg: null,
     },
+    {
+      id: "1523143",
+      senderName: "John Smith",
+      senderTag: "JohnSmith",
+      sentAt: new Date("2023-12-30"),
+      message: "Good thing",
+      senderImg: null,
+    },
   ]);
 
   // Use session and get currently logged in user's Tag, then design the chat box
@@ -47,24 +56,33 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
   return (
     <>
       {chatMessages.map((message) => {
+        const isByUser = currentUserSession.user.atTag === message.senderTag;
         return (
           <div
             key={message.id}
             className={`m-2 ${
-              currentUserSession.user.atTag === message.senderTag
-                ? "ml-auto justify-end"
-                : "mr-auto justify-start"
-            } flex w-full max-w-lg  space-x-3`}
+              isByUser ? "ml-auto justify-end" : "mr-auto justify-start"
+            } flex max-w-lg space-x-3`}
           >
-            <p
-              className={` space rounded-md ${
-                currentUserSession.user.atTag === message.senderTag
-                  ? "bg-amber-500"
-                  : "bg-orange"
-              } p-2 text-white`}
-            >
-              {message.message}
-            </p>
+            {!isByUser && (
+              <div>
+                <DisplayUserImage
+                  userImage={message.senderImg}
+                  sizeOption="medium"
+                />
+              </div>
+            )}
+            <div>
+              <p
+                className={` space rounded-md ${
+                  isByUser
+                    ? "rounded-tr-none bg-amber-500"
+                    : "rounded-tl-none bg-orange"
+                } p-2 text-white`}
+              >
+                {message.message}
+              </p>
+            </div>
           </div>
         );
       })}
