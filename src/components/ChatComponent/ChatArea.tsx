@@ -25,7 +25,7 @@ const ChatArea = () => {
         />
       </div>
       <div className="flex-auto">
-        <ChatDialogs />
+        <ChatDialogs chatId={activeChat.id} />
       </div>
       <div className="h-20">
         <ChatTextInput />
