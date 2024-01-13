@@ -39,7 +39,24 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
       message: "Good thing",
       senderImg: null,
     },
+    {
+      id: "1523123",
+      senderName: "Some new guy",
+      senderTag: "newGuy",
+      sentAt: new Date(),
+      message: "But ofcourse man",
+      senderImg: null,
+    },
+    {
+      id: "1523143",
+      senderName: "John Smith",
+      senderTag: "JohnSmith",
+      sentAt: new Date(),
+      message: "Good thing",
+      senderImg: null,
+    },
   ]);
+  const dateDivide = new Set();
 
   // Use session and get currently logged in user's Tag, then design the chat box
   const router = useRouter();
@@ -51,39 +68,64 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
   }
 
   // Fetch chat data from chatId through useMemo
-  console.log(currentUserSession.user.atTag);
 
+  function dateDivider(sentDate: Date) {
+    const pushDate = sentDate.getTime();
+    if (dateDivide.has(pushDate)) {
+      return null;
+    }
+    dateDivide.add(pushDate);
+    return (
+      <div className="my-2 flex justify-center ">
+        <div className="bg-grey px-4 py-2 rounded-md text-white">{new Date(pushDate).toLocaleDateString()}</div>
+      </div>
+    );
+  }
   return (
     <>
       {chatMessages.map((message) => {
         const isByUser = currentUserSession.user.atTag === message.senderTag;
         return (
-          <div
-            key={message.id}
-            className={`m-2 ${
-              isByUser ? "ml-auto justify-end" : "mr-auto justify-start"
-            } flex max-w-lg space-x-3`}
-          >
-            {!isByUser && (
+          <>
+            {dateDivider(message.sentAt)}
+            <div
+              key={message.id}
+              className={`m-2 ${
+                isByUser ? "ml-auto justify-end" : "mr-auto justify-start"
+              } flex max-w-lg space-x-3`}
+            >
+              {!isByUser && (
+                <div>
+                  <DisplayUserImage
+                    userImage={message.senderImg}
+                    sizeOption="medium"
+                  />
+                </div>
+              )}
               <div>
-                <DisplayUserImage
-                  userImage={message.senderImg}
-                  sizeOption="medium"
-                />
+                <p
+                  className={` space rounded-md ${
+                    isByUser
+                      ? "rounded-tr-none bg-amber-500"
+                      : "rounded-tl-none bg-orange"
+                  } p-2 text-white`}
+                >
+                  <div className="flex">
+                    <div className="font-bold">{message.senderName}</div>
+                    <div className="m-2 mx-4 h-1 w-1 rounded-full bg-white"></div>
+                    <div>
+                      {message.sentAt.toLocaleString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </div>
+                  </div>
+                  {message.message}
+                </p>
               </div>
-            )}
-            <div>
-              <p
-                className={` space rounded-md ${
-                  isByUser
-                    ? "rounded-tr-none bg-amber-500"
-                    : "rounded-tl-none bg-orange"
-                } p-2 text-white`}
-              >
-                {message.message}
-              </p>
             </div>
-          </div>
+          </>
         );
       })}
     </>
