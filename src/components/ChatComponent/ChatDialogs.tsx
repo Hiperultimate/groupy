@@ -81,6 +81,7 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
       </div>
     );
   }
+
   return (
     <>
       {chatMessages.map((message) => {

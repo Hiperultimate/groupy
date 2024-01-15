@@ -24,7 +24,7 @@ const ChatArea = () => {
           authorProfilePicture={activeChat.chatImg}
         />
       </div>
-      <div className="flex-auto">
+      <div className="flex-grow overflow-y-auto h-2">
         <ChatDialogs chatId={activeChat.id} />
       </div>
       <div className="h-20">
