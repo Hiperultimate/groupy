@@ -4,7 +4,7 @@ import { timeDifference } from "~/utils/timeOperations";
 import { useSetRecoilState } from "recoil";
 import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
 
-type TChatOptionComponent = Omit<TChatOption, 'chatUserTag'>
+type TChatOptionComponent = Omit<TChatOption, "chatUserTag">;
 
 const ChatOption = ({
   id,
@@ -43,7 +43,7 @@ const ChatOption = ({
       onClick={selectChatOption}
       className={`flex hover:cursor-pointer hover:bg-slate-200 ${
         isSelected ? "bg-slate-100" : ""
-      }`}
+      } `}
     >
       <div className="p-2">
         <DisplayUserImage userImage={chatImg} sizeOption="small" />

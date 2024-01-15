@@ -6,7 +6,7 @@ const UserChatList = () => {
   const chatOptions = useRecoilValue(chatOptionState);
 
   return (
-    <div className="chat-viewport-height">
+    <div className="chat-viewport-height overflow-y-auto">
       {chatOptions.map((chatData) => {
         return (
           <ChatOption
