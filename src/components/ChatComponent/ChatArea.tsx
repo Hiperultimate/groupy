@@ -24,10 +24,10 @@ const ChatArea = () => {
           authorProfilePicture={activeChat.chatImg}
         />
       </div>
-      <div className="flex-grow overflow-y-auto h-2">
+      <div className="h-2 flex-grow overflow-y-auto">
         <ChatDialogs chatId={activeChat.id} />
       </div>
-      <div className="h-20">
+      <div className="flex h-20 flex-col items-center justify-center border-t px-4">
         <ChatTextInput />
       </div>
     </div>
