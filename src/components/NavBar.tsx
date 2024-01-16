@@ -79,7 +79,7 @@ const NavBar = () => {
               className={`decoration-4 underline-offset-8 transition duration-300 hover:text-black hover:ease-in-out ${
                 selectedPage === pageStates.CHAT ? `underline` : ``
               }`}
-              href="#"
+              href="/chat"
             >
               Chat
             </Link>
