@@ -19,6 +19,7 @@
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
     "bcrypt": "^5.1.0",
+    "framer-motion": "^10.18.0",
     "next": "^13.2.4",
     "next-auth": "^4.20.1",
     "rc-slider": "^10.2.1",

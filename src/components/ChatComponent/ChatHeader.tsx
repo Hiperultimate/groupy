@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import DisplayUserImage from "../DisplayUserImage";
 import SvgMenuIcon from "public/SvgMenuIcon";
 import { useState } from "react";
+import FadeInOut from "../Animation/FadeInOut";
 
 const ChatHeader = ({
   authorName,
@@ -57,14 +58,12 @@ const ChatHeader = ({
           <div className="hover:cursor-pointer" onClick={displayMenu}>
             <SvgMenuIcon />
           </div>
-          {/* To be replaced by framer motion animation */}
-          <div
-            className={`absolute right-5  w-44 border border-light-grey bg-white transition-all duration-500 ease-in-out ${
-              isMenuOpen ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            Hello
-          </div>
+          <FadeInOut displayState={isMenuOpen}>
+            {/* Menu logic here */}
+            <div className="absolute right-5  w-44 border border-light-grey bg-white">
+              Hello
+            </div>
+          </FadeInOut>
         </div>
       </div>
     </div>
