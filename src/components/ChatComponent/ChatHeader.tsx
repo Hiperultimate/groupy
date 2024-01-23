@@ -3,6 +3,7 @@ import DisplayUserImage from "../DisplayUserImage";
 import SvgMenuIcon from "public/SvgMenuIcon";
 import { useState } from "react";
 import FadeInOut from "../Animation/FadeInOut";
+import HeaderMenu, { menuItems, type Options } from "./HeaderMenu";
 
 const ChatHeader = ({
   authorName,
@@ -59,15 +60,52 @@ const ChatHeader = ({
             <SvgMenuIcon />
           </div>
           <FadeInOut displayState={isMenuOpen}>
-            {/* Menu logic here */}
-            <div className="absolute right-5  w-44 border border-light-grey bg-white">
-              Hello
-            </div>
+            <HeaderMenu menuOptions={checkPermissions()} />
           </FadeInOut>
         </div>
       </div>
     </div>
   );
 };
+
+function checkPermissions() {
+  const permission: Options = {};
+
+  // Checks for user's permission to chat
+  if (true) {
+    permission["leave_chat"] = {
+      optionTitle: "Leave Chat",
+      useOption: () => {
+        console.log("Removed current user from chat logic here");
+      },
+    };
+  }
+
+  // Checks for user is moderator for chat
+  if (true) {
+    permission[menuItems.invite_member] = {
+      optionTitle: "Invite Members",
+      useOption: () => {
+        console.log("Invoke invite member menu");
+      },
+    };
+
+    permission[menuItems.remove_member] = {
+      optionTitle: "Remove Members",
+      useOption: () => {
+        console.log("Invoke remove member menu");
+      },
+    };
+
+    permission[menuItems.make_moderator] = {
+      optionTitle: "Make Members",
+      useOption: () => {
+        console.log("Invoke make moderator menu");
+      },
+    };
+  }
+
+  return permission;
+}
 
 export default ChatHeader;
