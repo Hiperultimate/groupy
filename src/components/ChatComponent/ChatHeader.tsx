@@ -4,6 +4,7 @@ import SvgMenuIcon from "public/SvgMenuIcon";
 import { useState } from "react";
 import FadeInOut from "../Animation/FadeInOut";
 import HeaderMenu, { menuItems, type Options } from "./HeaderMenu";
+import OutsideClickDetector from "../OutsideClickDetector";
 
 const ChatHeader = ({
   authorName,
@@ -25,8 +26,7 @@ const ChatHeader = ({
   }
 
   function displayMenu() {
-    console.log("Display menu...");
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((previousState) => !previousState);
   }
 
   return (
@@ -60,7 +60,13 @@ const ChatHeader = ({
             <SvgMenuIcon />
           </div>
           <FadeInOut displayState={isMenuOpen}>
-            <HeaderMenu menuOptions={checkPermissions()} />
+            <OutsideClickDetector
+              onOutsideClick={() => {
+                setIsMenuOpen(false);
+              }}
+            >
+              <HeaderMenu menuOptions={checkPermissions()} />
+            </OutsideClickDetector>
           </FadeInOut>
         </div>
       </div>
