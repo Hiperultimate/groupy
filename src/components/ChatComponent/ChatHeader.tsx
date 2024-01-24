@@ -98,7 +98,7 @@ function checkPermissions() {
     };
 
     permission[menuItems.make_moderator] = {
-      optionTitle: "Make Members",
+      optionTitle: "Make Moderator",
       useOption: () => {
         console.log("Invoke make moderator menu");
       },
