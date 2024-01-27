@@ -5,19 +5,29 @@ import { useState } from "react";
 import FadeInOut from "../Animation/FadeInOut";
 import HeaderMenu, { menuItems, type Options } from "./HeaderMenu";
 import OutsideClickDetector from "../OutsideClickDetector";
+import { type SetterOrUpdater, useSetRecoilState } from "recoil";
+import {
+  chatEditModalData,
+  type ChatMemberEditType,
+  isChatEditModelOpen,
+} from "~/store/atoms/chat";
+import { invokeChatMemberEditModal } from "./ChatMemberEditModal";
 
 const ChatHeader = ({
+  chatId,
   authorName,
   authorAtTag,
   authorProfilePicture,
 }: {
+  chatId: string;
   authorName: string;
   authorAtTag: string | null;
   authorProfilePicture: string | null;
 }) => {
   const router = useRouter();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const setIsEditChatModalOpen = useSetRecoilState(isChatEditModelOpen);
+  const setChatEditModalData = useSetRecoilState(chatEditModalData);
 
   function redirectToSelectedUser() {
     if (authorAtTag) {
@@ -65,7 +75,14 @@ const ChatHeader = ({
                 setIsMenuOpen(false);
               }}
             >
-              <HeaderMenu menuOptions={checkPermissions()} />
+              <HeaderMenu
+                menuOptions={checkPermissions(
+                  invokeChatMemberEditModal,
+                  setIsEditChatModalOpen,
+                  setChatEditModalData,
+                  chatId
+                )}
+              />
             </OutsideClickDetector>
           </FadeInOut>
         </div>
@@ -74,7 +91,24 @@ const ChatHeader = ({
   );
 };
 
-function checkPermissions() {
+function checkPermissions(
+  invokeChatMemberEditModal: (
+    setIsEditChatModalOpen: SetterOrUpdater<boolean>,
+    setChatEditModalData: SetterOrUpdater<{
+      chatId: string;
+      editType: ChatMemberEditType;
+    }>,
+    chatId: string,
+    editType: ChatMemberEditType
+  ) => void,
+
+  setIsEditChatModalOpen: SetterOrUpdater<boolean>,
+  setChatEditModalData: SetterOrUpdater<{
+    chatId: string;
+    editType: ChatMemberEditType;
+  }>,
+  chatId: string
+) {
   const permission: Options = {};
 
   // Checks for user's permission to chat
@@ -93,6 +127,12 @@ function checkPermissions() {
       optionTitle: "Invite Members",
       useOption: () => {
         console.log("Invoke invite member menu");
+        invokeChatMemberEditModal(
+          setIsEditChatModalOpen,
+          setChatEditModalData,
+          chatId,
+          menuItems.invite_member
+        );
       },
     };
 

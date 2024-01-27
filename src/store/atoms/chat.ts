@@ -13,6 +13,12 @@ export type TChatOption = {
   isSelected: boolean;
 };
 
+export type ChatMemberEditType = "invite_member" | "remove_member" | "make_moderator";
+
+type TChatEditModal = {
+  chatId : string, editType :ChatMemberEditType
+}
+
 export const chatOptionState = atom({
   key: "chatOption",
   // Dummy data
@@ -54,3 +60,14 @@ export const chatOptionState = atom({
   ] as TChatOption[],
   //   default: [] as TChatOption[],
 });
+
+
+export const isChatEditModelOpen = atom({
+  key: "isChatEditModelOpen",
+  default: false,
+})
+
+export const chatEditModalData = atom({
+  key: "isChatEditModelOpen",
+  default: {} as TChatEditModal,
+})
