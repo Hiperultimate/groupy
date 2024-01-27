@@ -1,3 +1,5 @@
+import SvgMagnifyingIcon from "public/SvgMagnifyingIcon";
+
 const SearchInput = ({
   placeholder,
   valueState,
@@ -8,13 +10,16 @@ const SearchInput = ({
   setValueState: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   return (
-    <input
-      type="text"
-      value={valueState}
-      placeholder={placeholder}
-      onChange={(e) => setValueState(e.target.value)}
-      className="py-2 border"
-    />
+    <div className="flex rounded-md border px-2 py-2">
+      <input
+        type="text"
+        value={valueState}
+        placeholder={placeholder}
+        className="w-full outline-none"
+        onChange={(e) => setValueState(e.target.value)}
+      />
+      <SvgMagnifyingIcon />
+    </div>
   );
 };
 

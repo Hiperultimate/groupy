@@ -53,7 +53,11 @@ const ChatMemberEditModal = ({
   }, [isEditChatModalOpen]);
 
   return (
-    <dialog ref={dialogRef} onClick={(e) => outsideModalClickHandler(e)}>
+    <dialog
+      ref={dialogRef}
+      onClick={(e) => outsideModalClickHandler(e)}
+      className="rounded-md p-3 w-96"
+    >
       <SearchInput
         valueState={searchInput}
         setValueState={setSearchInput}
