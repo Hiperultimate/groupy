@@ -62,41 +62,62 @@ const ChatMemberEditModal = ({
   }, [isEditChatModalOpen]);
 
   useEffect(() => {
+    // Fetch current chat user data according to editType here
     // Testing UI
     const dummyUsers = [
       { userId: "123123", userName: "John Smith", userTag: "JohnSmith" },
       { userId: "1231323", userName: "Bane Johnson", userTag: "BaneJohnson" },
+      { userId: "12123423", userName: "John Smith", userTag: "JohnSmith" },
+      { userId: "123112343", userName: "Bane Johnson", userTag: "BaneJohnson" },
+      { userId: "12123423", userName: "John Smith", userTag: "JohnSmith" },
+      {
+        userId: "11251631323",
+        userName: "Bane JohnsonwhysonJohnsonwhyson",
+        userTag: "BaneJohnsonnsonwhysnsonwhys",
+      },
+      {
+        userId: "15163112343",
+        userName: "Bane Johnson",
+        userTag: "BaneJohnson",
+      },
     ];
-    setTimeout(() => setSearchResult(dummyUsers), 1000);
+
+    if (searchInput !== "") {
+      setTimeout(() => setSearchResult(dummyUsers), 1000);
+    }
   }, [searchInput]);
 
   return (
     <dialog
       ref={dialogRef}
       onClick={(e) => outsideModalClickHandler(e)}
-      className="w-96 rounded-md p-3"
+      className=" w-96 rounded-md p-3 pr-0 pb-1"
     >
-      <SearchInput
-        valueState={searchInput}
-        setValueState={setSearchInput}
-        placeholder="Search users..."
-      />
-      {searchResult.map((user) => {
-        return (
-          <div
-            key={user.userId}
-            className="my-2 flex justify-between rounded-md  border border-light-grey"
-          >
-            <div className="flex py-3 pl-4">
-              <div>{user.userName}</div>
-              <div className="ml-2 text-grey">@{user.userTag}</div>
+      <div className="pr-3 pb-2">
+        <SearchInput
+          valueState={searchInput}
+          setValueState={setSearchInput}
+          placeholder="Search users..."
+        />
+      </div>
+      <div className="h-[450px] pr-2 overflow-y-scroll">
+        {searchResult.map((user) => {
+          return (
+            <div
+              key={user.userId}
+              className="mb-2 flex justify-between rounded-md border border-light-grey"
+            >
+              <div className="flex flex-col py-3 pl-4">
+                <div className="text-sm w-40 truncate">{user.userName}</div>
+                <div className="text-grey w-40 truncate">@{user.userTag}</div>
+              </div>
+              <div>
+                <EditModalOptions optionType={editType} />
+              </div>
             </div>
-            <div>
-              <EditModalOptions optionType={editType} />
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </dialog>
   );
 };
@@ -113,13 +134,16 @@ const EditModalOptions = ({
   };
 
   const buttonBg = {
-    remove_member: "border-[#FF4141] bg-[#FF4141]",
-    invite_member: "border-[#68D326] bg-[#68D326]",
-    make_moderator: "border-orange bg-orange",
+    remove_member:
+      "border-[#FF4141] bg-[#FF4141] hover:bg-[#FF5959] hover:border-[#FF5959] transition",
+    invite_member:
+      "border-[#68D326] bg-[#68D326] hover:bg-[#70E827] hover:border-[#70E827] transition",
+    make_moderator:
+      "border-orange bg-orange hover:bg-[#F99163] hover:border-[#F99163] transition",
   };
   return (
     <div
-      className={`flex h-full items-center justify-center rounded-br-md rounded-tr-md border px-3 ${buttonBg[optionType]}`}
+      className={`flex h-full cursor-pointer select-none items-center justify-center rounded-br-md rounded-tr-md border px-3 ${buttonBg[optionType]}`}
     >
       <div className="text-sm text-white">{buttonTitle[optionType]}</div>
       <div className="mx-2 h-4 border border-l-0 border-white py-2" />

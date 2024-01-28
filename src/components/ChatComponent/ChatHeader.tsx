@@ -126,7 +126,6 @@ function checkPermissions(
     permission[menuItems.invite_member] = {
       optionTitle: "Invite Members",
       useOption: () => {
-        console.log("Invoke invite member menu");
         invokeChatMemberEditModal(
           setIsEditChatModalOpen,
           setChatEditModalData,
@@ -139,14 +138,24 @@ function checkPermissions(
     permission[menuItems.remove_member] = {
       optionTitle: "Remove Members",
       useOption: () => {
-        console.log("Invoke remove member menu");
+        invokeChatMemberEditModal(
+          setIsEditChatModalOpen,
+          setChatEditModalData,
+          chatId,
+          menuItems.remove_member
+        );
       },
     };
 
     permission[menuItems.make_moderator] = {
       optionTitle: "Make Moderator",
       useOption: () => {
-        console.log("Invoke make moderator menu");
+        invokeChatMemberEditModal(
+          setIsEditChatModalOpen,
+          setChatEditModalData,
+          chatId,
+          menuItems.make_moderator
+        );
       },
     };
   }
