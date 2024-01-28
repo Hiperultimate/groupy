@@ -68,6 +68,6 @@ export const isChatEditModelOpen = atom({
 })
 
 export const chatEditModalData = atom({
-  key: "isChatEditModelOpen",
+  key: "chatEditModalData",
   default: {} as TChatEditModal,
 })
