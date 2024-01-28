@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import DisplayUserImage from "../DisplayUserImage";
 import SvgMenuIcon from "public/SvgMenuIcon";
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import FadeInOut from "../Animation/FadeInOut";
 import HeaderMenu, { menuItems, type Options } from "./HeaderMenu";
 import OutsideClickDetector from "../OutsideClickDetector";
@@ -80,6 +80,7 @@ const ChatHeader = ({
                   invokeChatMemberEditModal,
                   setIsEditChatModalOpen,
                   setChatEditModalData,
+                  setIsMenuOpen,
                   chatId
                 )}
               />
@@ -98,15 +99,17 @@ function checkPermissions(
       chatId: string;
       editType: ChatMemberEditType;
     }>,
+    setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
     chatId: string,
     editType: ChatMemberEditType
   ) => void,
-
+  
   setIsEditChatModalOpen: SetterOrUpdater<boolean>,
   setChatEditModalData: SetterOrUpdater<{
     chatId: string;
     editType: ChatMemberEditType;
   }>,
+  setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
   chatId: string
 ) {
   const permission: Options = {};
@@ -129,6 +132,7 @@ function checkPermissions(
         invokeChatMemberEditModal(
           setIsEditChatModalOpen,
           setChatEditModalData,
+          setIsMenuOpen,
           chatId,
           menuItems.invite_member
         );
@@ -141,6 +145,7 @@ function checkPermissions(
         invokeChatMemberEditModal(
           setIsEditChatModalOpen,
           setChatEditModalData,
+          setIsMenuOpen,
           chatId,
           menuItems.remove_member
         );
@@ -153,6 +158,7 @@ function checkPermissions(
         invokeChatMemberEditModal(
           setIsEditChatModalOpen,
           setChatEditModalData,
+          setIsMenuOpen,
           chatId,
           menuItems.make_moderator
         );

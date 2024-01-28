@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import SearchInput from "../SearchInput";
 import { type DialogElement } from "../CreatePostInput";
 import {
@@ -21,11 +27,13 @@ export const invokeChatMemberEditModal = (
     chatId: string;
     editType: ChatMemberEditType;
   }>,
+  setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
   chatId: string,
   editType: ChatMemberEditType
 ) => {
   setChatEditModalData({ chatId, editType });
   setIsEditChatModalOpen(true);
+  setIsMenuOpen(false);
 };
 
 const ChatMemberEditModal = ({
@@ -91,16 +99,16 @@ const ChatMemberEditModal = ({
     <dialog
       ref={dialogRef}
       onClick={(e) => outsideModalClickHandler(e)}
-      className=" w-96 rounded-md p-3 pr-0 pb-1"
+      className=" w-96 rounded-md p-3 pb-1 pr-0"
     >
-      <div className="pr-3 pb-2">
+      <div className="pb-2 pr-3">
         <SearchInput
           valueState={searchInput}
           setValueState={setSearchInput}
           placeholder="Search users..."
         />
       </div>
-      <div className="h-[450px] pr-2 overflow-y-scroll">
+      <div className="h-[450px] overflow-y-scroll pr-2">
         {searchResult.map((user) => {
           return (
             <div
@@ -108,8 +116,8 @@ const ChatMemberEditModal = ({
               className="mb-2 flex justify-between rounded-md border border-light-grey"
             >
               <div className="flex flex-col py-3 pl-4">
-                <div className="text-sm w-40 truncate">{user.userName}</div>
-                <div className="text-grey w-40 truncate">@{user.userTag}</div>
+                <div className="w-40 truncate text-sm">{user.userName}</div>
+                <div className="w-40 truncate text-grey">@{user.userTag}</div>
               </div>
               <div>
                 <EditModalOptions optionType={editType} />
