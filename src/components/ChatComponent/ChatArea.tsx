@@ -19,6 +19,7 @@ const ChatArea = () => {
     <div className="flex h-full flex-col ">
       <div className="h-24 border-b border-light-grey">
         <ChatHeader
+          chatId={activeChat.id}
           authorName={activeChat.chatName}
           authorAtTag={activeChat.chatUserTag}
           authorProfilePicture={activeChat.chatImg}

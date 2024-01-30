@@ -32,7 +32,7 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
       senderImg: null,
     },
     {
-      id: "1523143",
+      id: "15231455",
       senderName: "John Smith",
       senderTag: "JohnSmith",
       sentAt: new Date("2023-12-30"),
@@ -40,7 +40,7 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
       senderImg: null,
     },
     {
-      id: "1523123",
+      id: "15231523",
       senderName: "Some new guy",
       senderTag: "newGuy",
       sentAt: new Date(),
@@ -77,7 +77,9 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
     dateDivide.add(pushDate);
     return (
       <div className="my-2 flex justify-center ">
-        <div className="bg-grey px-4 py-2 rounded-md text-white">{new Date(pushDate).toLocaleDateString()}</div>
+        <div className="rounded-md bg-grey px-4 py-2 text-white">
+          {new Date(pushDate).toLocaleDateString()}
+        </div>
       </div>
     );
   }
@@ -87,10 +89,9 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
       {chatMessages.map((message) => {
         const isByUser = currentUserSession.user.atTag === message.senderTag;
         return (
-          <>
+          <div key={message.id}>
             {dateDivider(message.sentAt)}
             <div
-              key={message.id}
               className={`m-2 ${
                 isByUser ? "ml-auto justify-end" : "mr-auto justify-start"
               } flex max-w-lg space-x-3`}
@@ -104,7 +105,7 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
                 </div>
               )}
               <div>
-                <p
+                <div
                   className={` space rounded-md ${
                     isByUser
                       ? "rounded-tr-none bg-amber-500"
@@ -122,11 +123,11 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
                       })}
                     </div>
                   </div>
-                  {message.message}
-                </p>
+                  <p>{message.message}</p>
+                </div>
               </div>
             </div>
-          </>
+          </div>
         );
       })}
     </>
