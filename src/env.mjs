@@ -31,6 +31,7 @@ const server = z.object({
  */
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  NEXT_PUBLIC_CHATSERVER_URL: z.string().url(),
 });
 
 /**
@@ -46,6 +47,7 @@ const processEnv = {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   SUPABASE_PROJECT_URL: process.env.SUPABASE_PROJECT_URL,
   SUPABASE_PROJECT_ANON_KEY: process.env.SUPABASE_PROJECT_ANON_KEY,
+  NEXT_PUBLIC_CHATSERVER_URL: process.env.NEXT_PUBLIC_CHATSERVER_URL,
   // DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   // DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
