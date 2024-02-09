@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "web-dev": "next dev",
+    "cs-dev": "npm --prefix ./chatServer run dev",
+    "dev": "concurrently --kill-others \"npm run web-dev\" \"npm run cs-dev\"",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
@@ -44,6 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "autoprefixer": "^10.4.14",
+    "concurrently": "^8.2.2",
     "eslint": "^8.36.0",
     "eslint-config-next": "^13.2.4",
     "postcss": "^8.4.21",

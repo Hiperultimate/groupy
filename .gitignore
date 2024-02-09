@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+.env
+node_modules
+
 # testing
 /coverage
 
@@ -18,7 +21,7 @@
 next-env.d.ts
 
 # production
-/build
+*build
 
 # misc
 .DS_Store
