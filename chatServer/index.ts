@@ -1,10 +1,11 @@
-import dotenv from "dotenv";
+
 import cors from "cors";
 import express, { type Express, type Request, type Response } from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { env } from "./env";
 
-dotenv.config();
+
 
 const app: Express = express();
 app.use(cors());
@@ -47,5 +48,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(process.env.PORT, () => {
-  console.log(`App listening on port http://localhost:${process.env.PORT}`);
+  console.log(`App listening on port http://localhost:${env.PORT}`);
 });
