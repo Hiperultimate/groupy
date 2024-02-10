@@ -3,13 +3,25 @@ import ChatDialogs from "./ChatDialogs";
 import ChatHeader from "./ChatHeader";
 import ChatTextInput from "./ChatTextInput";
 import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
+import { useEffect, useState } from "react";
+import { socket } from "~/utils/socket";
 
 const ChatArea = () => {
   const chatData = useRecoilValue(chatOptionState);
+  const [textInput, setTextInput] = useState("");
 
   const activeChat: TChatOption | undefined = chatData.find((chat) => {
     return chat.isSelected === true;
   });
+
+  useEffect(() => {
+    if (activeChat) {
+      socket.emit("joinRoom", activeChat.id);
+      socket.on(`room:${activeChat.id}`, (roomData) => {
+        console.log("Checking :" , roomData);
+      });
+    }
+  }, [activeChat]);
 
   if (!activeChat) {
     return <></>;
@@ -29,7 +41,11 @@ const ChatArea = () => {
         <ChatDialogs chatId={activeChat.id} />
       </div>
       <div className="flex h-20 flex-col items-center justify-center border-t px-4">
-        <ChatTextInput />
+        <ChatTextInput
+          chatId={activeChat.id}
+          inputState={textInput}
+          setInputState={setTextInput}
+        />
       </div>
     </div>
   );

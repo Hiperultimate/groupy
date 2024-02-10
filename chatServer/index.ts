@@ -1,11 +1,8 @@
-
 import cors from "cors";
 import express, { type Express, type Request, type Response } from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { env } from "./env";
-
-
 
 const app: Express = express();
 app.use(cors());
@@ -25,25 +22,18 @@ app.get("/serverstatus", (req: Request, res: Response) => {
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("create", (room) => {
-    console.log("Room created");
+  socket.on("joinRoom", (room) => {
+    console.log("Room joined ID: ", room);
     socket.join(room);
   });
 
-  socket.on("roomMsg", (object) => {
-    // console.log("Checking data received : ", JSON.parse(object));
-    console.log("Checking data received : ", object);
-    socket.to(object.roomId).emit(object.message);
-  });
-
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
-    io.emit("chat message", msg);
-    // socket.broadcast.emit(msg);
+  socket.on("roomMessage", (object) => {
+    console.log("Message object received : ", object);
+    socket.to(object.roomId).emit(`room:${object.roomId}`, object.message);
   });
 
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    console.log("User disconnected");
   });
 });
 

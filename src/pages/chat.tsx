@@ -12,10 +12,7 @@ const Chat: NextPage = () => {
 
   useEffect(() => {
     console.log("Connecting with socketio");
-    const roomId = "1233412";
     socket.connect();
-    socket.emit("create", roomId);
-    socket.emit("roomMsg", { roomId: roomId, message: "Hello socketio!" });
   }, []);
 
   return (
