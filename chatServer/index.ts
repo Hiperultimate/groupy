@@ -1,8 +1,9 @@
 import cors from "cors";
+import { env } from "./env";
 import express, { type Express, type Request, type Response } from "express";
+import redisClient from "./redis";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import { env } from "./env";
 
 const app: Express = express();
 app.use(cors());
@@ -19,6 +20,7 @@ app.get("/serverstatus", (req: Request, res: Response) => {
   res.json({ status: "OK" });
 });
 
+// TODO: Implement redis, just use it to store messages and fetch messages when user loads in initially
 io.on("connection", (socket) => {
   console.log("a user connected");
 
@@ -27,8 +29,9 @@ io.on("connection", (socket) => {
     socket.join(room);
   });
 
-  socket.on("roomMessage", (object) => {
+  socket.on("roomMessage", async (object) => {
     console.log("Message object received : ", object);
+    await redisClient.set(`room:${object.roomId}`,object.message);
     socket.to(object.roomId).emit(`room:${object.roomId}`, object.message);
   });
 

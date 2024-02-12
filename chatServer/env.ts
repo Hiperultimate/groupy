@@ -5,6 +5,9 @@ dotenv.config();
 
 const envSchema = z.object({
   PORT: z.string().min(4),
+  REDIS_PORT: z.string().min(1),
+  REDIS_HOST: z.string().min(1),
+  REDIS_PASSWORD: z.string().min(1),
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
