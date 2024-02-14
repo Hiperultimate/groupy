@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-import { env } from "./env";
+import { env } from "../env";
 
 const redisClient = new Redis({
   port: Number(env.REDIS_PORT), // Redis port

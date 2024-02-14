@@ -1,9 +1,9 @@
 import cors from "cors";
-import { env } from "./env";
 import express, { type Express, type Request, type Response } from "express";
-import redisClient from "./redis";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { env } from "./env";
+import redisClient from "./utils/redis";
 
 const app: Express = express();
 app.use(cors());
