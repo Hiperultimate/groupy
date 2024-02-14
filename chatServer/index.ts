@@ -20,18 +20,42 @@ app.get("/serverstatus", (req: Request, res: Response) => {
   res.json({ status: "OK" });
 });
 
-// TODO: Implement redis, just use it to store messages and fetch messages when user loads in initially
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("joinRoom", (room) => {
+  socket.on("joinRoom", async (room) => {
     console.log("Room joined ID: ", room);
+
+    // Logic to get last N messages from a room
+    const previousMessageArr = await redisClient.lrange(
+      `roomMessages:${room}`,
+      -3, // Start
+      -1 // Stop
+    );
+
+    await Promise.all(
+      previousMessageArr.map(async (id) => {
+        const message = await redisClient.hgetall(id);
+        console.log(`Message ${id} : `, message);
+      })
+    );
+
     socket.join(room);
   });
 
   socket.on("roomMessage", async (object) => {
     console.log("Message object received : ", object);
-    await redisClient.set(`room:${object.roomId}`,object.message);
+
+    const messageId = Math.random() * 10000; // Generate a MUID instead
+    await redisClient.hset(messageId.toString(), {
+      sentAt: Date.now(),
+      message: object.message,
+    });
+    await redisClient.rpush(
+      `roomMessages:${object.roomId}`,
+      messageId.toString()
+    );
+
     socket.to(object.roomId).emit(`room:${object.roomId}`, object.message);
   });
 
