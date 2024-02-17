@@ -10,6 +10,7 @@
   },
   "include": [
     ".eslintrc.cjs",
+    "types.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",

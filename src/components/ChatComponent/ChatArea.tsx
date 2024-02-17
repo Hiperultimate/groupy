@@ -17,7 +17,7 @@ const ChatArea = () => {
   useEffect(() => {
     if (activeChat) {
       socket.emit("joinRoom", activeChat.id);
-      socket.on(`room:${activeChat.id}`, (roomData) => {
+      socket.on(`roomData`, (roomData) => {
         console.log("Checking :" , roomData);
       });
     }

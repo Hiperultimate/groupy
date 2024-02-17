@@ -4,12 +4,13 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { env } from "./env";
 import redisClient from "./utils/redis";
+import type { ServerToClientEvents } from "./types";
 
 const app: Express = express();
 app.use(cors());
 
 const server = createServer(app);
-const io = new Server(server, {
+const io = new Server<ServerToClientEvents>(server, {
   cors: {
     origin: "*",
   },
@@ -40,7 +41,7 @@ io.on("connection", (socket) => {
       })
     );
 
-    socket.join(room);
+    void socket.join(room);
   });
 
   socket.on("roomMessage", async (object) => {
@@ -56,7 +57,7 @@ io.on("connection", (socket) => {
       messageId.toString()
     );
 
-    socket.to(object.roomId).emit(`room:${object.roomId}`, object.message);
+    socket.to(object.roomId).emit(`roomData`, object.message);
   });
 
   socket.on("disconnect", () => {
