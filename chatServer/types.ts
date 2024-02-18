@@ -6,5 +6,5 @@ type TMessage = {
 export interface ServerToClientEvents {
   joinRoom: (room: string) => void;
   roomMessage: (messageObj: TMessage) => void;
-  roomData: (message: string) => void;
+  roomData: (messageObj: { roomID: string; message: string }) => void;
 }

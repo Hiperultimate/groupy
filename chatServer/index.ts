@@ -25,8 +25,6 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 
   socket.on("joinRoom", async (room) => {
-    console.log("Room joined ID: ", room);
-
     // Logic to get last N messages from a room
     const previousMessageArr = await redisClient.lrange(
       `roomMessages:${room}`,
@@ -42,6 +40,7 @@ io.on("connection", (socket) => {
     );
 
     void socket.join(room);
+    console.log("Room joined ID: ", room);
   });
 
   socket.on("roomMessage", async (object) => {
@@ -57,7 +56,9 @@ io.on("connection", (socket) => {
       messageId.toString()
     );
 
-    socket.to(object.roomId).emit(`roomData`, object.message);
+    socket
+      .to(object.roomId)
+      .emit(`roomData`, { roomID: object.roomId, message: object.message });
   });
 
   socket.on("disconnect", () => {

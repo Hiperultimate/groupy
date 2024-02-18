@@ -4,15 +4,29 @@ import { useRecoilValue } from "recoil";
 import ChatArea from "~/components/ChatComponent/ChatArea";
 import ChatMemberEditModal from "~/components/ChatComponent/ChatMemberEditModal";
 import UserChatList from "~/components/ChatComponent/UserChatList";
-import { chatEditModalData } from "~/store/atoms/chat";
+import { chatEditModalData, chatOptionState } from "~/store/atoms/chat";
 import { socket } from "~/utils/socket";
 
 const Chat: NextPage = () => {
   const editModalData = useRecoilValue(chatEditModalData);
+  const userChatList = useRecoilValue(chatOptionState);
 
   useEffect(() => {
-    console.log("Connecting with socketio");
     socket.connect();
+    socket.on(`roomData`, (roomData) => {
+      console.log("Checking :", roomData);
+    });
+    userChatList.forEach((chatData) => {
+      socket.emit("joinRoom", chatData.id);
+    });
+
+    return () => {
+      // Cleanup logic to remove socket connections
+      socket.off('roomData');
+      socket.off('joinRoom')
+      socket.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

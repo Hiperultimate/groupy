@@ -13,11 +13,15 @@ export type TChatOption = {
   isSelected: boolean;
 };
 
-export type ChatMemberEditType = "invite_member" | "remove_member" | "make_moderator";
+export type ChatMemberEditType =
+  | "invite_member"
+  | "remove_member"
+  | "make_moderator";
 
 type TChatEditModal = {
-  chatId : string, editType :ChatMemberEditType
-}
+  chatId: string;
+  editType: ChatMemberEditType;
+};
 
 export const chatOptionState = atom({
   key: "chatOption",
@@ -26,7 +30,7 @@ export const chatOptionState = atom({
     {
       id: "123123",
       chatName: "John Smith",
-      chatUserTag : "johnSmith",
+      chatUserTag: "johnSmith",
       isSelected: false,
       chatImg: null,
       chatLastMsg: "That would be great!",
@@ -61,13 +65,12 @@ export const chatOptionState = atom({
   //   default: [] as TChatOption[],
 });
 
-
 export const isChatEditModelOpen = atom({
   key: "isChatEditModelOpen",
   default: false,
-})
+});
 
 export const chatEditModalData = atom({
   key: "chatEditModalData",
   default: {} as TChatEditModal,
-})
+});
