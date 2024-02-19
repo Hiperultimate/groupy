@@ -1,3 +1,5 @@
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import SvgChatIcon from "public/SvgChatIcon";
 import { socket } from "~/utils/socket";
 
@@ -10,9 +12,21 @@ const ChatTextInput = ({
   inputState: string;
   setInputState: React.Dispatch<React.SetStateAction<string>>;
 }) => {
+  const { data: currentUser } = useSession();
+  const router = useRouter();
 
+  if (!currentUser) {
+    router.push("/");
+    return <></>;
+  }
   const submitHandler = () => {
-    socket.emit("roomMessage", { roomId: chatId, message: inputState});
+    socket.emit("roomMessage", {
+      senderName: currentUser.user.name,
+      senderTag: currentUser.user.atTag,
+      senderImg: currentUser.user.image,
+      roomId: chatId,
+      message: inputState,
+    });
   };
 
   return (

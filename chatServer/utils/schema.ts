@@ -1,10 +1,18 @@
 import { z } from "zod";
 
-const MessageSchema = z.object({
-  messageId: z.string().uuid(),
+export const ServerToClientMessageSchema = z.object({
+  id: z.string().cuid(),
   senderTag: z.string(),
   senderName: z.string(),
   sentAt: z.number(),
   message: z.string(),
   senderImg: z.string().url().optional(),
+});
+
+export const ClientToServerMessageSchema = z.object({
+  senderTag: z.string(),
+  senderName: z.string(),
+  message: z.string(),
+  senderImg: z.string().url().optional(),
+  roomId: z.string(),
 });
