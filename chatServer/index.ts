@@ -24,7 +24,7 @@ app.get("/serverstatus", (req: Request, res: Response) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("a user connected");
+  console.log("A user connected");
 
   socket.on("joinRoom", (room) => {
     console.log("User joined room :", room);

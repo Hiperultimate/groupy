@@ -17,13 +17,13 @@ const Chat: NextPage = () => {
       console.log("Checking :", roomData);
     });
     userChatList.forEach((chatData) => {
-      socket.emit("joinRoom", chatData.id);
+      socket.emit("joinRoom", chatData.roomID);
     });
 
     return () => {
       // Cleanup logic to remove socket connections
-      socket.off('roomData');
-      socket.off('joinRoom')
+      socket.off("roomData");
+      socket.off("joinRoom");
       socket.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

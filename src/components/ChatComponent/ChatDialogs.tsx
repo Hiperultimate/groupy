@@ -1,61 +1,20 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import DisplayUserImage from "../DisplayUserImage";
-
-type TChatMessage = {
-  id: string;
-  senderName: string;
-  senderTag: string;
-  sentAt: Date;
-  message: string;
-  senderImg: string | null;
-};
+import { chatRoomMessages, type TChatMessage } from "~/store/atoms/chat";
+import { useRecoilValue } from "recoil";
 
 const ChatDialogs = ({ chatId }: { chatId: string }) => {
-  const [chatMessages, setChatMessages] = useState<TChatMessage[]>([
-    {
-      id: "123123",
-      senderName: "John Smith",
-      senderTag: "JohnSmith",
-      sentAt: new Date("2023-12-30"),
-      message:
-        "Hey man, I know you have been coding a lot but you should CODE EVEN MORE",
-      senderImg: null,
-    },
-    {
-      id: "1523123",
-      senderName: "Some new guy",
-      senderTag: "newGuy",
-      sentAt: new Date("2023-12-30"),
-      message: "But ofcourse man",
-      senderImg: null,
-    },
-    {
-      id: "15231455",
-      senderName: "John Smith",
-      senderTag: "JohnSmith",
-      sentAt: new Date("2023-12-30"),
-      message: "Good thing",
-      senderImg: null,
-    },
-    {
-      id: "15231523",
-      senderName: "Some new guy",
-      senderTag: "newGuy",
-      sentAt: new Date(),
-      message: "But ofcourse man",
-      senderImg: null,
-    },
-    {
-      id: "1523143",
-      senderName: "John Smith",
-      senderTag: "JohnSmith",
-      sentAt: new Date(),
-      message: "Good thing",
-      senderImg: null,
-    },
-  ]);
+  const allChatMessages = useRecoilValue(chatRoomMessages);
+  let chatMessages: TChatMessage[] = [];
+
+  if (allChatMessages.hasOwnProperty(chatId)) {
+    const chatRoomMessages = allChatMessages[chatId];
+    if (chatRoomMessages !== undefined) {
+      chatMessages = chatRoomMessages;
+    }
+  }
+
   const dateDivide = new Set();
 
   // Use session and get currently logged in user's Tag, then design the chat box

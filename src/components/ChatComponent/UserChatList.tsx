@@ -10,8 +10,8 @@ const UserChatList = () => {
       {chatOptions.map((chatData) => {
         return (
           <ChatOption
-            key={chatData.id}
-            id={chatData.id}
+            key={chatData.roomID}
+            roomID={chatData.roomID}
             chatName={chatData.chatName}
             chatImg={chatData.chatImg}
             chatLastMsg={chatData.chatLastMsg}

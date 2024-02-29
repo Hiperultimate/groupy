@@ -2,8 +2,9 @@
 
 import { atom } from "recoil";
 
+// Chat groups
 export type TChatOption = {
-  id: string;
+  roomID: string;
   chatName: string;
   chatUserTag: string | null;
   chatImg: string | null;
@@ -11,6 +12,19 @@ export type TChatOption = {
   lastMsgSentAt: Date;
   unreadMsgCount: number;
   isSelected: boolean;
+};
+
+export type TChatMessage = {
+  id: string;
+  senderName: string;
+  senderTag: string;
+  sentAt: Date;
+  message: string;
+  senderImg: string | null;
+};
+
+export type TChatRoomMessages = {
+  [roomId: string]: TChatMessage[];
 };
 
 export type ChatMemberEditType =
@@ -28,7 +42,7 @@ export const chatOptionState = atom({
   // Dummy data
   default: [
     {
-      id: "123123",
+      roomID: "123123",
       chatName: "John Smith",
       chatUserTag: "johnSmith",
       isSelected: false,
@@ -40,7 +54,7 @@ export const chatOptionState = atom({
       unreadMsgCount: 12,
     },
     {
-      id: "12312233",
+      roomID: "12312233",
       chatName: "Immortals",
       isSelected: false,
       chatImg: null,
@@ -51,7 +65,7 @@ export const chatOptionState = atom({
       unreadMsgCount: 1,
     },
     {
-      id: "1231523",
+      roomID: "1231523",
       chatName: "Lazy Group",
       isSelected: false,
       chatImg: null,
@@ -63,6 +77,56 @@ export const chatOptionState = atom({
     },
   ] as TChatOption[],
   //   default: [] as TChatOption[],
+});
+
+export const chatRoomMessages = atom({
+  key: "chatRoomMessages",
+  // default: {} as TChatRoomMessages,
+  default: {
+    "123123": [
+      {
+        id: "623626",
+        senderName: "John Smith",
+        senderTag: "JohnSmith",
+        sentAt: new Date("2023-12-30"),
+        message:
+          "Hey man, I know you have been coding a lot but you should CODE EVEN MORE",
+        senderImg: null,
+      },
+      {
+        id: "1523123",
+        senderName: "Some new guy",
+        senderTag: "newGuy",
+        sentAt: new Date("2023-12-30"),
+        message: "But ofcourse man",
+        senderImg: null,
+      },
+      {
+        id: "15231455",
+        senderName: "John Smith",
+        senderTag: "JohnSmith",
+        sentAt: new Date("2023-12-30"),
+        message: "Good thing",
+        senderImg: null,
+      },
+      {
+        id: "15231523",
+        senderName: "Some new guy",
+        senderTag: "newGuy",
+        sentAt: new Date(),
+        message: "But ofcourse man",
+        senderImg: null,
+      },
+      {
+        id: "1523143",
+        senderName: "John Smith",
+        senderTag: "JohnSmith",
+        sentAt: new Date(),
+        message: "Good thing",
+        senderImg: null,
+      },
+    ],
+  } as TChatRoomMessages,
 });
 
 export const isChatEditModelOpen = atom({

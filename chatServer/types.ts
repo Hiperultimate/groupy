@@ -1,4 +1,4 @@
-type TMessage = {
+export type TMessage = {
   roomId: string;
   id: string;
   senderName: string;
@@ -8,7 +8,12 @@ type TMessage = {
   senderImg: string | undefined;
 };
 
-type TClientMessage = Omit<TMessage, "id" | "sentAt">
+export type TOldRoomMessages = {
+  [roomId: string]: TChatMessage[];
+};
+
+export type TChatMessage = Omit<TMessage, "roomId">;
+type TClientMessage = Omit<TMessage, "id" | "sentAt">;
 
 export interface ServerToClientEvents {
   joinRoom: (room: string) => void;

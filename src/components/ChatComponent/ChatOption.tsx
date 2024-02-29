@@ -7,7 +7,7 @@ import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
 type TChatOptionComponent = Omit<TChatOption, "chatUserTag">;
 
 const ChatOption = ({
-  id,
+  roomID,
   chatName,
   chatImg,
   chatLastMsg,
@@ -28,7 +28,7 @@ const ChatOption = ({
   function selectChatOption() {
     setChatOptions((chatOptions) => {
       const updatedOptions = chatOptions.map((chat) => {
-        if (chat.id === id) {
+        if (chat.roomID === roomID) {
           return { ...chat, isSelected: true };
         }
         return { ...chat, isSelected: false };
