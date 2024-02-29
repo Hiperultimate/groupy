@@ -26,23 +26,9 @@ app.get("/serverstatus", (req: Request, res: Response) => {
 io.on("connection", (socket) => {
   console.log("a user connected");
 
-  socket.on("joinRoom", async (room) => {
-    // Logic to get last N messages from a room
-    const previousMessageArr = await redisClient.lrange(
-      `roomMessages:${room}`,
-      -3, // Start
-      -1 // Stop
-    );
-
-    await Promise.all(
-      previousMessageArr.map(async (id) => {
-        const message = await redisClient.hgetall(id);
-        console.log(`Message ${id} : `, message);
-      })
-    );
-
+  socket.on("joinRoom", (room) => {
+    console.log("User joined room :", room);
     void socket.join(room);
-    console.log("Room joined ID: ", room);
   });
 
   socket.on("roomMessage", async (object) => {
@@ -56,7 +42,6 @@ io.on("connection", (socket) => {
       return new Error("Bad request");
     }
 
-    console.log("Broadcasting message : ", receivedData.data);
     const { senderTag, senderName, message, senderImg, roomId } =
       receivedData.data;
 
@@ -73,7 +58,8 @@ io.on("connection", (socket) => {
 
     await redisClient.hset(messageId, messageObject);
     await redisClient.rpush(`roomMessages:${object.roomId}`, messageId);
-
+    
+    console.log(`Broadcasting room ${object.roomId} message :`, messageObject);
     socket.to(object.roomId).emit(`roomData`, messageObject);
   });
 
