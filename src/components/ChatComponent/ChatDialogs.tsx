@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import DisplayUserImage from "../DisplayUserImage";
 import { chatRoomMessages, type TChatMessage } from "~/store/atoms/chat";
 import { useRecoilValue } from "recoil";
+import { api } from "~/utils/api";
 
 const ChatDialogs = ({ chatId }: { chatId: string }) => {
   const allChatMessages = useRecoilValue(chatRoomMessages);
@@ -26,7 +27,15 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
     return <></>;
   }
 
-  // Fetch chat data from chatId through useMemo
+  // Fetch chat data from backend and set it in recoil
+  const {data : oldChatMessages} = api.chat.getOldMessagesFromRoomId.useQuery({roomId: chatId}, {
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
+    staleTime: Infinity
+  });
+
+  console.log("Checking old chat messages : ", oldChatMessages);
 
   function dateDivider(sentDate: Date) {
     const pushDate = sentDate.getTime();
