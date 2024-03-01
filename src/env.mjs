@@ -23,6 +23,9 @@ const server = z.object({
   // DISCORD_CLIENT_SECRET: z.string(),
   SUPABASE_PROJECT_URL: z.string(),
   SUPABASE_PROJECT_ANON_KEY: z.string(),
+  REDIS_PORT: z.string().min(1),
+  REDIS_HOST: z.string().min(1),
+  REDIS_PASSWORD: z.string().min(1),
 });
 
 /**
@@ -48,6 +51,9 @@ const processEnv = {
   SUPABASE_PROJECT_URL: process.env.SUPABASE_PROJECT_URL,
   SUPABASE_PROJECT_ANON_KEY: process.env.SUPABASE_PROJECT_ANON_KEY,
   NEXT_PUBLIC_CHATSERVER_URL: process.env.NEXT_PUBLIC_CHATSERVER_URL,
+  REDIS_PORT: process.env.REDIS_PORT,
+  REDIS_HOST: process.env.REDIS_HOST,
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD,
   // DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   // DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
