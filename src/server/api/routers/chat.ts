@@ -8,6 +8,7 @@ export const chatRouter = createTRPCRouter({
     .input(z.object({ roomId: z.string() }))
     .output(
       z.record(
+        z.string(),
         z.array(
           z.object({
             id: z.string(),

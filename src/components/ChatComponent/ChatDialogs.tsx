@@ -2,23 +2,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import DisplayUserImage from "../DisplayUserImage";
 import { chatRoomMessages, type TChatMessage } from "~/store/atoms/chat";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { api } from "~/utils/api";
 
 const ChatDialogs = ({ chatId }: { chatId: string }) => {
-  const allChatMessages = useRecoilValue(chatRoomMessages);
+  const [allChatMessages, setAllChatMessages] =
+  useRecoilState(chatRoomMessages);
   let chatMessages: TChatMessage[] = [];
-
-  if (allChatMessages.hasOwnProperty(chatId)) {
-    const chatRoomMessages = allChatMessages[chatId];
-    if (chatRoomMessages !== undefined) {
-      chatMessages = chatRoomMessages;
-    }
-  }
-
-  const dateDivide = new Set();
-
-  // Use session and get currently logged in user's Tag, then design the chat box
+  
   const router = useRouter();
   const { data: currentUserSession } = useSession();
 
@@ -27,16 +18,28 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
     return <></>;
   }
 
-  // Fetch chat data from backend and set it in recoil
-  const {data : oldChatMessages} = api.chat.getOldMessagesFromRoomId.useQuery({roomId: chatId}, {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    retry: false,
-    staleTime: Infinity
-  });
+  if (allChatMessages.hasOwnProperty(chatId)) {
+    const chatRoomMessages = allChatMessages[chatId];
+    if (chatRoomMessages !== undefined) {
+      chatMessages = chatRoomMessages;
+    }
+  }
 
-  console.log("Checking old chat messages : ", oldChatMessages);
+  // Fetching chat data from backend and setting it in recoil state
+  const { data: oldChatMessages } = api.chat.getOldMessagesFromRoomId.useQuery(
+    { roomId: chatId },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: false,
+      staleTime: Infinity,
+    }
+  );
+  if (oldChatMessages !== undefined) {
+    setAllChatMessages(oldChatMessages);
+  }
 
+  const dateDivide = new Set();
   function dateDivider(sentDate: Date) {
     const pushDate = sentDate.getTime();
     if (dateDivide.has(pushDate)) {
