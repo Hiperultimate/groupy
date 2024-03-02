@@ -27,6 +27,13 @@ const ChatTextInput = ({
       roomId: chatId,
       message: inputState,
     });
+    setInputState("");
+  };
+
+  const handleKeyDown = (event : React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      submitHandler();
+    }
   };
 
   return (
@@ -35,6 +42,7 @@ const ChatTextInput = ({
         type="text"
         value={inputState}
         onChange={(e) => setInputState(e.target.value)}
+        onKeyDown={handleKeyDown}
         className="mx-5 my-2 w-full text-lg outline-none"
       />
       <span className="h-full border-l" />
