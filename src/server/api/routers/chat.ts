@@ -1,26 +1,16 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import type { TChatMessage, TChatRoomMessages } from "~/store/atoms/chat";
+import {
+  ChatMessageSchema,
+  type TChatMessage,
+  type TChatRoomMessages,
+} from "~/store/atoms/chat";
 
 export const chatRouter = createTRPCRouter({
   getOldMessagesFromRoomId: protectedProcedure
     .input(z.object({ roomId: z.string() }))
-    .output(
-      z.record(
-        z.string(),
-        z.array(
-          z.object({
-            id: z.string(),
-            senderName: z.string(),
-            senderTag: z.string(),
-            sentAt: z.date(),
-            message: z.string(),
-            senderImg: z.string().nullable(),
-          })
-        )
-      )
-    )
+    .output(z.record(z.string(), z.array(ChatMessageSchema)))
     .query(async ({ ctx, input }) => {
       const previousMessageArr = await ctx.redis.lrange(
         `roomMessages:${input.roomId}`,

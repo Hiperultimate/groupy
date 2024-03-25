@@ -1,15 +1,19 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import DisplayUserImage from "../DisplayUserImage";
-import { chatRoomMessages, type TChatMessage } from "~/store/atoms/chat";
+import {
+  chatRoomMessages,
+  type TChatRoomMessages,
+  type TChatMessage,
+} from "~/store/atoms/chat";
 import { useRecoilState } from "recoil";
 import { api } from "~/utils/api";
 
 const ChatDialogs = ({ chatId }: { chatId: string }) => {
   const [allChatMessages, setAllChatMessages] =
-  useRecoilState(chatRoomMessages);
+    useRecoilState(chatRoomMessages);
   let chatMessages: TChatMessage[] = [];
-  
+
   const router = useRouter();
   const { data: currentUserSession } = useSession();
 
@@ -19,25 +23,35 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
   }
 
   if (allChatMessages.hasOwnProperty(chatId)) {
-    const chatRoomMessages = allChatMessages[chatId];
-    if (chatRoomMessages !== undefined) {
-      chatMessages = chatRoomMessages;
+    const roomMessage = allChatMessages[chatId];
+    if (roomMessage !== undefined) {
+      chatMessages = roomMessage;
     }
   }
 
   // Fetching chat data from backend and setting it in recoil state
-  const { data: oldChatMessages } = api.chat.getOldMessagesFromRoomId.useQuery(
+  api.chat.getOldMessagesFromRoomId.useQuery(
     { roomId: chatId },
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      retry: false,
       staleTime: Infinity,
+      onSuccess: (data) => {
+        if (data !== undefined) {
+          setAllChatMessages((prevData) => {
+            const existingRoomChatData = data[chatId];
+            if (!existingRoomChatData) {
+              return { ...prevData };
+            }
+            const itemToAdd: TChatRoomMessages = {
+              [chatId]: existingRoomChatData,
+            };
+            return { ...prevData, ...itemToAdd };
+          });
+        }
+      },
     }
   );
-  if (oldChatMessages !== undefined) {
-    setAllChatMessages(oldChatMessages);
-  }
 
   const dateDivide = new Set();
   function dateDivider(sentDate: Date) {

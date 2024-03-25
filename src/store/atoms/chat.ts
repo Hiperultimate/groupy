@@ -1,7 +1,7 @@
 // import type { Notification } from "@prisma/client"; -> Import chat type from prisma instead of TChatOption
 
 import { atom } from "recoil";
-
+import { z } from "zod";
 // Chat groups
 export type TChatOption = {
   roomID: string;
@@ -14,14 +14,26 @@ export type TChatOption = {
   isSelected: boolean;
 };
 
-export type TChatMessage = {
-  id: string;
-  senderName: string;
-  senderTag: string;
-  sentAt: Date;
-  message: string;
-  senderImg: string | null;
-};
+export const ChatMessageSchema = z.object({
+  id: z.string(),
+  senderName: z.string(),
+  senderTag: z.string(),
+  sentAt: z.date(),
+  message: z.string(),
+  senderImg: z.string().nullable(),
+});
+
+export type TChatMessage = z.infer<typeof ChatMessageSchema>;
+
+export const ServerToClientChatMessageSchema = z.object({
+  id: z.string(),
+  senderName: z.string(),
+  senderTag: z.string(),
+  sentAt: z.date(),
+  senderImg: z.string().nullable(),
+  roomId: z.string(),
+  message: z.string(),
+});
 
 export type TChatRoomMessages = {
   [roomId: string]: TChatMessage[];
