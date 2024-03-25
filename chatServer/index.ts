@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
     await redisClient.rpush(`roomMessages:${object.roomId}`, messageId);
     
     console.log(`Broadcasting room ${object.roomId} message :`, messageObject);
-    socket.to(object.roomId).emit(`roomData`, messageObject);
+    socket.nsp.to(object.roomId).emit(`roomData`, messageObject);
   });
 
   socket.on("disconnect", () => {
