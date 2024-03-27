@@ -35,6 +35,10 @@ export const ServerToClientChatMessageSchema = z.object({
   message: z.string(),
 });
 
+export type TServerToClientChatMessageSchema = z.infer<
+  typeof ServerToClientChatMessageSchema
+>;
+
 export type TChatRoomMessages = {
   [roomId: string]: TChatMessage[];
 };

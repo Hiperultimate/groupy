@@ -2,9 +2,15 @@ import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { type Socket } from "socket.io-client";
 import {
+  type TServerToClientChatMessageSchema,
   ServerToClientChatMessageSchema,
   chatRoomMessages,
 } from "~/store/atoms/chat";
+
+type TServerIncomingChatMessage = Omit<
+  TServerToClientChatMessageSchema,
+  "sentAt"
+> & { sentAt: number };
 
 const useReceiveChatMessage = (socket: Socket) => {
   const setChatRoomMessages = useSetRecoilState(chatRoomMessages);
@@ -12,21 +18,24 @@ const useReceiveChatMessage = (socket: Socket) => {
   useEffect(() => {
     socket.on(
       `roomData`,
-      (roomData: {
-        [key: string]: {
-          id: string;
-          senderName: string;
-          message: string;
-          sentAt: number;
-          senderTag: string;
-          roomId: string;
-          senderImg: string | null;
-        };
-      }) => {
+      ({
+        id,
+        senderName,
+        senderTag,
+        sentAt,
+        senderImg,
+        roomId,
+        message,
+      }: TServerIncomingChatMessage) => {
         const messageUpdate = {
-          ...roomData,
-          roomID: roomData.roomId,
-          sentAt: new Date(Number(roomData.sentAt)),
+          id,
+          senderName,
+          senderTag,
+          senderImg,
+          roomId,
+          message,
+          roomID: roomId,
+          sentAt: new Date(Number(sentAt)),
         };
         const isValidMsg =
           ServerToClientChatMessageSchema.safeParse(messageUpdate);
@@ -35,7 +44,6 @@ const useReceiveChatMessage = (socket: Socket) => {
         } else {
           setChatRoomMessages((existingData) => {
             const newMessage = isValidMsg.data;
-            newMessage.sentAt = new Date(newMessage["sentAt"]);
             const toRoomId = newMessage.roomId;
             const existingRoomChatData = existingData[toRoomId];
             if (!existingRoomChatData) {
