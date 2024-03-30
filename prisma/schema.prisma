@@ -80,6 +80,7 @@ model Post {
   tags      Tag[]
   author    User        @relation(fields: [authorId], references: [id])
   authorId  String
+  groupId   String?
   comments  Comment[] 
   likedBy   UserLikedPost[]
   createdAt DateTime    @default(now())

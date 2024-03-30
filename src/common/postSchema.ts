@@ -15,10 +15,9 @@ export const postSchema = z
     isGroup: z.boolean(),
     groupName: z.string().min(1).max(25).optional().or(z.literal("")),
     ageSpectrum: z
-      .object({ minAge: z.number(), maxAge: z.number() })
-      .optional(),
-    groupSize: z.number().min(1).optional(),
-    instantJoin: z.boolean().optional(),
+      .object({ minAge: z.number(), maxAge: z.number() }),
+    groupSize: z.number().min(1),
+    instantJoin: z.boolean(),
     image: z.string().optional(),
   })
   .refine((schema) => {
