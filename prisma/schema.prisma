@@ -41,6 +41,7 @@ model User {
     joinedGroups        UserGroups[] 
     userChatMessages    ChatMessage[]  
     unreadMessages      UnreadMessage[]  
+    moderatingGroups    Group[] 
     // This second "side" of the UserFriends relation exists solely 
     // to satisfy prisma's requirements; we won't access it directly.     
     symmetricFriends    User[]              @relation(name: "UserFriends")      
@@ -117,6 +118,7 @@ model Group {
     name        String 
     image       String?
 
+    moderators  User[]     
     users       UserGroups[]
     messages    ChatMessage[]
 
