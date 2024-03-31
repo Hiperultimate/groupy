@@ -9,6 +9,7 @@ import { postSchema } from "~/common/postSchema";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { supabase } from "~/utils/storageBucket";
 import { getUserByID } from "./account";
+import createGroup from "~/server/prismaOperations/createGroup";
 
 /**
  *
@@ -195,7 +196,6 @@ export const postRouter = createTRPCRouter({
   createPost: protectedProcedure
     .input(postSchema)
     .mutation(async ({ input, ctx }) => {
-      // isGroup, groupName, groupSize, instantJoin fields will be used when creating group chat functionality
       const {
         content,
         isGroup,
@@ -237,10 +237,34 @@ export const postRouter = createTRPCRouter({
         }
       }
 
+      // Creating group
+      let group = undefined;
+      if (isGroup) {
+        try {
+          group = await createGroup({
+            prisma: ctx.prisma,
+            groupMakerId: ctx.session.user.id,
+            groupName: groupName,
+            groupImage: null,
+            minAgeLimit: ageSpectrum.minAge,
+            maxAgeLimit: ageSpectrum.maxAge,
+            size: groupSize,
+            instantJoin: instantJoin,
+          });
+        } catch (e) {
+          console.log("Error creating group :", e);
+          throw new TRPCError({
+            message: "Error occured while creating group, please try again.",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+      }
+
       try {
         const result = await ctx.prisma.post.create({
           data: {
             content,
+            groupId: group ? group?.id : null,
             tags: {
               connectOrCreate: tags.map((tag) => ({
                 where: { name: tag.value },

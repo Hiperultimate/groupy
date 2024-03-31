@@ -114,22 +114,22 @@ model Comment {
 }
 
 model Group {
-    id          String          @id @default(uuid())
-    name        String 
-    image       String?
+    id                  String          @id @default(uuid())
+    name                String 
+    image               String?
 
-    moderators  User[]     
-    users       UserGroups[]
-    messages    ChatMessage[]
+    moderators          User[]     
+    users               UserGroups[]
+    messages            ChatMessage[]
 
-    minAgeLimit Int             @default(1)
-    maxAgeLimit Int             @default(100)
+    minAgeLimit         Int             @default(1)
+    maxAgeLimit         Int             @default(100)
 
-    size        Int             @default(50)
+    size                Int             @default(50)
 
-    instantJoin Boolean         @default(true)
+    instantJoin         Boolean         @default(true)
 
-    userUnreadMessage UnreadMessage[]
+    userUnreadMessage   UnreadMessage[]
 }
 
 model UnreadMessage {
