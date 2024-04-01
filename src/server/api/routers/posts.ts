@@ -10,6 +10,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { supabase } from "~/utils/storageBucket";
 import { getUserByID } from "./account";
 import createGroup from "~/server/prismaOperations/createGroup";
+import createPost from "~/server/prismaOperations/createPost";
 
 /**
  *
@@ -237,7 +238,7 @@ export const postRouter = createTRPCRouter({
         }
       }
 
-      // Creating group
+      // Creating group if isGroup === true
       let group = undefined;
       if (isGroup) {
         try {
@@ -261,19 +262,13 @@ export const postRouter = createTRPCRouter({
       }
 
       try {
-        const result = await ctx.prisma.post.create({
-          data: {
-            content,
-            groupId: group ? group?.id : null,
-            tags: {
-              connectOrCreate: tags.map((tag) => ({
-                where: { name: tag.value },
-                create: { name: tag.value },
-              })),
-            },
-            authorId: ctx.session.user.id,
-            image: imageHolder,
-          },
+        const result = await createPost({
+          prisma: ctx.prisma,
+          content,
+          tags,
+          userId: ctx.session.user.id,
+          image: imageHolder ? imageHolder : null,
+          groupId: group?.id,
         });
 
         const properTag = tags.map((tag, index) => {
