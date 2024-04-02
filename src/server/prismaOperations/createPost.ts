@@ -1,11 +1,20 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 
 type CreatePost = {
-  prisma: PrismaClient<
-    Prisma.PrismaClientOptions,
-    never,
-    Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-  >;
+  prisma:
+    | PrismaClient<
+        Prisma.PrismaClientOptions,
+        never,
+        Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+      >
+    | Omit<
+        PrismaClient<
+          Prisma.PrismaClientOptions,
+          never,
+          Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+        >,
+        "$connect" | "$disconnect" | "$on" | "$transaction" | "$use"
+      >;
   content: string;
   tags: {
     value: string;

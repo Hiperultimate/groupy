@@ -238,78 +238,82 @@ export const postRouter = createTRPCRouter({
         }
       }
 
-      // Creating group if isGroup === true
-      let group = undefined;
-      if (isGroup) {
+      const post = await ctx.prisma.$transaction(async (tx) => {
+        let group = undefined;
+        let newPost = undefined;
+        if (isGroup) {
+          try {
+            group = await createGroup({
+              prisma: tx,
+              groupMakerId: ctx.session.user.id,
+              groupName: groupName,
+              groupImage: null,
+              minAgeLimit: ageSpectrum.minAge,
+              maxAgeLimit: ageSpectrum.maxAge,
+              size: groupSize,
+              instantJoin: instantJoin,
+            });
+          } catch (e) {
+            console.log("Error creating group :", e);
+            throw new TRPCError({
+              message: "Error occured while creating group, please try again.",
+              code: "INTERNAL_SERVER_ERROR",
+            });
+          }
+        }
+
         try {
-          group = await createGroup({
-            prisma: ctx.prisma,
-            groupMakerId: ctx.session.user.id,
-            groupName: groupName,
-            groupImage: null,
-            minAgeLimit: ageSpectrum.minAge,
-            maxAgeLimit: ageSpectrum.maxAge,
-            size: groupSize,
-            instantJoin: instantJoin,
+          newPost = await createPost({
+            prisma: tx,
+            content,
+            tags,
+            userId: ctx.session.user.id,
+            image: imageHolder ? imageHolder : null,
+            groupId: group?.id,
           });
         } catch (e) {
-          console.log("Error creating group :", e);
           throw new TRPCError({
-            message: "Error occured while creating group, please try again.",
+            message: "Error occured while creating post, please try again.",
             code: "INTERNAL_SERVER_ERROR",
           });
         }
-      }
 
-      try {
-        const result = await createPost({
-          prisma: ctx.prisma,
-          content,
-          tags,
-          userId: ctx.session.user.id,
-          image: imageHolder ? imageHolder : null,
-          groupId: group?.id,
-        });
+        return newPost;
+      });
 
-        const properTag = tags.map((tag, index) => {
-          return {
-            id: index.toString(),
-            name: tag.value,
-          };
-        });
-
-        if (result.image) {
-          const { data: getImageData } = supabase.storage
-            .from("images")
-            .getPublicUrl(`${result.image}`);
-
-          result.image = getImageData.publicUrl;
-        }
-
-        const newPostSerialized = {
-          id: result.id,
-          content: result.content,
-          image: result.image,
-          authorId: result.authorId,
-          tags: properTag,
-          createdAt: result.createdAt.toString(),
-          updatedAt: result.updatedAt.toString(),
-          likeCount: 0,
-          isUserLikePost: false,
-          commentCount: 0,
-        };
-
+      const properTag = tags.map((tag, index) => {
         return {
-          message: "Post created successfully",
-          status: 201,
-          result: newPostSerialized,
+          id: index.toString(),
+          name: tag.value,
         };
-      } catch (e) {
-        throw new TRPCError({
-          message: "Error occured while creating post, please try again.",
-          code: "INTERNAL_SERVER_ERROR",
-        });
+      });
+
+      if (post.image) {
+        const { data: getImageData } = supabase.storage
+          .from("images")
+          .getPublicUrl(`${post.image}`);
+
+        post.image = getImageData.publicUrl;
       }
+
+      const newPostSerialized = {
+        id: post.id,
+        content: post.content,
+        image: post.image,
+        authorId: post.authorId,
+        tags: properTag,
+        createdAt: post.createdAt.toString(),
+        updatedAt: post.updatedAt.toString(),
+        likeCount: 0,
+        isUserLikePost: false,
+        commentCount: 0,
+      };
+
+      return {
+        message: "Post created successfully",
+        status: 201,
+        result: newPostSerialized,
+      };
     }),
 
   addCommentToPost: protectedProcedure

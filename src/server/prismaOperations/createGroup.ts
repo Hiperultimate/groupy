@@ -2,11 +2,21 @@ import type { Prisma, PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 type CreateGroup = {
-  prisma: PrismaClient<
-    Prisma.PrismaClientOptions,
-    never,
-    Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-  >;
+  prisma:
+    | PrismaClient<
+        Prisma.PrismaClientOptions,
+        never,
+        Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+      >
+    | Omit<
+        PrismaClient<
+          Prisma.PrismaClientOptions,
+          never,
+          Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
+        >,
+        "$connect" | "$disconnect" | "$on" | "$transaction" | "$use"
+      >;
+
   groupMakerId: string;
   groupName: string | undefined;
   groupImage?: string | null;
