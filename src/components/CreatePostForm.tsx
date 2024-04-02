@@ -42,7 +42,6 @@ function CreatePostForm({
   const [userImageFile, setUserImageFile] = useState<File | null>(null);
   const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
 
-  // These states are temporary until frontend is completed.
   const [contentError, setContentError] = useState<string[]>([]);
   const [isGroupError, setIsGroupError] = useState<string[]>([]);
   const [groupNameError, setGroupNameError] = useState<string[]>([]);

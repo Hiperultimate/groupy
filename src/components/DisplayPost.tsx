@@ -157,6 +157,10 @@ export const DisplayPost = ({
     }
   }
 
+  function handleGroupJoin(){
+    console.log("Submit reqeust to join group :", postData.groupId);
+  }
+
   function redirectToSelectedUser() {
     if (authorAtTag) {
       void router.push(`/${authorAtTag}`);
@@ -260,7 +264,10 @@ export const DisplayPost = ({
           </div>
         )}
       </div>
-      <button className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange">
+      <button
+        onClick={handleGroupJoin}
+        className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange"
+      >
         Join up &rarr;
       </button>
       <div className="mx-4 my-6 flex justify-between text-grey">
