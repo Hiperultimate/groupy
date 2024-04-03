@@ -23,6 +23,7 @@ type CreatePost = {
   userId: string;
   image: string | null;
   groupId?: string;
+  groupSize?: number;
 };
 
 const createPost = async ({
@@ -32,11 +33,11 @@ const createPost = async ({
   userId,
   image,
   groupId,
+  groupSize,
 }: CreatePost) => {
   const post = await prisma.post.create({
     data: {
       content,
-      groupId: groupId ? groupId : null,
       tags: {
         connectOrCreate: tags.map((tag) => ({
           where: { name: tag.value },
@@ -45,6 +46,8 @@ const createPost = async ({
       },
       authorId: userId,
       image: image,
+      groupId: groupId ? groupId : null,
+      groupSize: groupSize ? groupSize : null,
     },
   });
 

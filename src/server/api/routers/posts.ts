@@ -270,6 +270,7 @@ export const postRouter = createTRPCRouter({
             userId: ctx.session.user.id,
             image: imageHolder ? imageHolder : null,
             groupId: group?.id,
+            groupSize: group?.size,
           });
         } catch (e) {
           throw new TRPCError({
@@ -304,7 +305,10 @@ export const postRouter = createTRPCRouter({
         tags: properTag,
         createdAt: post.createdAt.toString(),
         updatedAt: post.updatedAt.toString(),
-        groupId: post.groupId,
+        groupData: {
+          groupId: post.groupId,
+          groupSize: groupSize
+        },
         likeCount: 0,
         isUserLikePost: false,
         commentCount: 0,

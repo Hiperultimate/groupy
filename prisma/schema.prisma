@@ -82,6 +82,7 @@ model Post {
   author    User        @relation(fields: [authorId], references: [id])
   authorId  String
   groupId   String?
+  groupSize Int?
   comments  Comment[] 
   likedBy   UserLikedPost[]
   createdAt DateTime    @default(now())
