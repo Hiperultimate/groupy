@@ -29,6 +29,8 @@ export type FullPostType = {
   createdAt: string;
   updatedAt: string;
   tags: Tag[];
+  groupId: string | null;
+  groupSize: number | null;
   likeCount: number;
   isUserLikePost: boolean;
   commentCount: number;
@@ -157,7 +159,7 @@ export const DisplayPost = ({
     }
   }
 
-  function handleGroupJoin(){
+  function handleGroupJoin() {
     console.log("Submit reqeust to join group :", postData.groupId);
   }
 
@@ -215,7 +217,7 @@ export const DisplayPost = ({
         </div>
       </div>
       <div className={`relative my-2 border-t-2 border-light-grey`} />
-      <div className="px-3">{postContent}</div>
+      <div className="min-h-[80px] px-3">{postContent}</div>
       <div className="ml-3 flex flex-wrap justify-center py-2">
         {postTags.map((tag) => {
           return (
@@ -264,12 +266,16 @@ export const DisplayPost = ({
           </div>
         )}
       </div>
-      <button
-        onClick={handleGroupJoin}
-        className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange"
-      >
-        Join up &rarr;
-      </button>
+      {postData.groupId ? (
+        <button
+          onClick={handleGroupJoin}
+          className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange"
+        >
+          Join up &rarr;
+        </button>
+      ) : (
+        <div className="border" />
+      )}
       <div className="mx-4 my-6 flex justify-between text-grey">
         <div className="flex gap-11 ">
           <div className="flex">
@@ -294,12 +300,14 @@ export const DisplayPost = ({
             {commentCounter}
           </div>
         </div>
-        <div className="flex">
-          <div className="mx-2">
-            <SvgPeopleIcon />
+        {postData.groupSize && (
+          <div className="flex">
+            <div className="mx-2">
+              <SvgPeopleIcon />
+            </div>
+            Limit : {postData.groupSize}
           </div>
-          1-10
-        </div>
+        )}
       </div>
       <div className={`relative border-t-2 border-light-grey`} />
       <div className="flex rounded-lg bg-white p-3">

@@ -30,6 +30,7 @@ export type SerializablePost = {
   image: string | null;
   authorId: string;
   groupId: string | null;
+  groupSize: number | null;
   createdAt: string;
   updatedAt: string;
   tags: Tag[];
