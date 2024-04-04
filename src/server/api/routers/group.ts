@@ -33,10 +33,10 @@ export const groupRouter = createTRPCRouter({
       });
 
       if (isAlreadyMember) {
-        throw new TRPCError({
+        return {
+          status: 200,
           message: `You are already a member of ${selectedGroup.name}`,
-          code: "CONFLICT",
-        });
+        };
       }
 
       const groupMemberCount = await ctx.prisma.userGroups.count({
