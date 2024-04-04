@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -7,7 +8,75 @@ import {
   type TChatRoomMessages,
 } from "~/store/atoms/chat";
 
-export const chatRouter = createTRPCRouter({
+export const groupRouter = createTRPCRouter({
+  joinGroup: protectedProcedure
+    .input(z.object({ groupId: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const selectedGroup = await ctx.prisma.group.findFirst({
+        where: {
+          id: input.groupId,
+        },
+      });
+
+      if (!selectedGroup) {
+        throw new TRPCError({
+          message: "Unable to find group.",
+          code: "NOT_FOUND",
+        });
+      }
+
+      const isAlreadyMember = await ctx.prisma.userGroups.findFirst({
+        where: {
+          groupId: input.groupId,
+          userId: ctx.session.user.id,
+        },
+      });
+
+      if (isAlreadyMember) {
+        throw new TRPCError({
+          message: `You are already a member of ${selectedGroup.name}`,
+          code: "CONFLICT",
+        });
+      }
+
+      const groupMemberCount = await ctx.prisma.userGroups.count({
+        where: {
+          groupId: input.groupId,
+        },
+      });
+
+      if (!groupMemberCount || selectedGroup.size < groupMemberCount) {
+        throw new TRPCError({
+          message: `${selectedGroup.name} group has no room. Max limit : ${selectedGroup.size}, size occupied : ${groupMemberCount}`,
+          code: "UNAUTHORIZED",
+        });
+      }
+
+      if(selectedGroup.instantJoin === false){
+        // Send a notification to group admins logic here
+      }
+
+      try {
+        await ctx.prisma.userGroups.create({
+          data: {
+            userId: ctx.session.user.id,
+            groupId: selectedGroup.id,
+          },
+        });
+      } catch (e) {
+        console.log("An error occured while user was joining the group : ", e);
+        throw new TRPCError({
+          message: "An error occured while joining the group",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+
+      return {
+        status: 200,
+        message: `Successfully joined ${selectedGroup.name}`,
+      };
+    }),
+
   getOldMessagesFromRoomId: protectedProcedure
     .input(z.object({ roomId: z.string() }))
     .output(z.record(z.string(), z.array(ChatMessageSchema)))

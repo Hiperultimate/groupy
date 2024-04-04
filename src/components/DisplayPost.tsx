@@ -101,6 +101,9 @@ export const DisplayPost = ({
       },
     });
 
+  const { mutate: joinGroup, isLoading: isJoiningGroup } =
+    api.group.joinGroup.useMutation();
+
   // Send custom Error page instead
   if (!authorInfo)
     return (
@@ -160,7 +163,18 @@ export const DisplayPost = ({
   }
 
   function handleGroupJoin() {
-    console.log("Submit reqeust to join group :", postData.groupId);
+    console.log("Submit request to join group");
+    joinGroup(
+      { groupId: postData.groupId as string },
+      {
+        onSuccess: (data) => {
+          console.log(data.message);
+        },
+        onError: (err) => {
+          console.log(err.message);
+        },
+      }
+    );
   }
 
   function redirectToSelectedUser() {
@@ -269,7 +283,8 @@ export const DisplayPost = ({
       {postData.groupId ? (
         <button
           onClick={handleGroupJoin}
-          className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange"
+          className="h-16 bg-orange text-white transition duration-300 ease-in-out hover:bg-light-orange disabled:bg-amber-600"
+          disabled={isJoiningGroup}
         >
           Join up &rarr;
         </button>

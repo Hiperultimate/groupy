@@ -1,13 +1,13 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import DisplayUserImage from "../DisplayUserImage";
+import { useRecoilState } from "recoil";
 import {
   chatRoomMessages,
-  type TChatRoomMessages,
   type TChatMessage,
+  type TChatRoomMessages,
 } from "~/store/atoms/chat";
-import { useRecoilState } from "recoil";
 import { api } from "~/utils/api";
+import DisplayUserImage from "../DisplayUserImage";
 
 const ChatDialogs = ({ chatId }: { chatId: string }) => {
   const [allChatMessages, setAllChatMessages] =
@@ -30,7 +30,7 @@ const ChatDialogs = ({ chatId }: { chatId: string }) => {
   }
 
   // Fetching chat data from backend and setting it in recoil state
-  api.chat.getOldMessagesFromRoomId.useQuery(
+  api.group.getOldMessagesFromRoomId.useQuery(
     { roomId: chatId },
     {
       refetchOnWindowFocus: false,

@@ -305,10 +305,8 @@ export const postRouter = createTRPCRouter({
         tags: properTag,
         createdAt: post.createdAt.toString(),
         updatedAt: post.updatedAt.toString(),
-        groupData: {
-          groupId: post.groupId,
-          groupSize: groupSize
-        },
+        groupId: post.groupId,
+        groupSize: groupSize,
         likeCount: 0,
         isUserLikePost: false,
         commentCount: 0,
