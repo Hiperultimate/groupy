@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
 import { hashPassword } from "~/utils/passwordUtils";
 import { supabase } from "~/utils/storageBucket";
+import createNotification from "~/server/prismaOperations/createNotification";
 
 export async function getUserByID(
   prisma: PrismaClient,
@@ -233,11 +234,11 @@ export const accountRouter = createTRPCRouter({
       }
 
       // Halts mutation for global user
-      if(currentUserData.id === process.env.GLOBAL_ACCOUNT_USER_ID){
+      if (currentUserData.id === process.env.GLOBAL_ACCOUNT_USER_ID) {
         throw new TRPCError({
           message: "Cannot change details for global user.",
-          code: "FORBIDDEN"
-        })
+          code: "FORBIDDEN",
+        });
       }
 
       const userWithNewEmail = await ctx.prisma.user.findFirst({
@@ -314,7 +315,11 @@ export const accountRouter = createTRPCRouter({
               create: { name: tag.value },
             })),
           },
-          image: imageHolder ? imageHolder.startsWith('https') ? currentUserData.image : imageHolder : null,
+          image: imageHolder
+            ? imageHolder.startsWith("https")
+              ? currentUserData.image
+              : imageHolder
+            : null,
         },
       });
 
@@ -403,13 +408,12 @@ export const accountRouter = createTRPCRouter({
       }
 
       // Creating notification in DB
-      await ctx.prisma.notification.create({
-        data: {
-          type: NotificationType.FRIENDREQUEST,
-          message: `${ctx.session.user.atTag} has sent you a friend request`,
-          receivingUser: { connect: { id: userReceivingFR } },
-          sendingUser: { connect: { id: userSendingFR } },
-        },
+      await createNotification({
+        prisma: ctx.prisma,
+        type: NotificationType.FRIENDREQUEST,
+        senderAtTag : ctx.session.user.atTag,
+        receivingUserId : userReceivingFR,
+        senderUserId : userSendingFR
       });
 
       return { success: true, message: "Friend request sent" };
