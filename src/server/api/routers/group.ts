@@ -1,7 +1,9 @@
+import { NotificationType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import createNotification from "~/server/prismaOperations/createNotification";
 import {
   ChatMessageSchema,
   type TChatMessage,
@@ -15,6 +17,9 @@ export const groupRouter = createTRPCRouter({
       const selectedGroup = await ctx.prisma.group.findFirst({
         where: {
           id: input.groupId,
+        },
+        include: {
+          moderators: true,
         },
       });
 
@@ -52,8 +57,47 @@ export const groupRouter = createTRPCRouter({
         });
       }
 
-      if(selectedGroup.instantJoin === false){
+      if (selectedGroup.instantJoin === false) {
         // Send a notification to group admins logic here
+        const hasNotificationSent = await ctx.prisma.notification.findFirst({
+          where: {
+            sendingUserId: ctx.session.user.id,
+            groupId: selectedGroup.id,
+          },
+        });
+
+        if (hasNotificationSent) {
+          return {
+            status: 200,
+            message: "Group request already sent",
+          };
+        }
+
+        try {
+          const selectedGroupModerators = selectedGroup.moderators;
+          selectedGroupModerators.map(async (moderator) => {
+            await createNotification({
+              prisma: ctx.prisma,
+              type: NotificationType.JOIN_GROUP_REQUEST,
+              currentUserTag: ctx.session.user.atTag,
+              groupId: selectedGroup.id,
+              receivingUserId: moderator.id,
+              senderUserId: ctx.session.user.id,
+              groupName: selectedGroup.name,
+            });
+          });
+        } catch (e) {
+          throw new TRPCError({
+            message:
+              "An error occurred while sending group join notification to the moderators.",
+            code: "INTERNAL_SERVER_ERROR",
+          });
+        }
+
+        return {
+          status: 200,
+          message: `Request to join group ${selectedGroup.name} sent successfully`,
+        };
       }
 
       try {
