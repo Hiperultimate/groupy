@@ -50,6 +50,8 @@ model User {
 enum NotificationType {
     MESSAGE
     FRIENDREQUEST
+    JOIN_GROUP_REQUEST
+    INVITE_TO_GROUP_REQUEST
 }
 
 model Notification{
@@ -62,6 +64,9 @@ model Notification{
 
     sendingUser          User?               @relation(name: "notificationSent", fields: [sendingUserId], references: [id])
     sendingUserId        String?
+
+    forGroup             Group?              @relation(fields: [groupId], references: [id])
+    groupId              String?
 
     createdAt            DateTime            @default(now())
 
@@ -122,6 +127,7 @@ model Group {
     moderators          User[]     
     users               UserGroups[]
     messages            ChatMessage[]
+    joinNotification    Notification[]
 
     minAgeLimit         Int             @default(1)
     maxAgeLimit         Int             @default(100)
