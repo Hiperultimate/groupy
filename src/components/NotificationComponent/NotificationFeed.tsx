@@ -3,6 +3,8 @@ import { useRecoilState } from "recoil";
 import { notification } from "~/store/atoms/notification";
 import { api } from "~/utils/api";
 import FriendRequestMessage from "./FriendRequestMessage";
+import { NotificationType } from "@prisma/client";
+import JoinGroupNotification from "./JoinGroupNotification";
 
 const NotificationFeed = () => {
   const {
@@ -62,27 +64,31 @@ const NotificationFeed = () => {
               {userNotification.length !== 0 ? (
                 <div>
                   {userNotification.map((notification, index) => {
-                    if (notification.type === "FRIENDREQUEST") {
-                      if (index !== 0) {
+                    switch (notification.type) {
+                      case NotificationType.FRIENDREQUEST:
                         return (
                           <div key={notification.id}>
-                            <div
-                              className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
-                            />
-                            <FriendRequestMessage
+                            {index !== 0 && (
+                              <div
+                                className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
+                              />
+                            )}
+                            <FriendRequestMessage notification={notification} />
+                          </div>
+                        );
+                      case NotificationType.JOIN_GROUP_REQUEST:
+                        return (
+                          <div key={notification.id}>
+                            {index !== 0 && (
+                              <div
+                                className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
+                              />
+                            )}
+                            <JoinGroupNotification
                               notification={notification}
                             />
                           </div>
                         );
-                      } else {
-                        return (
-                          <div key={notification.id}>
-                            <FriendRequestMessage
-                              notification={notification}
-                            />
-                          </div>
-                        );
-                      }
                     }
                   })}
                 </div>
