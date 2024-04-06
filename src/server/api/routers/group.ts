@@ -26,8 +26,61 @@ export const groupRouter = createTRPCRouter({
         throw new TRPCError({ message: "Group not found", code: "NOT_FOUND" });
       }
 
-      return { status: 200, name : groupName.name };
+      return { status: 200, name: groupName.name };
     }),
+
+  acceptJoinGroupRequest: protectedProcedure
+    .input(z.object({ notificationId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const selectedNotification = await ctx.prisma.notification.findFirst({
+        where: {
+          id: input.notificationId,
+        },
+      });
+
+      if (
+        !selectedNotification ||
+        !selectedNotification.groupId ||
+        !selectedNotification.sendingUserId
+      ) {
+        throw new TRPCError({
+          message: "Invalid notification: Not a group join request",
+          code: "NOT_FOUND",
+        });
+      }
+
+      try {
+        await ctx.prisma.userGroups.create({
+          data: {
+            groupId: selectedNotification.groupId,
+            userId: selectedNotification.sendingUserId,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          message: "Invalid groupID or userId",
+          code: "BAD_REQUEST",
+        });
+      }
+
+      try {
+        // Deleting all related notifications from moderators notification
+        await ctx.prisma.notification.deleteMany({
+          where: {
+            sendingUserId: selectedNotification.sendingUserId,
+            groupId: selectedNotification.groupId,
+          },
+        });
+      } catch (e) {
+        throw new TRPCError({
+          message: `An error occured while deleting join notification for ${selectedNotification.sendingUserId} : ${selectedNotification.groupId}`,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+
+      return {status : 200 , message : "Group join request successfull"};
+    }),
+
   joinGroup: protectedProcedure
     .input(z.object({ groupId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {

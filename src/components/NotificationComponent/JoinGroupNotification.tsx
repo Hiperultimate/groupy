@@ -20,8 +20,15 @@ const JoinGroupNotification = ({
       id: notification.groupId as string,
     });
 
+  const { mutate: acceptJoinGroupRequest } =
+    api.group.acceptJoinGroupRequest.useMutation();
+
   function redirectToSelectedUser(userTag: string) {
     void router.push(`/${userTag}`);
+  }
+
+  function acceptJoinGroupBtnHandler() {
+    acceptJoinGroupRequest({ notificationId: notification.id });
   }
 
   return (
@@ -52,7 +59,7 @@ const JoinGroupNotification = ({
               </div>
               <div className="my-2 flex justify-center gap-4">
                 <button
-                  //   onClick={acceptJoinGroupRequest}
+                  onClick={acceptJoinGroupBtnHandler}
                   //   disabled={isAcceptJoinGroupRequestLoading}
                   className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey"
                 >
