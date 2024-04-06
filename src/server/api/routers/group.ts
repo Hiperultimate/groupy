@@ -11,6 +11,23 @@ import {
 } from "~/store/atoms/chat";
 
 export const groupRouter = createTRPCRouter({
+  getGroupNameFromId: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const groupName = await ctx.prisma.group.findFirst({
+        where: {
+          id: input.id,
+        },
+        select: {
+          name: true,
+        },
+      });
+      if (!groupName) {
+        throw new TRPCError({ message: "Group not found", code: "NOT_FOUND" });
+      }
+
+      return { status: 200, name : groupName.name };
+    }),
   joinGroup: protectedProcedure
     .input(z.object({ groupId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
