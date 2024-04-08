@@ -1,4 +1,6 @@
 import type { Notification } from "@prisma/client";
+import { notification as notificationState } from "~/store/atoms/notification";
+import { useSetRecoilState } from "recoil";
 import { useRouter } from "next/navigation";
 import { ColorRing } from "react-loader-spinner";
 import { api } from "~/utils/api";
@@ -10,6 +12,8 @@ const JoinGroupNotification = ({
 }) => {
   const router = useRouter();
 
+  const setNotification = useSetRecoilState(notificationState);
+
   const { data: userTag, isLoading: isUserTagLoading } =
     api.account.getUserTagById.useQuery({
       id: notification.sendingUserId as string,
@@ -20,15 +24,55 @@ const JoinGroupNotification = ({
       id: notification.groupId as string,
     });
 
-  const { mutate: acceptJoinGroupRequest } =
-    api.group.acceptJoinGroupRequest.useMutation();
+  const {
+    mutate: acceptJoinGroupRequest,
+    isLoading: isAcceptJoinGroupRequestLoading,
+  } = api.group.acceptJoinGroupRequest.useMutation();
+
+  const {
+    mutate: rejectJoinGroupRequest,
+    isLoading: isRejectJoinGroupRequestLoading,
+  } = api.group.rejectJoinGroupRequest.useMutation();
 
   function redirectToSelectedUser(userTag: string) {
     void router.push(`/${userTag}`);
   }
 
   function acceptJoinGroupBtnHandler() {
-    acceptJoinGroupRequest({ notificationId: notification.id });
+    acceptJoinGroupRequest(
+      { notificationId: notification.id },
+      {
+        onSuccess: (_) => {
+          setNotification((prevNotifs) =>
+            prevNotifs.filter((notif) => notif.id !== notification.id)
+          );
+          // send toast message
+        },
+        onError: (_) => {
+          // send a toast message
+          console.log("Something went wrong");
+        },
+      }
+    );
+  }
+
+  function rejectJoinGroupBtnHandler() {
+    rejectJoinGroupRequest(
+      { notificationId: notification.id },
+      {
+        onSuccess: (_) => {
+          setNotification((prevNotifs) =>
+            prevNotifs.filter((notif) => notif.id !== notification.id)
+          );
+          // send toast message
+        },
+        onError: (_) => {
+          // send a toast message
+          console.log("Something went wrong");
+        },
+      }
+    );
+    console.log("Invote reject group join request");
   }
 
   return (
@@ -60,13 +104,20 @@ const JoinGroupNotification = ({
               <div className="my-2 flex justify-center gap-4">
                 <button
                   onClick={acceptJoinGroupBtnHandler}
-                  //   disabled={isAcceptJoinGroupRequestLoading}
+                  disabled={
+                    isAcceptJoinGroupRequestLoading ||
+                    isRejectJoinGroupRequestLoading
+                  }
                   className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey"
                 >
                   Accept
                 </button>
                 <button
-                  //   onClick={rejectJoinGroupRequest}
+                  onClick={rejectJoinGroupBtnHandler}
+                  disabled={
+                    isAcceptJoinGroupRequestLoading ||
+                    isRejectJoinGroupRequestLoading
+                  }
                   className="rounded-md bg-orange px-4 py-1 text-white shadow-md transition duration-300 ease-in-out hover:bg-light-orange active:bg-loading-grey disabled:bg-loading-grey"
                 >
                   Reject
