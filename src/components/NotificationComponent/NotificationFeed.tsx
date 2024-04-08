@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import FriendRequestMessage from "./FriendRequestMessage";
 import { NotificationType } from "@prisma/client";
 import JoinGroupNotification from "./JoinGroupNotification";
+import MessageNotification from "./MessageNotification";
 
 const NotificationFeed = () => {
   const {
@@ -89,6 +90,19 @@ const NotificationFeed = () => {
                             />
                           </div>
                         );
+                      case NotificationType.MESSAGE:
+                        return (
+                          <div key={notification.id}>
+                            {index !== 0 && (
+                              <div
+                                className={`relative my-2 ${tailwindComponentWidth} border-t-2 border-light-grey`}
+                              />
+                            )}
+                            <MessageNotification
+                              notification={notification}
+                            />
+                          </div>
+                        )
                     }
                   })}
                 </div>

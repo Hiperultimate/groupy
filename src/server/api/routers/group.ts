@@ -78,7 +78,70 @@ export const groupRouter = createTRPCRouter({
         });
       }
 
-      return {status : 200 , message : "Group join request successfull"};
+      return { status: 200, message: "Group join request successfull" };
+    }),
+
+  rejectJoinGroupRequest: protectedProcedure
+    .input(z.object({ notificationId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const selectedNotification = await ctx.prisma.notification.findFirst({
+        where: {
+          id: input.notificationId,
+        },
+      });
+
+      if (
+        !selectedNotification ||
+        !selectedNotification.groupId ||
+        !selectedNotification.sendingUserId
+      ) {
+        throw new TRPCError({
+          message: "Invalid notification: Not a group join request",
+          code: "NOT_FOUND",
+        });
+      }
+
+      const groupName = await ctx.prisma.group.findFirst({
+        where: {
+          id: selectedNotification.groupId,
+        },
+        select: {
+          name: true,
+        },
+      });
+
+      if (!groupName) {
+        throw new TRPCError({ message: "Invalid group", code: "NOT_FOUND" });
+      }
+
+      await ctx.prisma.notification.create({
+        data: {
+          type: NotificationType.MESSAGE,
+          receivingUserId: selectedNotification.sendingUserId,
+          message: `Your request to join group ${groupName.name} has been rejected`,
+        },
+      });
+
+      try {
+        // Deleting all related notifications from moderators notification
+        await ctx.prisma.notification.deleteMany({
+          where: {
+            sendingUserId: selectedNotification.sendingUserId,
+            groupId: selectedNotification.groupId,
+          },
+        });
+      } catch (e) {
+        // Not throwing a TRPCError because we don't want user to see it
+        console.log({
+          message: `An error occured while deleting join notification for ${selectedNotification.sendingUserId} : ${selectedNotification.groupId}`,
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+
+      return {
+        status: 200,
+        message: "Rejected group join request successfull",
+      };
     }),
 
   joinGroup: protectedProcedure
@@ -245,5 +308,24 @@ export const groupRouter = createTRPCRouter({
       );
 
       return oldMessages;
+    }),
+
+  deleteNotification: protectedProcedure
+    .input(z.object({ notificationId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.prisma.notification.delete({
+          where: {
+            id: input.notificationId,
+          },
+        });
+      } catch (e) {
+        return new TRPCError({
+          message: "Invalid notification, unable to remove",
+          code: "BAD_REQUEST",
+        });
+      }
+
+      return { message: "Deleted notification", status: 200 };
     }),
 });
