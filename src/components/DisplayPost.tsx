@@ -10,6 +10,7 @@ import { ColorRing, Discuss } from "react-loader-spinner";
 import { type CurrentUser, type SerializablePost } from "~/pages/home";
 import { api } from "~/utils/api";
 import DisplayUserImage from "./DisplayUserImage";
+import { toast } from "react-toastify";
 
 type PostComment = {
   id: string;
@@ -168,10 +169,10 @@ export const DisplayPost = ({
       { groupId: postData.groupId as string },
       {
         onSuccess: (data) => {
-          console.log(data.message);
+          toast.success(data.message);
         },
-        onError: (err) => {
-          console.log(err.message);
+        onError: (_) => {
+          toast.error("An error occurred. Please try again later");
         },
       }
     );

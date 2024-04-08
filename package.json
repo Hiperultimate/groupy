@@ -30,6 +30,7 @@
     "react-dom": "18.2.0",
     "react-loader-spinner": "^5.3.4",
     "react-select": "^5.7.2",
+    "react-toastify": "^10.0.5",
     "recoil": "^0.7.7",
     "socket.io-client": "^4.7.4",
     "superjson": "1.12.2",

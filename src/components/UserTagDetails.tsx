@@ -1,18 +1,13 @@
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import { ColorRing } from "react-loader-spinner";
 import { api } from "~/utils/api";
 import DisplayUserImage from "./DisplayUserImage";
-import ErrorNotification from "./ErrorNotification";
-import ClientNotification from "./ClientNotification";
+import { toast } from "react-toastify";
 
 const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { data, isLoading, isError } = api.account.getUserByTag.useQuery({
     atTag: userTag,
   });
-
-  const [successMessage, setSuccessMessage] = useState("");
-
   const userId = data?.id;
 
   const {
@@ -30,13 +25,11 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
   const { mutate: friendRequest, isLoading: isSendingFriendRequest } =
     api.account.sendFriendRequestNotification.useMutation({
       onSuccess: () => {
-        setSuccessMessage("Friend Request Sent!");
+        toast.success("Friend Request Sent!");
       },
     });
 
   const { mutate: removeFriend } = api.account.unfriend.useMutation();
-
-  const [friendReqMsg, setFriendReqMsg] = useState("");
 
   const currentUser = useSession();
   const currentUserTag = currentUser.data?.user.atTag;
@@ -55,7 +48,7 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
       { toUserId: data?.id as string },
       {
         onError: (error) => {
-          setFriendReqMsg(error.message);
+          toast.error(error.message)
         },
       }
     );
@@ -66,15 +59,6 @@ const UserTagDetails = ({ userTag }: { userTag: string }) => {
       className={`p-4 pt-2 ${tailwindComponentWidth} rounded-lg bg-white font-poppins shadow-md`}
     >
       {isError && <div>An error occured</div>}
-
-      <ErrorNotification
-        errorMessage={friendReqMsg}
-        setErrorMessage={setFriendReqMsg}
-      />
-      <ClientNotification
-        message={successMessage}
-        setMessage={setSuccessMessage}
-      />
       {isLoading ? (
         <div className="flex items-center justify-center">
           <ColorRing

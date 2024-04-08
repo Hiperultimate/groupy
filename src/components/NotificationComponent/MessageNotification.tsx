@@ -16,7 +16,6 @@ const MessageNotification = ({
 
   function deleteNotificationHandler() {
     console.log("Deleting notification");
-
     deleteNotification(
       { notificationId: notification.id },
       {

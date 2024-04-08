@@ -3,6 +3,7 @@ import { notification as notificationState } from "~/store/atoms/notification";
 import { useSetRecoilState } from "recoil";
 import { useRouter } from "next/navigation";
 import { ColorRing } from "react-loader-spinner";
+import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 
 const JoinGroupNotification = ({
@@ -46,11 +47,9 @@ const JoinGroupNotification = ({
           setNotification((prevNotifs) =>
             prevNotifs.filter((notif) => notif.id !== notification.id)
           );
-          // send toast message
         },
         onError: (_) => {
-          // send a toast message
-          console.log("Something went wrong");
+          toast.error("Something went wrong while accepting group join request")
         },
       }
     );
@@ -64,15 +63,12 @@ const JoinGroupNotification = ({
           setNotification((prevNotifs) =>
             prevNotifs.filter((notif) => notif.id !== notification.id)
           );
-          // send toast message
         },
         onError: (_) => {
-          // send a toast message
-          console.log("Something went wrong");
+          toast.error("Something went wrong while declining group join request")
         },
       }
     );
-    console.log("Invote reject group join request");
   }
 
   return (
