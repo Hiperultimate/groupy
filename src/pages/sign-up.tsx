@@ -12,7 +12,6 @@ import SvgGroupyLogo from "public/SvgGroupyLogo";
 import SvgCamera from "public/SvgCamera";
 import InputField from "../components/InputField";
 import BackgroundContainer from "../components/BackgroundContainer";
-import ErrorNotification from "~/components/ErrorNotification";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
@@ -20,6 +19,7 @@ import Image from "next/image";
 import InputErrorText from "../components/InputErrorText";
 import { encodeImageToBase64 } from "~/common/imageConversion";
 import StyledImageInput from "~/components/StyledImageInput";
+import { toast } from "react-toastify";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -69,7 +69,6 @@ const SignUp: NextPage = () => {
   const [descriptionError, setDescriptionError] = useState<string[]>([]);
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
-  const [serverError, setServerError] = useState<string>("");
 
   const fieldSetErrorMap: FieldSetErrorMap = {
     name: setNameError,
@@ -148,7 +147,7 @@ const SignUp: NextPage = () => {
       // Create user
       signUpUser(userData, {
         onError: (error) => {
-          setServerError(error.message);
+          toast.error(error.message);
         },
         onSuccess: (data) => {
           console.log("Success!");
@@ -164,10 +163,6 @@ const SignUp: NextPage = () => {
 
   return (
     <>
-      <ErrorNotification
-        errorMessage={serverError}
-        setErrorMessage={setServerError}
-      />
       <BackgroundContainer>
         <div className="flex items-center py-60">
           <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white px-12 pt-12 font-poppins shadow-lg">

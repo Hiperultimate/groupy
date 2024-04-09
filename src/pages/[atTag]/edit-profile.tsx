@@ -12,8 +12,6 @@ import SvgCamera from "public/SvgCamera";
 import SvgGroupyLogo from "public/SvgGroupyLogo";
 import { encodeImageToBase64 } from "~/common/imageConversion";
 import BackgroundContainer from "~/components/BackgroundContainer";
-import ClientNotification from "~/components/ClientNotification";
-import ErrorNotification from "~/components/ErrorNotification";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "~/components/InputCreatableSelect";
@@ -23,6 +21,7 @@ import StyledImageInput from "~/components/StyledImageInput";
 import { getUserByID, type AccountRouter } from "~/server/api/routers/account";
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { toast } from "react-toastify";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -101,9 +100,6 @@ const EditProfile: NextPage<
   const [descriptionError, setDescriptionError] = useState<string[]>([]);
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
-  const [serverError, setServerError] = useState<string>("");
-
-  const [successMessage, setSuccessMessage] = useState("");
 
   const fieldSetErrorMap: FieldSetErrorMap = {
     name: setNameError,
@@ -175,12 +171,12 @@ const EditProfile: NextPage<
       // Update user
       updateUser(userData, {
         onError: (error) => {
-          setServerError(error.message);
+          toast.error(error.message);
         },
         onSuccess: (data) => {
           console.log("Success!");
           console.log("Updated data : ", data);
-          setSuccessMessage("User Profile Updated!");
+          toast.success("User Profile Updated!");
           // router.push("/");
         },
       });
@@ -189,14 +185,6 @@ const EditProfile: NextPage<
 
   return (
     <>
-      <ErrorNotification
-        errorMessage={serverError}
-        setErrorMessage={setServerError}
-      />
-      <ClientNotification
-        message={successMessage}
-        setMessage={setSuccessMessage}
-      />
       <BackgroundContainer>
         <div className="flex items-center py-60">
           <div className="m-auto w-4/5 max-w-[1250px] rounded-xl bg-white px-12 pt-12 font-poppins shadow-lg">

@@ -11,13 +11,13 @@ import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
 import { type DialogElement } from "./CreatePostInput";
-import ErrorNotification from "./ErrorNotification";
 import HoverDisplayMessage from "./HoverDisplayMessage";
 import InputErrorText from "./InputErrorText";
 import InputField from "./InputField";
 import StyledImageInput from "./StyledImageInput";
 import { useSetRecoilState } from "recoil";
 import { postsState } from "~/store/atoms/posts";
+import { toast } from "react-toastify";
 
 
 type TScrollMark = { [key: string]: string | ReactElement };
@@ -50,7 +50,6 @@ function CreatePostForm({
   const [isInstantJoinError, setIsInstantJoinError] = useState<string[]>([]);
   const [userImageError, setUserImageError] = useState<string[]>([]);
   const [selectedTagsError, setSelectedTagsError] = useState<string[]>([]);
-  const [serverError, setServerError] = useState<string>("");
 
   const { mutate: createPost, isLoading: isCreatePostLoading } =
     api.post.createPost.useMutation();
@@ -131,7 +130,8 @@ function CreatePostForm({
 
       createPost(postData, {
         onError: (error) => {
-          setServerError(error.message);
+          // setServerError(error.message);
+          toast.error(error.message);
         },
         onSuccess: (data) => {
           console.log("New post created successfully!");
@@ -188,10 +188,6 @@ function CreatePostForm({
       className="font-poppins"
       onSubmit={(event) => void handleFormSubmit(event)}
     >
-      <ErrorNotification
-        errorMessage={serverError}
-        setErrorMessage={setServerError}
-      />
       <div className="flex items-center justify-center">
         <div className="m-2 text-3xl font-bold text-dark-blue">
           Create your post
