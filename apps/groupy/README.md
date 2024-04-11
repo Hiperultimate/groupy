@@ -6,7 +6,7 @@ Welcome to Groupy, a social networking platform designed to bring together indiv
 
 ## Technologies Used
 
-Groupy is built using the following technologies (To be updated):
+Groupy is built using the following technologies:
 
 - Next.js: A popular React framework for building server-side rendered applications.
 - TypeScript: A typed superset of JavaScript that enhances code scalability and maintainability.
@@ -17,6 +17,17 @@ Groupy is built using the following technologies (To be updated):
 - Tanstack Query: A powerful data fetching and caching library for managing data in the application.
 - RecoilJS: A state management library for managing and sharing the application's global state.
 - Zod: A TypeScript-first schema validation library for data validation and sanitization.
+
+## Project Structure
+
+- `src/pages`: This directory contains the Next.js pages used to structure the application's frontend.
+- `src/components`: Inside this folder, you'll find the components that are utilized within the pages located in `src/pages`.
+- `public`: This directory holds SVG files converted into TypeScript (tsx) files, as well as the fonts used throughout the project. It serves as a repository for static assets accessible to both the frontend and the backend.
+- `src/common`: Contains a collection of functions that are shared between both the frontend and the backend of the project.
+- `src/utils`: Consists of utility functions.
+- `src/store`: Contains Recoil states, which help manage the state of the React components efficiently.
+- `src/server`: This directory is dedicated to the backend of the project. It contains backend APIs and a Prisma connector for interacting with the database. Server logic and API endpoints are implemented here.
+- `prisma`: This folder contains Prisma migrations and a **schema.prisma** file. The **schema.prisma** file serves as the blueprint for the database models, defining their structure and relationships.
 
 ## Completed Features
 
@@ -50,6 +61,24 @@ Contributions to Groupy are welcome! If you'd like to contribute to the project,
 6. Commit your changes with clear and concise messages.
 7. Push your changes to your forked repository.
 8. Create a pull request detailing your changes and their purpose.
+
+
+# Getting Started
+
+To run Groupy locally, follow these steps:
+
+1. Clone the repository.
+2. Install the required dependencies using `npm install`.
+3. Rename the `env.example` file to `.env`.
+4. Add the following keys and replace the values with your own:
+
+   - Replace `YOUR_NEXTAUTH_URL` with the URL of your Next.js application where NextAuth should handle authentication.
+   - Replace `YOUR_NEXTAUTH_SECRET` with a random secret key for NextAuth. You can generate one using a tool like `openssl rand -hex 32`.
+   - Replace `YOUR_SUPABASE_PROJECT_URL` with the URL of your Supabase project.
+   - Replace `YOUR_SUPABASE_PROJECT_ANON_KEY` with the anonymous key for your Supabase project.
+
+5. Run database migrations using `npx prisma migrate dev`.
+6. Run the development server using `npm run dev`.
 
 ## License
 

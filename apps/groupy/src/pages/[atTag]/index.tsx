@@ -29,6 +29,8 @@ export type SerializablePost = {
   authorId: string;
   createdAt: string;
   updatedAt: string;
+  groupId : string | null;
+  groupSize: number | null;
   tags: Tag[];
   likeCount: number;
   isUserLikePost: boolean;

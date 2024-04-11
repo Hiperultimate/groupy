@@ -47,17 +47,17 @@ export const groupRouter = createTRPCRouter({
       return {...group.messages[0]}
     })
 
-    let groupOptions = userGroups.map((groupObj) => {
-      const group = groupObj.group;
-      return {
-        roomID: group.id,
-        chatName: group.name,
-        chatImg: group.image,
-        unreadMsgCount: group.userUnreadMessage[0]
-          ? group.userUnreadMessage[0].unreadMessageCount
-          : 0,
-      };
-    });
+    // let groupOptions = userGroups.map((groupObj) => {
+    //   const group = groupObj.group;
+    //   return {
+    //     roomID: group.id,
+    //     chatName: group.name,
+    //     chatImg: group.image,
+    //     unreadMsgCount: group.userUnreadMessage[0]
+    //       ? group.userUnreadMessage[0].unreadMessageCount
+    //       : 0,
+    //   };
+    // });
 
     console.log(
       "Checking the user groups : ",
