@@ -1,10 +1,15 @@
 import { useEffect } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { type Socket } from "socket.io-client";
 import { chatOptionState } from "~/store/atoms/chat";
+import { api } from "~/utils/api";
 
 const useJoinChatRoom = (socket: Socket) => {
-  const userChatList = useRecoilValue(chatOptionState);
+  const [userChatList, setUserChatList] = useRecoilState(chatOptionState);
+
+  // Currently in progress
+  const {data : chatOptions } = api.group.getCurrentUserGroupOptions.useQuery();
+
 
   useEffect(() => {
     userChatList.forEach((chatData) => {

@@ -11,6 +11,60 @@ import {
 } from "~/store/atoms/chat";
 
 export const groupRouter = createTRPCRouter({
+  getCurrentUserGroupOptions: protectedProcedure.query(async ({ ctx }) => {
+    // Currently in progress
+    const currentUser = ctx.session.user;
+    const userGroups = await ctx.prisma.userGroups.findMany({
+      where: { userId: currentUser.id },
+      select: {
+        group: {
+          include: {
+            // userUnreadMessage will contain only 1 item in array which will contain unreadMessageCount for the specific group
+            userUnreadMessage: {
+              where: { userId: currentUser.id },
+              select: {
+                unreadMessageCount: true,
+              },
+            },
+
+            messages: {
+              orderBy: { sentAt: "desc" },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    userGroups.map(async groupObj => {
+      const group = groupObj.group;
+      const lastMessageInPrisma = group.messages[0];
+      // const lastMessageInRedis = await ctx.redis.lrange(`roomMessages:${group.id}`, -2,-1)
+      const lastMessageIdRedis = await ctx.redis.lrange(`roomMessages:${123123}`, -1, -1)
+      const lastMessageRedis = await ctx.redis.hgetall('vxcx86huuy6s93900pb74hx0')
+
+      console.log("Checking last redis message :",lastMessageRedis );
+      return {...group.messages[0]}
+    })
+
+    let groupOptions = userGroups.map((groupObj) => {
+      const group = groupObj.group;
+      return {
+        roomID: group.id,
+        chatName: group.name,
+        chatImg: group.image,
+        unreadMsgCount: group.userUnreadMessage[0]
+          ? group.userUnreadMessage[0].unreadMessageCount
+          : 0,
+      };
+    });
+
+    console.log(
+      "Checking the user groups : ",
+      userGroups,
+      // lastMessageInPrisma
+    );
+  }),
   getGroupNameFromId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
