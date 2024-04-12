@@ -1,5 +1,5 @@
+import { type PrismaClient } from "@groupy/db_prisma";
 import { TRPCError } from "@trpc/server";
-import { type PrismaClient } from "db_prisma";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";

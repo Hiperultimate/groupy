@@ -1,5 +1,5 @@
+import type { Prisma, PrismaClient } from "@groupy/db_prisma";
 import { TRPCError } from "@trpc/server";
-import type { Prisma, PrismaClient } from "db_prisma";
 
 type CreateGroup = {
   prisma:

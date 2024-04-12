@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
 
-import { type Tag } from "db_prisma";
+import { type Tag } from "@groupy/db_prisma";
 import { type Session } from "next-auth";
 import type { ParsedUrlQuery } from "querystring";
 import BackgroundContainer from "~/components/BackgroundContainer";

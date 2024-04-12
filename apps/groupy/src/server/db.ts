@@ -1,4 +1,4 @@
-import { PrismaClient } from "db_prisma";
+import { PrismaClient } from "@groupy/db_prisma";
 import { Redis } from "ioredis";
 
 import { env } from "~/env.mjs";

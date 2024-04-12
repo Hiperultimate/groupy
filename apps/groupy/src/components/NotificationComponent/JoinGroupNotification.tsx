@@ -1,4 +1,4 @@
-import type { Notification } from "db_prisma";
+import type { Notification } from "@groupy/db_prisma";
 import { useRouter } from "next/navigation";
 import { ColorRing } from "react-loader-spinner";
 import { toast } from "react-toastify";

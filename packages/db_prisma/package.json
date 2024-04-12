@@ -1,5 +1,5 @@
 {
-  "name": "db_prisma",
+  "name": "@groupy/db_prisma",
   "version": "1.0.0",
   "description": "",
   "main": "./index.ts",

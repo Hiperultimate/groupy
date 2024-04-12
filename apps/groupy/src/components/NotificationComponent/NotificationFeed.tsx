@@ -1,4 +1,4 @@
-import { NotificationType } from "db_prisma";
+import { NotificationType } from "@groupy/db_prisma";
 import { ColorRing } from "react-loader-spinner";
 import { useRecoilState } from "recoil";
 import { notification } from "~/store/atoms/notification";

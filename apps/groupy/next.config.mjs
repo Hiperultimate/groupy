@@ -38,7 +38,7 @@ const config = {
     ],
   },
   // eslint: {ignoreDuringBuilds: true},
-  transpilePackages: ["db_prisma"],
+  transpilePackages: ["@groupy/db_prisma"],
 
   webpack: (config, { isServer }) => {
     if (isServer) {

@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 
-import { type Tag } from "db_prisma";
+import { type Tag } from "@groupy/db_prisma";
 import { type Session } from "next-auth";
 import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";

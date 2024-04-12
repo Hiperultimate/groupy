@@ -1,4 +1,4 @@
-// import type { Notification } from "db_prisma"; -> Import chat type from prisma instead of TChatOption
+// import type { Notification } from "@groupy/db_prisma"; -> Import chat type from prisma instead of TChatOption
 
 import { atom } from "recoil";
 import { z } from "zod";

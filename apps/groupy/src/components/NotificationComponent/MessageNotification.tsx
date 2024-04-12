@@ -1,4 +1,4 @@
-import type { Notification } from "db_prisma";
+import type { Notification } from "@groupy/db_prisma";
 import SvgCrossIcon from "public/SvgCrossIcon";
 import { useSetRecoilState } from "recoil";
 import { notification as notificationState } from "~/store/atoms/notification";

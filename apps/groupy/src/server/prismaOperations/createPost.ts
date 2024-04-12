@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "db_prisma";
+import type { Prisma, PrismaClient } from "@groupy/db_prisma";
 
 type CreatePost = {
   prisma:

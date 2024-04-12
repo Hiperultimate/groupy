@@ -17,7 +17,7 @@
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
     "bcrypt": "^5.1.0",
-    "db_prisma": "*",
+    "@groupy/db_prisma": "*",
     "framer-motion": "^10.18.0",
     "ioredis": "^5.3.2",
     "next": "^13.2.4",

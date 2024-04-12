@@ -1,4 +1,4 @@
-import { type Tag } from "db_prisma";
+import { type Tag } from "@groupy/db_prisma";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import SvgMessageIcon from "public/SvgMessageIcon";

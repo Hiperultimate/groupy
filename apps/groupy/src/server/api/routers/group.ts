@@ -1,5 +1,5 @@
+import { NotificationType } from "@groupy/db_prisma";
 import { TRPCError } from "@trpc/server";
-import { NotificationType } from "db_prisma";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";

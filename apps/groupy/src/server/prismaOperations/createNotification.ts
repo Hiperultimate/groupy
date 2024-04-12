@@ -2,7 +2,7 @@ import {
     NotificationType,
     type Prisma,
     type PrismaClient,
-} from "db_prisma";
+} from "@groupy/db_prisma";
 
 type NotificationTypeObj = typeof NotificationType;
 

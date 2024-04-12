@@ -9,7 +9,7 @@ import {
     publicProcedure,
 } from "~/server/api/trpc";
 
-import { NotificationType, Prisma, type PrismaClient } from "db_prisma";
+import { NotificationType, Prisma, type PrismaClient } from "@groupy/db_prisma";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
