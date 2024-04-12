@@ -1,9 +1,9 @@
-import type { Notification } from "@prisma/client";
-import { notification as notificationState } from "~/store/atoms/notification";
-import { useSetRecoilState } from "recoil";
+import type { Notification } from "db_prisma";
 import { useRouter } from "next/navigation";
 import { ColorRing } from "react-loader-spinner";
 import { toast } from "react-toastify";
+import { useSetRecoilState } from "recoil";
+import { notification as notificationState } from "~/store/atoms/notification";
 import { api } from "~/utils/api";
 
 const JoinGroupNotification = ({

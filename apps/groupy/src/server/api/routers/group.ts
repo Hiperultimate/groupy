@@ -1,13 +1,13 @@
-import { NotificationType } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { NotificationType } from "db_prisma";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import createNotification from "~/server/prismaOperations/createNotification";
 import {
-  ChatMessageSchema,
-  type TChatMessage,
-  type TChatRoomMessages,
+    ChatMessageSchema,
+    type TChatMessage,
+    type TChatRoomMessages,
 } from "~/store/atoms/chat";
 
 export const groupRouter = createTRPCRouter({

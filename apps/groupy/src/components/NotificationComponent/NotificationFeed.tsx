@@ -1,9 +1,9 @@
+import { NotificationType } from "db_prisma";
 import { ColorRing } from "react-loader-spinner";
 import { useRecoilState } from "recoil";
 import { notification } from "~/store/atoms/notification";
 import { api } from "~/utils/api";
 import FriendRequestMessage from "./FriendRequestMessage";
-import { NotificationType } from "@prisma/client";
 import JoinGroupNotification from "./JoinGroupNotification";
 import MessageNotification from "./MessageNotification";
 

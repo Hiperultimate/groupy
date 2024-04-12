@@ -1,0 +1,21 @@
+{
+  "name": "db_prisma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push --skip-generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^4.13.0",
+    "prisma": "^4.11.0"
+  }
+}

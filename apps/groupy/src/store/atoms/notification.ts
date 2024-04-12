@@ -1,4 +1,4 @@
-import type { Notification } from "@prisma/client";
+import type { Notification } from "db_prisma";
 import { atom } from "recoil";
 
 export const notification = atom({

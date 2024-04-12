@@ -4,18 +4,18 @@ import { signUpSchema, updateUserSchema } from "../../../common/authSchema";
 
 import { TRPCError } from "@trpc/server";
 import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
+    createTRPCRouter,
+    protectedProcedure,
+    publicProcedure,
 } from "~/server/api/trpc";
 
-import { NotificationType, Prisma, type PrismaClient } from "@prisma/client";
+import { NotificationType, Prisma, type PrismaClient } from "db_prisma";
 import { type Session } from "next-auth";
 import { v4 as uuidv4 } from "uuid";
 import { base64ToImageData } from "~/common/imageConversion";
+import createNotification from "~/server/prismaOperations/createNotification";
 import { hashPassword } from "~/utils/passwordUtils";
 import { supabase } from "~/utils/storageBucket";
-import createNotification from "~/server/prismaOperations/createNotification";
 
 export async function getUserByID(
   prisma: PrismaClient,

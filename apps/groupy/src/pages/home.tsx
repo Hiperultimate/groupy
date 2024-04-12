@@ -1,7 +1,7 @@
 import {
-  type GetServerSideProps,
-  type InferGetServerSidePropsType,
-  type NextPage,
+    type GetServerSideProps,
+    type InferGetServerSidePropsType,
+    type NextPage,
 } from "next";
 
 import { getPosts } from "~/server/api/routers/posts";
@@ -14,15 +14,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 
-import { type Tag } from "@prisma/client";
+import { type Tag } from "db_prisma";
 import { type Session } from "next-auth";
 import BackgroundContainer from "~/components/BackgroundContainer";
 import CreatePostInput from "~/components/CreatePostInput";
 import FriendList from "~/components/FriendList";
 import NotificationFeed from "~/components/NotificationComponent/NotificationFeed";
+import { RenderPosts } from "~/components/RenderPosts";
 import UserDetails from "~/components/UserDetails";
 import { notification } from "~/store/atoms/notification";
-import { RenderPosts } from "~/components/RenderPosts";
 
 export type SerializablePost = {
   id: string;

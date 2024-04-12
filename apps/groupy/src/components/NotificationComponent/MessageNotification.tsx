@@ -1,8 +1,8 @@
-import type { Notification } from "@prisma/client";
-import { notification as notificationState } from "~/store/atoms/notification";
-import { useSetRecoilState } from "recoil";
-import { api } from "~/utils/api";
+import type { Notification } from "db_prisma";
 import SvgCrossIcon from "public/SvgCrossIcon";
+import { useSetRecoilState } from "recoil";
+import { notification as notificationState } from "~/store/atoms/notification";
+import { api } from "~/utils/api";
 
 const MessageNotification = ({
   notification,

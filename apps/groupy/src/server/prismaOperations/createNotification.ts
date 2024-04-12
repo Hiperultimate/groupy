@@ -1,8 +1,8 @@
 import {
-  NotificationType,
-  type Prisma,
-  type PrismaClient,
-} from "@prisma/client";
+    NotificationType,
+    type Prisma,
+    type PrismaClient,
+} from "db_prisma";
 
 type NotificationTypeObj = typeof NotificationType;
 

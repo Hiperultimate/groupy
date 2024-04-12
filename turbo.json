@@ -8,6 +8,12 @@
       "cache": false,
       "persistent": false
     },
+    "db:generate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
     "lint": {},
     "type-check": {}
   }

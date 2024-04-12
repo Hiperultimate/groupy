@@ -1,4 +1,4 @@
-import { type Tag } from "@prisma/client";
+import { type Tag } from "db_prisma";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import SvgMessageIcon from "public/SvgMessageIcon";
@@ -7,10 +7,10 @@ import SvgThumbsUpIcon from "public/SvgThumbsUpIcon";
 import SvgThumbsUpIconFill from "public/SvgThumbsUpIconFill";
 import { useEffect, useState } from "react";
 import { ColorRing, Discuss } from "react-loader-spinner";
+import { toast } from "react-toastify";
 import { type CurrentUser, type SerializablePost } from "~/pages/home";
 import { api } from "~/utils/api";
 import DisplayUserImage from "./DisplayUserImage";
-import { toast } from "react-toastify";
 
 type PostComment = {
   id: string;

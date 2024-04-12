@@ -1,9 +1,9 @@
-import type { Notification } from "@prisma/client";
+import type { Notification } from "db_prisma";
 import { useRouter } from "next/router";
+import { ColorRing } from "react-loader-spinner";
 import { useSetRecoilState } from "recoil";
 import { api } from "~/utils/api";
 import { notification as notificationStore } from "../../store/atoms/notification";
-import { ColorRing } from "react-loader-spinner";
 
 const FriendRequestMessage = ({
   notification,
