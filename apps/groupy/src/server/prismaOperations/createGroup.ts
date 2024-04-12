@@ -1,5 +1,8 @@
 import type { Prisma, PrismaClient } from "@groupy/db_prisma";
 import { TRPCError } from "@trpc/server";
+import type { PrismaTransactionalClient } from "~/common/types";
+
+
 
 type CreateGroup = {
   prisma:
@@ -8,14 +11,7 @@ type CreateGroup = {
         never,
         Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
       >
-    | Omit<
-        PrismaClient<
-          Prisma.PrismaClientOptions,
-          never,
-          Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-        >,
-        "$connect" | "$disconnect" | "$on" | "$transaction" | "$use"
-      >;
+    | PrismaTransactionalClient
 
   groupMakerId: string;
   groupName: string | undefined;

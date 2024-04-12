@@ -1,4 +1,6 @@
 import type { Prisma, PrismaClient } from "@groupy/db_prisma";
+import type { PrismaTransactionalClient } from "~/common/types";
+
 
 type CreatePost = {
   prisma:
@@ -7,14 +9,7 @@ type CreatePost = {
         never,
         Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
       >
-    | Omit<
-        PrismaClient<
-          Prisma.PrismaClientOptions,
-          never,
-          Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-        >,
-        "$connect" | "$disconnect" | "$on" | "$transaction" | "$use"
-      >;
+    | PrismaTransactionalClient
   content: string;
   tags: {
     value: string;
