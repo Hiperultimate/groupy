@@ -68,6 +68,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(process.env.PORT, () => {
-  console.log(`App listening on port http://localhost:${env.PORT}`);
+server.listen(process.env.CS_PORT, () => {
+  console.log(`App listening on port http://localhost:${env.CS_PORT}`);
 });
