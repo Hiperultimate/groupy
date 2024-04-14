@@ -5,7 +5,7 @@
   "scripts": {
     "build": "dotenv -- turbo run build",
     "dev": "dotenv -- turbo run dev",
-    "build-groupy" : "dotenv -- turbo run build --filter=groupy",
+    "build-groupy" : "turbo db:generate & dotenv -- turbo run build --filter=groupy",
     "buildrun-groupy": "dotenv -- turbo run start --filter=groupy"
   },
   "packageManager": "npm@10.5.0",
