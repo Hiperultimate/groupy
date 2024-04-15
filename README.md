@@ -40,6 +40,32 @@ There are exciting features in the pipeline to enhance Groupy further:
 3. **Live Group Chat:** Upon joining a group, users can engage in real-time group chat with other members.
 4. **Admin Controls for Group Chat:** Administrators of group chats will have the ability to select and admit members they wish to join.
 
+# Getting Started
+
+To run Groupy locally, follow these steps:
+
+1. Clone the repository.
+2. Install the required dependencies using `npm install`.
+3. Run the command `turbo db:generate` to generate Prisma Client.
+4. Rename the `env.example` file to `.env`.
+5. Add the following keys and replace the values with your own:
+
+   - Replace `DATABASE_URL` with your postgresql database url
+   - Replace `YOUR_NEXTAUTH_URL` with the URL of your Next.js application where NextAuth should handle authentication.
+   - Replace `YOUR_NEXTAUTH_SECRET` with a random secret key for NextAuth. You can generate one using a tool like `openssl rand -hex 32`.
+   - Replace `YOUR_SUPABASE_PROJECT_URL` with the URL of your Supabase project.
+   - Replace `YOUR_SUPABASE_PROJECT_ANON_KEY` with the anonymous key for your Supabase project.
+
+    Requirements for chat-server
+   - Replace `NEXT_PUBLIC_CHATSERVER_URL` with the URL where `chat-server` is running at (For development : `http://localhost:4000`).
+   - Replace `REDIS_PORT` with port of your redis server.
+   - Replace `REDIS_HOST` with host data of your redis server.
+   - Replace `REDIS_PASSWORD` with the password of your redis server.
+   - Replace `CS_PORT` with the PORT number where you want to run your chat-server.
+
+6. Run database migrations using `npm run prisma-migrate`.
+7. Run the development server using `npm run dev`.
+
 ## Contribution
 
 Contributions to Groupy are welcome! If you'd like to contribute to the project, follow these steps:
