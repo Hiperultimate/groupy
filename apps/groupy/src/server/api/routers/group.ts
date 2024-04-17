@@ -4,10 +4,11 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import createNotification from "~/server/prismaOperations/createNotification";
+import dbJoinGroup from "~/server/prismaOperations/joinGroup";
 import {
-    ChatMessageSchema,
-    type TChatMessage,
-    type TChatRoomMessages,
+  ChatMessageSchema,
+  type TChatMessage,
+  type TChatRoomMessages,
 } from "~/store/atoms/chat";
 
 export const groupRouter = createTRPCRouter({
@@ -36,16 +37,22 @@ export const groupRouter = createTRPCRouter({
       },
     });
 
-    userGroups.map(async groupObj => {
+    userGroups.map(async (groupObj) => {
       const group = groupObj.group;
       const lastMessageInPrisma = group.messages[0];
       // const lastMessageInRedis = await ctx.redis.lrange(`roomMessages:${group.id}`, -2,-1)
-      const lastMessageIdRedis = await ctx.redis.lrange(`roomMessages:${123123}`, -1, -1)
-      const lastMessageRedis = await ctx.redis.hgetall('vxcx86huuy6s93900pb74hx0')
+      const lastMessageIdRedis = await ctx.redis.lrange(
+        `roomMessages:${123123}`,
+        -1,
+        -1
+      );
+      const lastMessageRedis = await ctx.redis.hgetall(
+        "vxcx86huuy6s93900pb74hx0"
+      );
 
-      console.log("Checking last redis message :",lastMessageRedis );
-      return {...group.messages[0]}
-    })
+      console.log("Checking last redis message :", lastMessageRedis);
+      return { ...group.messages[0] };
+    });
 
     // let groupOptions = userGroups.map((groupObj) => {
     //   const group = groupObj.group;
@@ -61,7 +68,7 @@ export const groupRouter = createTRPCRouter({
 
     console.log(
       "Checking the user groups : ",
-      userGroups,
+      userGroups
       // lastMessageInPrisma
     );
   }),
@@ -104,13 +111,13 @@ export const groupRouter = createTRPCRouter({
       }
 
       try {
-        await ctx.prisma.userGroups.create({
-          data: {
-            groupId: selectedNotification.groupId,
-            userId: selectedNotification.sendingUserId,
-          },
+        await dbJoinGroup({
+          prisma: ctx.prisma,
+          userId: selectedNotification.sendingUserId,
+          groupId: selectedNotification.groupId,
         });
       } catch (err) {
+        console.log("An error occurred while joining group :", err);
         throw new TRPCError({
           message: "Invalid groupID or userId",
           code: "BAD_REQUEST",
@@ -288,11 +295,10 @@ export const groupRouter = createTRPCRouter({
       }
 
       try {
-        await ctx.prisma.userGroups.create({
-          data: {
-            userId: ctx.session.user.id,
-            groupId: selectedGroup.id,
-          },
+        await dbJoinGroup({
+          prisma: ctx.prisma,
+          userId: ctx.session.user.id,
+          groupId: selectedGroup.id,
         });
       } catch (e) {
         console.log("An error occured while user was joining the group : ", e);

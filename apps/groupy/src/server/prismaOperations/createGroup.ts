@@ -60,6 +60,14 @@ const createGroup = async ({
     },
   });
 
+  // Initialize unreadMessage record
+  await prisma.unreadMessage.create({
+    data: {
+      userId: groupMakerId,
+      groupId: group.id,
+    },
+  });
+
   return group;
 };
 
