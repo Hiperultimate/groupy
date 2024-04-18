@@ -10,7 +10,8 @@
   "scripts": {
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:push": "prisma db push --skip-generate"
+    "db:push": "prisma db push --skip-generate",
+    "db:studio" : "npx prisma studio"
   },
   "keywords": [],
   "author": "",
