@@ -7,6 +7,7 @@ import { env } from "./env";
 import redisClient from "./utils/redis";
 import type { ServerToClientEvents } from "./types";
 import { ClientToServerMessageSchema } from "./utils/schema";
+import redisPopulateGroup from "./db_helpers/postgres_to_redis/populateGroups";
 
 const app: Express = express();
 app.use(cors());
@@ -26,9 +27,10 @@ app.get("/serverstatus", (req: Request, res: Response) => {
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("joinRoom", (room) => {
-    console.log("User joined room :", room);
-    void socket.join(room);
+  socket.on("joinRoom", (groupId) => {
+    console.log("User joined room :", groupId);
+    void socket.join(groupId);
+    redisPopulateGroup(groupId);
   });
 
   socket.on("roomMessage", async (object) => {
@@ -68,6 +70,6 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(process.env.CS_PORT, () => {
+server.listen(env.CS_PORT, () => {
   console.log(`App listening on port http://localhost:${env.CS_PORT}`);
 });
