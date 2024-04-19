@@ -36,41 +36,48 @@ export const groupRouter = createTRPCRouter({
         },
       },
     });
+    const userChatOptions = await Promise.all(
+      userGroups.map(async (groupObj) => {
+        const group = groupObj.group;
+        const lastMessageInPrisma = group.messages[0];
+        const lastRedisMessageArr = await ctx.redis.lrange(
+          `roomMessages:${group.id}`,
+          -1,
+          -1
+        );
+        const lastRedisMessageId = lastRedisMessageArr[0];
+        // If redis has any data, that is the latest one. Simply return it
+        if (lastRedisMessageId) {
+          const lastRedisMessage = await ctx.redis.hgetall(lastRedisMessageId);
+          return {
+            roomID: group.id,
+            chatName: group.name,
+            chatImg: group.image,
+            chatLastMsg: lastRedisMessage.message ? lastRedisMessage.message : null,
+            lastMsgSentAt: lastRedisMessage
+              ? new Date(Number(lastRedisMessage.sentAt as string))
+              : null,
+            unreadMsgCount: 0,
+          };
+        }
 
-    userGroups.map(async (groupObj) => {
-      const group = groupObj.group;
-      const lastMessageInPrisma = group.messages[0];
-      // const lastMessageInRedis = await ctx.redis.lrange(`roomMessages:${group.id}`, -2,-1)
-      const lastMessageIdRedis = await ctx.redis.lrange(
-        `roomMessages:${123123}`,
-        -1,
-        -1
-      );
-      const lastMessageRedis = await ctx.redis.hgetall(
-        "vxcx86huuy6s93900pb74hx0"
-      );
-
-      console.log("Checking last redis message :", lastMessageRedis);
-      return { ...group.messages[0] };
-    });
-
-    // let groupOptions = userGroups.map((groupObj) => {
-    //   const group = groupObj.group;
-    //   return {
-    //     roomID: group.id,
-    //     chatName: group.name,
-    //     chatImg: group.image,
-    //     unreadMsgCount: group.userUnreadMessage[0]
-    //       ? group.userUnreadMessage[0].unreadMessageCount
-    //       : 0,
-    //   };
-    // });
-
-    console.log(
-      "Checking the user groups : ",
-      userGroups
-      // lastMessageInPrisma
+        // Returning last prisma message
+        return {
+          roomID: group.id,
+          chatName: group.name,
+          chatImg: group.image,
+          chatLastMsg: lastMessageInPrisma ? lastMessageInPrisma.message : null,
+          lastMsgSentAt: lastMessageInPrisma
+            ? lastMessageInPrisma.sentAt
+            : null,
+          unreadMsgCount: group.userUnreadMessage[0]
+            ? group.userUnreadMessage[0].unreadMessageCount
+            : 0,
+        };
+      })
     );
+
+    return userChatOptions;
   }),
   getGroupNameFromId: protectedProcedure
     .input(z.object({ id: z.string() }))
