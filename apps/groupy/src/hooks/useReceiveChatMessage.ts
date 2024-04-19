@@ -47,9 +47,12 @@ const useReceiveChatMessage = (socket: Socket) => {
             const toRoomId = newMessage.roomId;
             const existingRoomChatData = existingData[toRoomId];
             if (!existingRoomChatData) {
-              // toast some error message
-              return existingData;
+              // Creating new room in chatRoomMessages
+              return {
+                [toRoomId]: [newMessage],
+              };
             }
+
             const updatedChatRoomData = [...existingRoomChatData, newMessage];
             const updatedChatRoomMessage = {
               ...existingData,
