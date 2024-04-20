@@ -36,7 +36,7 @@ function CreatePostForm({
     minAge: number;
     maxAge: number;
   }>({ minAge: 15, maxAge: 30 });
-  const [groupSize, setGroupSize] = useState(1);
+  const [groupSize, setGroupSize] = useState(5);
   const [isInstantJoin, setIsInstantJoin] = useState(false);
   const [userImage, setUserImage] = useState<string | undefined>();
   const [userImageFile, setUserImageFile] = useState<File | null>(null);
@@ -139,7 +139,7 @@ function CreatePostForm({
           setIsGroup(false);
           setGroupName("");
           setAgeSpectrum({ minAge: 15, maxAge: 30 });
-          setGroupSize(1);
+          setGroupSize(5);
           setIsInstantJoin(false);
           setUserImage(undefined);
           setUserImageFile(null);
