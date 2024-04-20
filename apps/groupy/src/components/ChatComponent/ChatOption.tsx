@@ -18,7 +18,7 @@ const ChatOption = ({
   const [unreadMessageCount, setUnreadMessageCount] = useState(unreadMsgCount);
   const [lastChatMsg, setLastChatMsg] = useState(chatLastMsg);
   const [lastReadMsgTime, setLastReadMsgTime] = useState(
-    lastMsgSentAt !== null ? timeDifference(new Date(),lastMsgSentAt) : ""
+    lastMsgSentAt !== null ? timeDifference(new Date(), lastMsgSentAt) : ""
   );
 
   const setChatOptions = useSetRecoilState(chatOptionState);
@@ -52,9 +52,11 @@ const ChatOption = ({
           <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
             {lastChatMsg}
           </div>
-          <div>
-            <div className="m-2 h-1 w-1 rounded-full bg-grey"></div>
-          </div>
+          {lastChatMsg && (
+            <div>
+              <div className="m-2 h-1 w-1 rounded-full bg-grey"></div>
+            </div>
+          )}
           <div>{lastReadMsgTime}</div>
         </div>
       </div>
