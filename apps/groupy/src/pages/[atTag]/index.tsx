@@ -11,7 +11,7 @@ import { getServerAuthSession } from "../../server/auth";
 
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
-import { atom, useRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 
 import { type Tag } from "@groupy/db_prisma";
 import { type Session } from "next-auth";
@@ -21,6 +21,7 @@ import { DisplayPost } from "~/components/DisplayPost";
 import FriendList from "~/components/FriendList";
 import UserTagDetails from "~/components/UserTagDetails";
 import { api } from "~/utils/api";
+import { userPosts } from "~/store/atoms/posts";
 
 export type SerializablePost = {
   id: string;
@@ -83,10 +84,6 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
   };
 };
 
-export const userPosts = atom({
-  key: "specificUserPosts",
-  default: [] as SerializablePost[],
-});
 
 const UserSpecificPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
