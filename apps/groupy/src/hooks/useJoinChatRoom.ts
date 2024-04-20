@@ -1,24 +1,34 @@
 import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { type Socket } from "socket.io-client";
-import { chatOptionState } from "~/store/atoms/chat";
+import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
 import { api } from "~/utils/api";
 
 const useJoinChatRoom = (socket: Socket) => {
-  const [userChatList, setUserChatList] = useRecoilState(chatOptionState);
+  const setUserChatList = useSetRecoilState(chatOptionState);
 
-  // Currently in progress
-  const {data : chatOptions } = api.group.getCurrentUserGroupOptions.useQuery();
-
+  const { data: fetchChatOptions, isSuccess } =
+    api.group.getCurrentUserGroupOptions.useQuery(
+      undefined,
+      {
+        refetchOnWindowFocus: false,
+      }
+    );
 
   useEffect(() => {
-    userChatList.forEach((chatData) => {
-      socket.emit("joinRoom", chatData.roomID);
-    });
+    if (isSuccess) {
+      const chatOptions: TChatOption[] = fetchChatOptions.map((option) => {
+        return { ...option, isSelected: false };
+      });
+      setUserChatList(chatOptions);
+      chatOptions.forEach((option) => {
+        socket.emit("joinRoom", option.roomID);
+      });
+    }
     return () => {
       socket.off("joinRoom");
     };
-  },[socket, userChatList]);
+  }, [socket, fetchChatOptions, setUserChatList, isSuccess]);
 };
 
 export default useJoinChatRoom;

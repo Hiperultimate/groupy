@@ -2,7 +2,7 @@ import { useRecoilValue } from "recoil";
 import ChatDialogs from "./ChatDialogs";
 import ChatHeader from "./ChatHeader";
 import ChatTextInput from "./ChatTextInput";
-import { type TChatOption, chatOptionState } from "~/store/atoms/chat";
+import { type TChatOption, chatOptionState, chatUserTagKey } from "~/store/atoms/chat";
 import { useState } from "react";
 
 const ChatArea = () => {
@@ -23,7 +23,7 @@ const ChatArea = () => {
         <ChatHeader
           chatId={activeChat.roomID}
           authorName={activeChat.chatName}
-          authorAtTag={activeChat.chatUserTag}
+          authorAtTag={chatUserTagKey in activeChat? activeChat.chatUserTag : null }
           authorProfilePicture={activeChat.chatImg}
         />
       </div>

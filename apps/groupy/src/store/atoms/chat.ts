@@ -2,17 +2,17 @@
 
 import { atom } from "recoil";
 import { z } from "zod";
-// Chat groups
+
+export const chatUserTagKey = "chatUserTag" as const;
 export type TChatOption = {
   roomID: string;
   chatName: string;
-  chatUserTag: string | null;
   chatImg: string | null;
-  chatLastMsg: string;
-  lastMsgSentAt: Date;
+  chatLastMsg: string | null;
+  lastMsgSentAt: Date | null;
   unreadMsgCount: number;
   isSelected: boolean;
-};
+} & ({ [chatUserTagKey]: string | null } | Record<never, never>);
 
 export const ChatMessageSchema = z.object({
   id: z.string(),
