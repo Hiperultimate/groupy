@@ -15,14 +15,12 @@ const ChatOption = ({
   unreadMsgCount,
   isSelected,
 }: TChatOptionComponent) => {
-  // Demo data to populate last read message
-  const demoCurrentDate = new Date("2023-12-30");
-
   const [unreadMessageCount, setUnreadMessageCount] = useState(unreadMsgCount);
   const [lastChatMsg, setLastChatMsg] = useState(chatLastMsg);
   const [lastReadMsgTime, setLastReadMsgTime] = useState(
-    timeDifference(demoCurrentDate, lastMsgSentAt)
+    lastMsgSentAt !== null ? timeDifference(new Date(),lastMsgSentAt) : ""
   );
+
   const setChatOptions = useSetRecoilState(chatOptionState);
 
   function selectChatOption() {
