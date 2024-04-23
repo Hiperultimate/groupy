@@ -58,11 +58,11 @@ const ChatOption = ({
           </div>
         </div>
       </div>
-      <div className="flex w-full items-center">
+      {unreadMsgCount > 0 && <div className="flex w-full items-center">
         <div className="ml-auto mr-3 rounded-full bg-orange px-2 py-1 text-[11px] text-white">
           {unreadMsgCount > 999 ? "999+" : unreadMsgCount}
         </div>
-      </div>
+      </div>}
     </div>
   );
 };
