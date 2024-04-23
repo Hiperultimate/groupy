@@ -5,6 +5,7 @@ import {
   type TServerToClientChatMessageSchema,
   ServerToClientChatMessageSchema,
   chatRoomMessages,
+  chatOptionState,
 } from "~/store/atoms/chat";
 
 type TServerIncomingChatMessage = Omit<
@@ -14,6 +15,7 @@ type TServerIncomingChatMessage = Omit<
 
 const useReceiveChatMessage = (socket: Socket) => {
   const setChatRoomMessages = useSetRecoilState(chatRoomMessages);
+  const setChatOption = useSetRecoilState(chatOptionState);
 
   useEffect(() => {
     socket.on(
@@ -42,9 +44,9 @@ const useReceiveChatMessage = (socket: Socket) => {
         if (!isValidMsg.success) {
           console.log("Incorrect type : ", isValidMsg.error);
         } else {
+          const newMessage = isValidMsg.data;
+          const toRoomId = newMessage.roomId;
           setChatRoomMessages((existingData) => {
-            const newMessage = isValidMsg.data;
-            const toRoomId = newMessage.roomId;
             const existingRoomChatData = existingData[toRoomId];
             if (!existingRoomChatData) {
               // Creating new room in chatRoomMessages
@@ -60,6 +62,34 @@ const useReceiveChatMessage = (socket: Socket) => {
             };
             return updatedChatRoomMessage;
           });
+
+          setChatOption((options) => {
+            const requiredRoom = options.find(
+              (room) => room.roomID === toRoomId
+            );
+
+            if (!requiredRoom) {
+              console.log(
+                "Client side error, unable to update required chatRoomOption with latest message"
+              );
+              return options;
+            }
+
+            const updateRequiredRoom = {
+              ...requiredRoom,
+              chatLastMsg: newMessage.message,
+              lastMsgSentAt: newMessage.sentAt,
+            };
+
+            const updateOptions = options.map((chatOption) => {
+              if (chatOption.roomID === toRoomId) {
+                return updateRequiredRoom;
+              }
+              return chatOption;
+            });
+
+            return updateOptions;
+          });
         }
       }
     );
@@ -67,7 +97,7 @@ const useReceiveChatMessage = (socket: Socket) => {
     return () => {
       socket.off("roomData");
     };
-  }, [setChatRoomMessages, socket]);
+  }, [setChatRoomMessages, setChatOption, socket]);
 };
 
 export default useReceiveChatMessage;

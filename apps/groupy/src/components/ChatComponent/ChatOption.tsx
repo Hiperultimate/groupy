@@ -16,11 +16,6 @@ const ChatOption = ({
   isSelected,
 }: TChatOptionComponent) => {
   const [unreadMessageCount, setUnreadMessageCount] = useState(unreadMsgCount);
-  const [lastChatMsg, setLastChatMsg] = useState(chatLastMsg);
-  const [lastReadMsgTime, setLastReadMsgTime] = useState(
-    lastMsgSentAt !== null ? timeDifference(new Date(), lastMsgSentAt) : ""
-  );
-
   const setChatOptions = useSetRecoilState(chatOptionState);
 
   function selectChatOption() {
@@ -50,14 +45,14 @@ const ChatOption = ({
         <div>{chatName}</div>
         <div className="flex w-full text-grey">
           <div className="overflow-hidden text-ellipsis whitespace-nowrap ">
-            {lastChatMsg}
+            {chatLastMsg}
           </div>
-          {lastChatMsg && (
+          {chatLastMsg && (
             <div>
               <div className="m-2 h-1 w-1 rounded-full bg-grey"></div>
             </div>
           )}
-          <div>{lastReadMsgTime}</div>
+          <div>{lastMsgSentAt !== null ? timeDifference(new Date(), lastMsgSentAt) : ""}</div>
         </div>
       </div>
       <div className="flex w-full items-center">
