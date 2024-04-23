@@ -15,14 +15,13 @@ const ChatOption = ({
   unreadMsgCount,
   isSelected,
 }: TChatOptionComponent) => {
-  const [unreadMessageCount, setUnreadMessageCount] = useState(unreadMsgCount);
   const setChatOptions = useSetRecoilState(chatOptionState);
 
   function selectChatOption() {
     setChatOptions((chatOptions) => {
       const updatedOptions = chatOptions.map((chat) => {
         if (chat.roomID === roomID) {
-          return { ...chat, isSelected: true };
+          return { ...chat, isSelected: true, unreadMsgCount: 0 };
         }
         return { ...chat, isSelected: false };
       });
@@ -52,12 +51,16 @@ const ChatOption = ({
               <div className="m-2 h-1 w-1 rounded-full bg-grey"></div>
             </div>
           )}
-          <div>{lastMsgSentAt !== null ? timeDifference(new Date(), lastMsgSentAt) : ""}</div>
+          <div>
+            {lastMsgSentAt !== null
+              ? timeDifference(new Date(), lastMsgSentAt)
+              : ""}
+          </div>
         </div>
       </div>
       <div className="flex w-full items-center">
         <div className="ml-auto mr-3 rounded-full bg-orange px-2 py-1 text-[11px] text-white">
-          {unreadMessageCount > 999 ? "999+" : unreadMessageCount}
+          {unreadMsgCount > 999 ? "999+" : unreadMsgCount}
         </div>
       </div>
     </div>

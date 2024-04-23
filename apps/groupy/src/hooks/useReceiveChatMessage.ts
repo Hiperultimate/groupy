@@ -79,6 +79,7 @@ const useReceiveChatMessage = (socket: Socket) => {
               ...requiredRoom,
               chatLastMsg: newMessage.message,
               lastMsgSentAt: newMessage.sentAt,
+              unreadMsgCount : requiredRoom.unreadMsgCount + (requiredRoom.isSelected === true ? 0 : 1),
             };
 
             const updateOptions = options.map((chatOption) => {
