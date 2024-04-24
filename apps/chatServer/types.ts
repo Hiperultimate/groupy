@@ -1,6 +1,7 @@
 export type TMessage = {
   roomId: string;
   id: string;
+  senderId: string;
   senderName: string;
   senderTag: string;
   sentAt: number;

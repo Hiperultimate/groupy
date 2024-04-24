@@ -22,6 +22,7 @@ const useReceiveChatMessage = (socket: Socket) => {
       `roomData`,
       ({
         id,
+        senderId,
         senderName,
         senderTag,
         sentAt,
@@ -31,6 +32,7 @@ const useReceiveChatMessage = (socket: Socket) => {
       }: TServerIncomingChatMessage) => {
         const messageUpdate = {
           id,
+          senderId,
           senderName,
           senderTag,
           senderImg,

@@ -18,6 +18,7 @@ export const ChatMessageSchema = z.object({
   id: z.string(),
   senderName: z.string(),
   senderTag: z.string(),
+  senderId: z.string(),
   sentAt: z.date(),
   message: z.string(),
   senderImg: z.string().nullable(),
@@ -27,6 +28,7 @@ export type TChatMessage = z.infer<typeof ChatMessageSchema>;
 
 export const ServerToClientChatMessageSchema = z.object({
   id: z.string(),
+  senderId: z.string(),
   senderName: z.string(),
   senderTag: z.string(),
   sentAt: z.date(),
@@ -102,52 +104,52 @@ export const isChatOptionLoading = atom({
 
 export const chatRoomMessages = atom({
   key: "chatRoomMessages",
-  // default: {} as TChatRoomMessages,
-  default: {
-    "123123": [
-      {
-        id: "623626",
-        senderName: "John Smith",
-        senderTag: "JohnSmith",
-        sentAt: new Date("2023-12-30"),
-        message:
-          "Hey man, I know you have been coding a lot but you should CODE EVEN MORE",
-        senderImg: null,
-      },
-      {
-        id: "1523123",
-        senderName: "Some new guy",
-        senderTag: "newGuy",
-        sentAt: new Date("2023-12-30"),
-        message: "But ofcourse man",
-        senderImg: null,
-      },
-      {
-        id: "15231455",
-        senderName: "John Smith",
-        senderTag: "JohnSmith",
-        sentAt: new Date("2023-12-30"),
-        message: "Good thing",
-        senderImg: null,
-      },
-      {
-        id: "15231523",
-        senderName: "Some new guy",
-        senderTag: "newGuy",
-        sentAt: new Date(),
-        message: "But ofcourse man",
-        senderImg: null,
-      },
-      {
-        id: "1523143",
-        senderName: "John Smith",
-        senderTag: "JohnSmith",
-        sentAt: new Date(),
-        message: "Good thing",
-        senderImg: null,
-      },
-    ],
-  } as TChatRoomMessages,
+  default: {} as TChatRoomMessages,
+  // default: {
+  //   "123123": [
+  //     {
+  //       id: "623626",
+  //       senderName: "John Smith",
+  //       senderTag: "JohnSmith",
+  //       sentAt: new Date("2023-12-30"),
+  //       message:
+  //         "Hey man, I know you have been coding a lot but you should CODE EVEN MORE",
+  //       senderImg: null,
+  //     },
+  //     {
+  //       id: "1523123",
+  //       senderName: "Some new guy",
+  //       senderTag: "newGuy",
+  //       sentAt: new Date("2023-12-30"),
+  //       message: "But ofcourse man",
+  //       senderImg: null,
+  //     },
+  //     {
+  //       id: "15231455",
+  //       senderName: "John Smith",
+  //       senderTag: "JohnSmith",
+  //       sentAt: new Date("2023-12-30"),
+  //       message: "Good thing",
+  //       senderImg: null,
+  //     },
+  //     {
+  //       id: "15231523",
+  //       senderName: "Some new guy",
+  //       senderTag: "newGuy",
+  //       sentAt: new Date(),
+  //       message: "But ofcourse man",
+  //       senderImg: null,
+  //     },
+  //     {
+  //       id: "1523143",
+  //       senderName: "John Smith",
+  //       senderTag: "JohnSmith",
+  //       sentAt: new Date(),
+  //       message: "Good thing",
+  //       senderImg: null,
+  //     },
+  //   ],
+  // } as TChatRoomMessages,
 });
 
 export const isChatEditModelOpen = atom({

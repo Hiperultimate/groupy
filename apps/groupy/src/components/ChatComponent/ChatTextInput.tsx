@@ -24,6 +24,7 @@ const ChatTextInput = ({
       senderName: currentUser.user.name,
       senderTag: currentUser.user.atTag,
       senderImg: currentUser.user.image,
+      senderId : currentUser.user.id,
       roomId: chatId,
       message: inputState,
     });

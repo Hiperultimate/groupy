@@ -340,6 +340,7 @@ export const groupRouter = createTRPCRouter({
           if (message) {
             const roomId = message.roomId;
             const messageId = message.id;
+            const senderId = message.senderId;
             const senderName = message.senderName;
             const senderTag = message.senderTag;
             const sentAt = message.sentAt
@@ -351,6 +352,7 @@ export const groupRouter = createTRPCRouter({
             if (
               roomId &&
               messageId &&
+              senderId &&
               senderName &&
               senderTag &&
               sentAt !== undefined &&
@@ -358,6 +360,7 @@ export const groupRouter = createTRPCRouter({
             ) {
               const parsedMessage: TChatMessage = {
                 id: messageId,
+                senderId: senderId,
                 senderName: senderName,
                 senderTag: senderTag,
                 sentAt: sentAt,

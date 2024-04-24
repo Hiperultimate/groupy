@@ -10,6 +10,7 @@ export const ServerToClientMessageSchema = z.object({
 });
 
 export const ClientToServerMessageSchema = z.object({
+  senderId: z.string(),
   senderTag: z.string(),
   senderName: z.string(),
   message: z.string(),
