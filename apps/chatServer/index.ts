@@ -8,6 +8,7 @@ import redisClient from "./utils/redis";
 import type { ServerToClientEvents } from "./types";
 import { ClientToServerMessageSchema } from "./utils/schema";
 import redisPopulateGroup from "./db_helpers/postgres_to_redis/populateGroups";
+import { increaseUnreadMessageCount } from "./db_helpers/unreadMessageCount";
 
 const app: Express = express();
 app.use(cors());
@@ -44,7 +45,7 @@ io.on("connection", (socket) => {
       return new Error("Bad request");
     }
 
-    const { senderTag, senderName, message, senderImg, roomId } =
+    const { senderTag, senderName, message, senderImg, roomId, senderId } =
       receivedData.data;
 
     const messageId = createId(); // generating cuid
@@ -55,11 +56,13 @@ io.on("connection", (socket) => {
       sentAt: Date.now(),
       senderImg: senderImg,
       roomId: roomId,
+      senderId : senderId,
       message: message,
     };
 
     await redisClient.hset(messageId, messageObject);
     await redisClient.rpush(`roomMessages:${object.roomId}`, messageId);
+    await increaseUnreadMessageCount({groupId : roomId , senderId : object.senderId})
     
     console.log(`Broadcasting room ${object.roomId} message :`, messageObject);
     socket.nsp.to(object.roomId).emit(`roomData`, messageObject);

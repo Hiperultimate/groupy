@@ -1,5 +1,6 @@
 import { prisma } from "../../utils/prisma";
 import redisClient from "../../utils/redis";
+import isGroupInRedis from "../common/redisCheckGroup";
 
 const redisPopulateGroup = async (groupId: string) => {
   const checkGroupInRedis = await isGroupInRedis(groupId);
@@ -9,14 +10,6 @@ const redisPopulateGroup = async (groupId: string) => {
 
   // Start populating group data in redis
   await redisCreateGroupUnreadMessages(groupId);
-};
-
-const isGroupInRedis = async (groupId: string) => {
-  const groupMemberCount = await redisClient.hlen(`unreadMessages:${groupId}`);
-  if (groupMemberCount <= 0) {
-    return false;
-  }
-  return true;
 };
 
 // This function creates a record in redis which stores all users in the group with their unreadMessagesCount
