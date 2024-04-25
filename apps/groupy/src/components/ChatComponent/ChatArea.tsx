@@ -2,16 +2,41 @@ import { useRecoilValue } from "recoil";
 import ChatDialogs from "./ChatDialogs";
 import ChatHeader from "./ChatHeader";
 import ChatTextInput from "./ChatTextInput";
-import { type TChatOption, chatOptionState, chatUserTagKey } from "~/store/atoms/chat";
-import { useState } from "react";
+import {
+  type TChatOption,
+  chatOptionState,
+  chatUserTagKey,
+} from "~/store/atoms/chat";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { socket } from "~/utils/socket";
 
 const ChatArea = () => {
+  const { data: currentUser } = useSession();
   const chatData = useRecoilValue(chatOptionState);
   const [textInput, setTextInput] = useState("");
 
   const activeChat: TChatOption | undefined = chatData.find((chat) => {
     return chat.isSelected === true;
   });
+
+  // Updates the server about user reading state of a group
+  useEffect(() => {
+    if (activeChat && currentUser?.user.id) {
+      socket.emit("userReadingGroup", {
+        groupId: activeChat.roomID,
+        userId: currentUser.user.id,
+      });
+    }
+    return () => {
+      if (activeChat && currentUser?.user.id) {
+        socket.emit("userStopReadingGroup", {
+          groupId: activeChat.roomID,
+          userId: currentUser.user.id,
+        });
+      }
+    };
+  }, [activeChat, currentUser]);
 
   if (!activeChat) {
     return <></>;
@@ -23,7 +48,9 @@ const ChatArea = () => {
         <ChatHeader
           chatId={activeChat.roomID}
           authorName={activeChat.chatName}
-          authorAtTag={chatUserTagKey in activeChat? activeChat.chatUserTag : null }
+          authorAtTag={
+            chatUserTagKey in activeChat ? activeChat.chatUserTag : null
+          }
           authorProfilePicture={activeChat.chatImg}
         />
       </div>

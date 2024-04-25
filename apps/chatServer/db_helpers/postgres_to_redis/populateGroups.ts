@@ -38,6 +38,10 @@ const redisCreateGroupUnreadMessages = async (groupId: string) => {
     redisBatch.hset(`unreadMessages:${groupId}`, {
       [userId]: unreadMessageCount,
     });
+
+    redisBatch.hset(`isGroupMemberReading:${groupId}`, {
+      [userId]: "false",
+    });
   }
 
   await redisBatch.exec();
