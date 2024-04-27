@@ -1,9 +1,7 @@
-import type {
-  GetServerSideProps,
-  InferGetServerSidePropsType,
-} from "next";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { getServerSession, type Session } from "next-auth";
-import { useRecoilValue } from "recoil";
+import { useEffect } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 import ChatArea from "~/components/ChatComponent/ChatArea";
 import ChatMemberEditModal from "~/components/ChatComponent/ChatMemberEditModal";
@@ -13,7 +11,7 @@ import useJoinChatRoom from "~/hooks/useJoinChatRoom";
 import useReceiveChatMessage from "~/hooks/useReceiveChatMessage";
 import { authOptions } from "~/server/auth";
 
-import { chatEditModalData } from "~/store/atoms/chat";
+import { chatEditModalData, isChatOptionLoading } from "~/store/atoms/chat";
 
 type ServerSideProps = {
   currentUserSession: Session;
@@ -22,7 +20,7 @@ type ServerSideProps = {
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
   ctx
 ) => {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions)
+  const session = await getServerSession(ctx.req, ctx.res, authOptions);
 
   if (!session) {
     return {
@@ -30,22 +28,29 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
         destination: "/",
         permanent: false,
       },
-    }
+    };
   }
 
   return {
     props: {
-      currentUserSession : session,
+      currentUserSession: session,
     },
-  }
+  };
 };
 
-const Chat = ({ currentUserSession }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Chat = ({
+  currentUserSession,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const editModalData = useRecoilValue(chatEditModalData);
+  const setIsChatOptionLoading = useSetRecoilState(isChatOptionLoading);
 
   const socket = useChatConnect();
-  useJoinChatRoom(socket);
+  const { isLoading } = useJoinChatRoom(socket, currentUserSession.user.id);
   useReceiveChatMessage(socket);
+
+  useEffect(() => {
+    setIsChatOptionLoading(isLoading);
+  }, [isLoading, setIsChatOptionLoading]);
 
   return (
     <>
