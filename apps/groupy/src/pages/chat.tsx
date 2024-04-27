@@ -1,4 +1,8 @@
-import { type NextPage } from "next";
+import type {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+} from "next";
+import { getServerSession, type Session } from "next-auth";
 import { useRecoilValue } from "recoil";
 
 import ChatArea from "~/components/ChatComponent/ChatArea";
@@ -7,10 +11,36 @@ import UserChatList from "~/components/ChatComponent/UserChatList";
 import useChatConnect from "~/hooks/useChatConnect";
 import useJoinChatRoom from "~/hooks/useJoinChatRoom";
 import useReceiveChatMessage from "~/hooks/useReceiveChatMessage";
+import { authOptions } from "~/server/auth";
 
 import { chatEditModalData } from "~/store/atoms/chat";
 
-const Chat: NextPage = () => {
+type ServerSideProps = {
+  currentUserSession: Session;
+};
+
+export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
+  ctx
+) => {
+  const session = await getServerSession(ctx.req, ctx.res, authOptions)
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {
+      currentUserSession : session,
+    },
+  }
+};
+
+const Chat = ({ currentUserSession }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const editModalData = useRecoilValue(chatEditModalData);
 
   const socket = useChatConnect();
