@@ -8,14 +8,40 @@ import {
 } from "~/store/atoms/chat";
 import { api } from "~/utils/api";
 import DisplayUserImage from "../DisplayUserImage";
+import { useEffect } from "react";
+import { socket } from "~/utils/socket";
 
-const ChatDialogs = ({ chatId }: { chatId: string }) => {
+const ChatDialogs = ({
+  chatId,
+  userId,
+}: {
+  chatId: string;
+  userId: string;
+}) => {
   const [allChatMessages, setAllChatMessages] =
     useRecoilState(chatRoomMessages);
   let chatMessages: TChatMessage[] = [];
 
   const router = useRouter();
   const { data: currentUserSession } = useSession();
+
+  // Updates the server about user reading state of a group
+  useEffect(() => {
+    if (chatId && userId) {
+      socket.emit("userReadingGroup", {
+        groupId: chatId,
+        userId: userId,
+      });
+    }
+    return () => {
+      if (chatId && userId) {
+        socket.emit("userStopReadingGroup", {
+          groupId: chatId,
+          userId: userId,
+        });
+      }
+    };
+  }, [chatId, userId]);
 
   if (!currentUserSession) {
     router.push("/");

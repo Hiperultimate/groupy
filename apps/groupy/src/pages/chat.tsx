@@ -63,7 +63,7 @@ const Chat = ({
           <UserChatList />
         </div>
         <div className="w-9/12 border border-l-0 ">
-          <ChatArea />
+          <ChatArea userId={currentUserSession.user.id}/>
         </div>
       </main>
     </>

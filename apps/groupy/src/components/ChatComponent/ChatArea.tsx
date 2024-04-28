@@ -7,36 +7,15 @@ import {
   chatOptionState,
   chatUserTagKey,
 } from "~/store/atoms/chat";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { socket } from "~/utils/socket";
+import { useState } from "react";
 
-const ChatArea = () => {
-  const { data: currentUser } = useSession();
+const ChatArea = ({ userId }: { userId: string }) => {
   const chatData = useRecoilValue(chatOptionState);
   const [textInput, setTextInput] = useState("");
 
   const activeChat: TChatOption | undefined = chatData.find((chat) => {
     return chat.isSelected === true;
   });
-
-  // Updates the server about user reading state of a group
-  useEffect(() => {
-    if (activeChat && currentUser?.user.id) {
-      socket.emit("userReadingGroup", {
-        groupId: activeChat.roomID,
-        userId: currentUser.user.id,
-      });
-    }
-    return () => {
-      if (activeChat && currentUser?.user.id) {
-        socket.emit("userStopReadingGroup", {
-          groupId: activeChat.roomID,
-          userId: currentUser.user.id,
-        });
-      }
-    };
-  }, [activeChat, currentUser]);
 
   if (!activeChat) {
     return <></>;
@@ -55,7 +34,7 @@ const ChatArea = () => {
         />
       </div>
       <div className="h-2 flex-grow overflow-y-auto">
-        <ChatDialogs chatId={activeChat.roomID} />
+        <ChatDialogs chatId={activeChat.roomID} userId={userId} />
       </div>
       <div className="flex h-20 flex-col items-center justify-center border-t px-4">
         <ChatTextInput
