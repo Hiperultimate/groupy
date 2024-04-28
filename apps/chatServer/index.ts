@@ -9,6 +9,8 @@ import type { ServerToClientEvents } from "./types";
 import { ClientToServerMessageSchema } from "./utils/schema";
 import redisPopulateGroup from "./db_helpers/postgres_to_redis/populateGroups";
 import { increaseUnreadMessageCount } from "./db_helpers/unreadMessageCount";
+import { errorMessages, errorType } from "./constants";
+import { isUserGroupInRedis } from "./db_helpers/common/redisCheckGroup";
 
 const app: Express = express();
 app.use(cors());
@@ -28,8 +30,16 @@ app.get("/serverstatus", (req: Request, res: Response) => {
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("joinRoom", (groupId) => {
-    console.log("User joined room :", groupId);
+  socket.on("joinRoom", async (groupId, userId) => {
+    const exists = await isUserGroupInRedis(groupId, userId);
+
+    if (!exists) {
+      console.log(`User ${userId} is not a member of group ${groupId}`);
+      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED])
+      return;
+    }
+
+    socket.data.userId = userId;
     void socket.join(groupId);
     redisPopulateGroup(groupId);
   });
@@ -42,7 +52,8 @@ io.on("connection", (socket) => {
         "Bad request object : ",
         receivedData.error.flatten().fieldErrors
       );
-      return new Error("Bad request");
+      io.to(socket.id).emit("error", errorMessages[errorType.INVALID_MESSAGE])
+      return;
     }
 
     const { senderTag, senderName, message, senderImg, roomId, senderId } =
@@ -67,32 +78,46 @@ io.on("connection", (socket) => {
       senderId: object.senderId,
     });
 
-    console.log(`Broadcasting room ${object.roomId} message :`, messageObject);
     socket.nsp.to(object.roomId).emit(`roomData`, messageObject);
   });
 
   socket.on("userReadingGroup", async ({ groupId, userId }) => {
-    const exists = await redisClient.hexists(
-      `isGroupMemberReading:${groupId}`,
-      userId
-    );
+    const exists = await isUserGroupInRedis(groupId, userId)
     if (!exists) {
-      console.log(`User ${userId} is not a member of group ${groupId}`);
+      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED])
       return;
     }
-    await redisClient.hset(`isGroupMemberReading:${groupId}`, userId, "true");
+
+    await redisClient.sadd(`activeGroupMembers:${groupId}`, userId);
   });
 
   socket.on("userStopReadingGroup", async ({ groupId, userId }) => {
-    const exists = await redisClient.hexists(
-      `isGroupMemberReading:${groupId}`,
-      userId
-    );
+    const exists = await isUserGroupInRedis(groupId, userId)
     if (!exists) {
-      console.log(`User ${userId} is not a member of group ${groupId}`);
+      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED])
       return;
     }
-    await redisClient.hset(`isGroupMemberReading:${groupId}`, userId, "false");
+
+    await redisClient.srem(`activeGroupMembers:${groupId}`, userId);
+  });
+
+  socket.on("disconnecting", async () => {
+    const currentUserId: string | undefined = socket.data.userId;
+
+    if (!currentUserId) {
+      return;
+    }
+
+    const allRooms = socket.rooms;
+    allRooms.delete(socket.id);
+    const userJoinedRooms = allRooms;
+
+    const batch = redisClient.multi();
+    for (const groupId of userJoinedRooms) {
+      batch.srem(`activeGroupMembers:${groupId}`, currentUserId);
+    }
+
+    await batch.exec();
   });
 
   socket.on("disconnect", () => {

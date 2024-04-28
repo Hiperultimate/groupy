@@ -1,3 +1,5 @@
+import { errorType } from "./constants";
+
 export type TMessage = {
   roomId: string;
   id: string;
@@ -13,6 +15,8 @@ export type TOldRoomMessages = {
   [roomId: string]: TChatMessage[];
 };
 
+export type ErrorTypes = typeof errorType[keyof typeof errorType];
+
 export type TChatMessage = Omit<TMessage, "roomId">;
 type TClientMessage = Omit<TMessage, "id" | "sentAt">;
 type TUserReadingGroup = {
@@ -21,10 +25,12 @@ type TUserReadingGroup = {
 };
 
 export interface ServerToClientEvents {
-  joinRoom: (room: string) => void;
+  joinRoom: (room: string, userId: string) => void;
   roomMessage: (messageObj: TClientMessage) => void;
   roomData: (messageObj: TMessage) => void;
-  
+
   userReadingGroup: (userReadingArgs: TUserReadingGroup) => void;
-  userStopReadingGroup : (userReadingArgs: TUserReadingGroup) => void;
+  userStopReadingGroup: (userReadingArgs: TUserReadingGroup) => void;
+
+  error: (errorType : string) => void;
 }

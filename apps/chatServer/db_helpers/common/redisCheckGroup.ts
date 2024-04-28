@@ -9,4 +9,10 @@ const isGroupInRedis = async (groupId: string) => {
   return true;
 };
 
-export default isGroupInRedis;
+const isUserGroupInRedis = async (groupId: string, userId: string) => {
+  const exists = await redisClient.hexists(`unreadMessages:${groupId}`, userId);
+
+  return exists;
+};
+
+export { isGroupInRedis, isUserGroupInRedis };

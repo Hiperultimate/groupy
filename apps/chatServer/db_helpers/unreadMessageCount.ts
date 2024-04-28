@@ -1,5 +1,5 @@
 import redisClient from "../utils/redis";
-import isGroupInRedis from "./common/redisCheckGroup";
+import { isGroupInRedis } from "./common/redisCheckGroup";
 
 const increaseUnreadMessageCount = async ({
   groupId,
@@ -17,8 +17,8 @@ const increaseUnreadMessageCount = async ({
   const groupMembers = await redisClient.hgetall(`unreadMessages:${groupId}`);
   const batch = redisClient.pipeline();
   for (const memberId in groupMembers) {
-    if(memberId !== senderId){
-        batch.hincrby(`unreadMessages:${groupId}`, memberId, 1);
+    if (memberId !== senderId) {
+      batch.hincrby(`unreadMessages:${groupId}`, memberId, 1);
     }
   }
   await batch.exec();
