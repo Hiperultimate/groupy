@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
         "Bad request object : ",
         receivedData.error.flatten().fieldErrors
       );
-      io.to(socket.id).emit("error", errorMessages[errorType.INVALID_MESSAGE])
+      io.to(socket.id).emit("error", errorMessages[errorType.INVALID_MESSAGE]);
       return;
     }
 
@@ -63,9 +63,11 @@ io.on("connection", (socket) => {
       message: message,
     };
 
-    await redisClient.hset(messageId, messageObject);
-    await redisClient.rpush(`roomMessages:${object.roomId}`, messageId);
-    await increaseUnreadMessageCount({
+    const batch = redisClient.multi();
+    batch.hset(messageId, messageObject);
+    batch.rpush(`roomMessages:${object.roomId}`, messageId);
+    await batch.exec();
+    increaseUnreadMessageCount({
       groupId: roomId,
       senderId: object.senderId,
     });
@@ -74,9 +76,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("userReadingGroup", async ({ groupId, userId }) => {
-    const exists = await isUserGroupInRedis(groupId, userId)
+    const exists = await isUserGroupInRedis(groupId, userId);
     if (!exists) {
-      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED])
+      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED]);
       return;
     }
 
@@ -84,9 +86,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("userStopReadingGroup", async ({ groupId, userId }) => {
-    const exists = await isUserGroupInRedis(groupId, userId)
+    const exists = await isUserGroupInRedis(groupId, userId);
     if (!exists) {
-      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED])
+      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED]);
       return;
     }
 
