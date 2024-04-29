@@ -82,7 +82,8 @@ io.on("connection", (socket) => {
       return;
     }
 
-    await redisClient.sadd(`activeGroupMembers:${groupId}`, userId);
+    redisClient.sadd(`activeGroupMembers:${groupId}`, userId);
+    redisClient.hset(`unreadMessages:${groupId}`, userId , 0);
   });
 
   socket.on("userStopReadingGroup", async ({ groupId, userId }) => {
