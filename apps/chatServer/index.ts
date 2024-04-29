@@ -31,14 +31,6 @@ io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("joinRoom", async (groupId, userId) => {
-    const exists = await isUserGroupInRedis(groupId, userId);
-
-    if (!exists) {
-      console.log(`User ${userId} is not a member of group ${groupId}`);
-      io.to(socket.id).emit("error", errorMessages[errorType.NOT_ALLOWED])
-      return;
-    }
-
     socket.data.userId = userId;
     void socket.join(groupId);
     redisPopulateGroup(groupId);

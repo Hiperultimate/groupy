@@ -14,10 +14,14 @@ const increaseUnreadMessageCount = async ({
     return;
   }
 
+  const activeUser = await redisClient.smembers(
+    `activeGroupMembers:${groupId}`
+  );
+  const activeUserSet = new Set(activeUser);
   const groupMembers = await redisClient.hgetall(`unreadMessages:${groupId}`);
   const batch = redisClient.pipeline();
   for (const memberId in groupMembers) {
-    if (memberId !== senderId) {
+    if (memberId !== senderId && !activeUserSet.has(memberId)) {
       batch.hincrby(`unreadMessages:${groupId}`, memberId, 1);
     }
   }
