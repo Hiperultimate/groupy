@@ -20,19 +20,23 @@ const ChatTextInput = ({
     return <></>;
   }
   const submitHandler = () => {
+    if (!(inputState.length > 0)) {
+      return;
+    }
+
     socket.emit("roomMessage", {
       senderName: currentUser.user.name,
       senderTag: currentUser.user.atTag,
       senderImg: currentUser.user.image,
-      senderId : currentUser.user.id,
+      senderId: currentUser.user.id,
       roomId: chatId,
       message: inputState,
     });
     setInputState("");
   };
 
-  const handleKeyDown = (event : React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
       submitHandler();
     }
   };

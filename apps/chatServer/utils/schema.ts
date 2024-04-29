@@ -13,7 +13,7 @@ export const ClientToServerMessageSchema = z.object({
   senderId: z.string(),
   senderTag: z.string(),
   senderName: z.string(),
-  message: z.string(),
+  message: z.string().min(1),
   senderImg: z.string().url().optional(),
   roomId: z.string(),
 });
