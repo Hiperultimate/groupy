@@ -10,8 +10,9 @@ import { type DialogElement } from "../CreatePostInput";
 import {
   type ChatMemberEditType,
   isChatEditModelOpen,
+  chatEditModalData,
 } from "~/store/atoms/chat";
-import { type SetterOrUpdater, useRecoilState } from "recoil";
+import { type SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
 import SvgCrossIcon from "public/SvgCrossIcon";
 import { menuItems } from "./HeaderMenu";
 
@@ -36,13 +37,11 @@ export const invokeChatMemberEditModal = (
   setIsMenuOpen(false);
 };
 
-const ChatMemberEditModal = ({
-  chatId,
-  editType,
-}: {
-  chatId: string;
-  editType: ChatMemberEditType;
-}) => {
+const ChatMemberEditModal = () => {
+  const editModalData = useRecoilValue(chatEditModalData);
+  const chatId = editModalData.chatId;
+  const editType = editModalData.editType;
+  
   const dialogRef = useRef<DialogElement>(null);
   const [isEditChatModalOpen, setIsEditChatModalOpen] =
     useRecoilState(isChatEditModelOpen);

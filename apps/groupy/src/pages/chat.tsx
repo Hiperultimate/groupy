@@ -41,7 +41,6 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (
 const Chat = ({
   currentUserSession,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const editModalData = useRecoilValue(chatEditModalData);
   const setIsChatOptionLoading = useSetRecoilState(isChatOptionLoading);
 
   const socket = useChatConnect();
@@ -54,10 +53,7 @@ const Chat = ({
 
   return (
     <>
-      <ChatMemberEditModal
-        chatId={editModalData.chatId}
-        editType={editModalData.editType}
-      />
+      <ChatMemberEditModal />
       <main className="flex pt-20 font-poppins">
         <div className="w-3/12 border ">
           <UserChatList />
