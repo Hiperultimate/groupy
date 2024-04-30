@@ -79,9 +79,9 @@ const ChatDialogs = ({
     }
   );
 
-  const dateDivide = new Set();
+  const dateDivide = new Set<string>();
   function dateDivider(sentDate: Date) {
-    const pushDate = sentDate.getTime();
+    const pushDate = sentDate.toLocaleDateString();
     if (dateDivide.has(pushDate)) {
       return null;
     }

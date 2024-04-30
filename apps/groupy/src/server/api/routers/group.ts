@@ -336,7 +336,6 @@ export const groupRouter = createTRPCRouter({
       await Promise.all(
         previousMessageArr.map(async (id) => {
           const message = await ctx.redis.hgetall(id);
-          console.log(`Message ${id} : `, message);
           if (message) {
             const roomId = message.roomId;
             const messageId = message.id;
