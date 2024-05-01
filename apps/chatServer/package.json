@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon index.ts",
     "build": "esbuild index.ts --bundle --platform=node --outfile=build/index.js",
-    "br": "node build/index.js"
+    "start": "node build/index.js"
   },
   "keywords": [],
   "author": "",

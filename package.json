@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "dotenv -- turbo run build",
+    "start": "dotenv -- turbo run start",
     "dev": "dotenv -- turbo run dev",
     "build-groupy" : "turbo db:generate && turbo run build --scope=groupy --include-dependencies --no-deps",
     "build-groupy-local" : "turbo db:generate & dotenv -- turbo run build --filter=groupy",
