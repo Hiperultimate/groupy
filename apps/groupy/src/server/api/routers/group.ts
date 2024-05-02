@@ -120,6 +120,7 @@ export const groupRouter = createTRPCRouter({
       try {
         await dbJoinGroup({
           prisma: ctx.prisma,
+          redis : ctx.redis,
           userId: selectedNotification.sendingUserId,
           groupId: selectedNotification.groupId,
         });
@@ -304,6 +305,7 @@ export const groupRouter = createTRPCRouter({
       try {
         await dbJoinGroup({
           prisma: ctx.prisma,
+          redis: ctx.redis,
           userId: ctx.session.user.id,
           groupId: selectedGroup.id,
         });
