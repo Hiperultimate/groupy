@@ -6,9 +6,9 @@ import { socket } from "~/utils/socket";
 const useChatConnect = () => {
   useEffect(() => {
     socket.connect();
-    socket.on("error", (message : string) => {
+    socket.on("error", (message: string) => {
       toast.error(message);
-    })
+    });
 
     return () => {
       socket.off("error");
