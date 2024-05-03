@@ -53,6 +53,7 @@ const useReceiveChatMessage = (socket: Socket) => {
             if (!existingRoomChatData) {
               // Creating new room in chatRoomMessages
               return {
+                ...existingData,
                 [toRoomId]: [newMessage],
               };
             }
@@ -81,7 +82,9 @@ const useReceiveChatMessage = (socket: Socket) => {
               ...requiredRoom,
               chatLastMsg: newMessage.message,
               lastMsgSentAt: newMessage.sentAt,
-              unreadMsgCount : requiredRoom.unreadMsgCount + (requiredRoom.isSelected === true ? 0 : 1),
+              unreadMsgCount:
+                requiredRoom.unreadMsgCount +
+                (requiredRoom.isSelected === true ? 0 : 1),
             };
 
             const updateOptions = options.map((chatOption) => {
