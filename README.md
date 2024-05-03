@@ -6,17 +6,35 @@ Welcome to Groupy, a social networking platform designed to bring together indiv
 
 ## Technologies Used
 
-Groupy is built using the following technologies (To be updated):
+Groupy is built using the following technologies:
 
+- TurboRepo: A package manager facilitating dependency management for projects
+- Socket.io: Enabling real-time, bidirectional communication between web clients and servers, utilizing WebSockets or alternative transport mechanisms.
+- Express: Server-side logic and HTTP request handling for chat server.
 - Next.js: A popular React framework for building server-side rendered applications.
 - TypeScript: A typed superset of JavaScript that enhances code scalability and maintainability.
 - tRPC: A simple and fast way to create TypeScript API endpoints.
+- Redis: In-memory data structure store serving as a database, cache, and message broker, supporting various data structures and offering high performance and scalability.
 - Prisma with Supabase: Prisma is used as the ORM to interact with the database, and Supabase provides the backend-as-a-service platform.
 - Tailwind CSS: A utility-first CSS framework for rapidly styling the user interface.
-- nextAuth: Provides authentication support for Next.js applications.
+- NextAuth: Provides authentication support for Next.js applications.
 - Tanstack Query: A powerful data fetching and caching library for managing data in the application.
 - RecoilJS: A state management library for managing and sharing the application's global state.
 - Zod: A TypeScript-first schema validation library for data validation and sanitization.
+
+## Project Structure
+
+- `packages/db_prisma`: Contains Prisma ORM which is used to talk to PostgreSQL database.
+- `apps/chatServer`: This folder contains the chat server which is runs on express and socket.io. 
+- `apps/chatServer/utils`: Consists of utility functions for chatServer.
+- `apps/groupy/src/pages`: This directory contains the Next.js pages used to structure the application's frontend.
+- `apps/groupy/src/components`: Inside this folder, you'll find the components that are utilized within the pages located in `src/pages`.
+- `apps/groupy/public`: This directory holds SVG files converted into TypeScript (tsx) files, as well as the fonts used throughout Groupy. It serves as a repository for static assets accessible to both the frontend and the backend.
+- `apps/groupy/src/common`: Contains a collection of functions that are shared between both the frontend and the backend for Groupy.
+- `apps/groupy/src/utils`: Consists of utility functions for Groupy.
+- `apps/groupy/src/store`: Contains Recoil states, which help manage the state of the React components efficiently.
+- `apps/groupy/src/server`: This directory is dedicated to the backend for Groupy. It contains backend APIs and a Prisma connector for interacting with the database. Server logic and API endpoints are implemented here.
+- `apps/groupy/prisma`: This folder contains Prisma migrations and a **schema.prisma** file. The **schema.prisma** file serves as the blueprint for the database models, defining their structure and relationships.
 
 ## Completed Features
 
@@ -30,15 +48,15 @@ So far, the following features have been implemented in Groupy:
 6. **Writing Comments for Posts:** Users can comment on posts to engage in discussions.
 7. **Bandwidth-Saving Comment Loading:** A limited number of comments are initially loaded per post, with dynamic loading of more comments as the user scrolls to optimize bandwidth usage.
 8. **Sending Friend Requests:** Users can connect with others by sending friend requests.
+9. **Creating Groups:** Users can create groups through posts and can toggle instant join option which lets other users join the group on a single click or sends notification to the group moderator if Instant join is set to false.
+10. **Live Chatting:**  Chat page is now available where users can see their joined groups and actively participate while chatting.
 
 ## Planned Features
 
 There are exciting features in the pipeline to enhance Groupy further:
 
 1. **Searching for Posts through Tags:** Users will be able to filter posts based on tags to find specific groups of interest.
-2. **Group Up Feature:** Users can create posts that act as invitations to group chats, with the option to set a limit on the number of people allowed to join.
-3. **Live Group Chat:** Upon joining a group, users can engage in real-time group chat with other members.
-4. **Admin Controls for Group Chat:** Administrators of group chats will have the ability to select and admit members they wish to join.
+2. **Group Moderation Options:** Group moderators will be able to add or remove users from their group .
 
 # Getting Started
 

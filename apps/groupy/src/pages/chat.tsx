@@ -42,7 +42,6 @@ const Chat = ({
   currentUserSession,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const setIsChatOptionLoading = useSetRecoilState(isChatOptionLoading);
-
   const socket = useChatConnect();
   const { isLoading } = useJoinChatRoom(socket, currentUserSession.user.id);
   useReceiveChatMessage(socket);
