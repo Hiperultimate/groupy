@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --toastify-color-success: #F1723B;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-ExtraLight.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Teko";
+  src: url("/fonts/Teko-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+.background-design {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 4em;
+  background-color: #ffffff;
+  background-image: linear-gradient(#bbbbbb 0.9px, transparent 0.9px),
+    linear-gradient(to right, #bbbbbb 0.9px, #ffffff 0.9px);
+  background-size: 25px 25px;
+}
+
+.blur-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(247, 248, 249, 0.97) 50%,
+    rgba(247, 248, 249, 1) 100%
+  );
+}
+
+.background-animate {
+  background-size: 500%;
+
+  -webkit-animation: Movement 3s ease-in-out infinite;
+  -moz-animation: Movement 3s ease-in-out infinite;
+  animation: Movement 3s ease-in-out infinite;
+}
+
+@keyframes Movement {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  75% {
+    background-position: 100% 50%;
+  }
+}
+
+.chat-viewport-height{
+  height: calc(100vh - 82px);
+}

@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd ../.. && npm run build-groupy",
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
