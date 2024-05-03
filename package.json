@@ -8,6 +8,7 @@
     "dev": "dotenv -- turbo run dev",
     "build-groupy" : "turbo db:generate && turbo run build --scope=groupy --include-dependencies --no-deps",
     "build-groupy-local" : "turbo db:generate & dotenv -- turbo run build --filter=groupy",
+    "build-chatServer" : "turbo db:generate && turbo run build --scope=chat-server --include-dependencies --no-deps",
     "buildrun-groupy": "dotenv -- turbo run start --filter=groupy",
     "prisma-migrate" : "dotenv -- turbo run db:migrate",
     "prisma-studio": "dotenv -- turbo run db:studio"
