@@ -13,7 +13,6 @@ import {
 
 export const groupRouter = createTRPCRouter({
   getCurrentUserGroupOptions: protectedProcedure.query(async ({ ctx }) => {
-    // Currently in progress
     const currentUser = ctx.session.user;
     const userGroups = await ctx.prisma.userGroups.findMany({
       where: { userId: currentUser.id },
@@ -49,16 +48,22 @@ export const groupRouter = createTRPCRouter({
         // If redis has any data, that is the latest one. Simply return it
         if (lastRedisMessageId) {
           const lastRedisMessage = await ctx.redis.hgetall(lastRedisMessageId);
-          const unreadMessageCount = await ctx.redis.hget(`unreadMessages:${group.id}`, currentUser.id);
+          const unreadMessageCount = await ctx.redis.hget(
+            `unreadMessages:${group.id}`,
+            currentUser.id
+          );
+
           return {
             roomID: group.id,
             chatName: group.name,
             chatImg: group.image,
-            chatLastMsg: lastRedisMessage.message ? lastRedisMessage.message : null,
+            chatLastMsg: lastRedisMessage.message
+              ? lastRedisMessage.message
+              : null,
             lastMsgSentAt: lastRedisMessage
               ? new Date(Number(lastRedisMessage.sentAt as string))
               : null,
-            unreadMsgCount: unreadMessageCount ? unreadMessageCount : 0,
+            unreadMsgCount: Number(unreadMessageCount) ? Number(unreadMessageCount) : 0,
           };
         }
 
@@ -121,7 +126,7 @@ export const groupRouter = createTRPCRouter({
       try {
         await dbJoinGroup({
           prisma: ctx.prisma,
-          redis : ctx.redis,
+          redis: ctx.redis,
           userId: selectedNotification.sendingUserId,
           groupId: selectedNotification.groupId,
         });
