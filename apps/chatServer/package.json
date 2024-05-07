@@ -28,6 +28,7 @@
     "@types/node": "^20.11.10",
     "esbuild": "^0.20.0",
     "nodemon": "^3.0.3",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "tsconfig":"*"
   }
 }
