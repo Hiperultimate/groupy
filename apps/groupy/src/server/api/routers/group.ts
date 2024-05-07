@@ -48,11 +48,7 @@ export const groupRouter = createTRPCRouter({
         // If redis has any data, that is the latest one. Simply return it
         if (lastRedisMessageId) {
           const lastRedisMessage = await ctx.redis.hgetall(lastRedisMessageId);
-          const unreadMessageCount = await ctx.redis.hget(
-            `unreadMessages:${group.id}`,
-            currentUser.id
-          );
-
+          const unreadMessageCount = await ctx.redis.hget(`unreadMessages:${group.id}`, currentUser.id);
           return {
             roomID: group.id,
             chatName: group.name,
