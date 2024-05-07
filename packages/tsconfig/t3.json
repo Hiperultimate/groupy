@@ -1,23 +1,15 @@
 {
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "display": "T3",
-    "compilerOptions": {
-      "target": "es2017",
-      "lib": ["dom", "dom.iterable", "esnext"],
-      "allowJs": true,
-      "checkJs": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "forceConsistentCasingInFileNames": true,
-      "noEmit": true,
-      "esModuleInterop": true,
-      "module": "esnext",
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "jsx": "preserve",
-      "incremental": true,
-      "noUncheckedIndexedAccess": true
-    }
+  "extends": "tsconfig/base.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "T3",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "noUncheckedIndexedAccess": true
   }
-  
+}
