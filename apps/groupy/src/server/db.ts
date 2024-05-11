@@ -1,5 +1,5 @@
 import { PrismaClient } from "@groupy/db_prisma";
-import { Redis } from "ioredis";
+import { redis as redisDB } from "@groupy/db_redis/connection";
 
 import { env } from "~/env.mjs";
 
@@ -14,9 +14,8 @@ export const prisma =
 
 if (env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
-export const redis = new Redis({
-  port: Number(env.REDIS_PORT), // Redis port
-  host: String(env.REDIS_HOST), // Redis host
-  username: "default", // needs Redis >= 6
-  password: env.REDIS_PASSWORD,
-});
+// Requires the following environment variables
+// env.REDIS_PORT
+// env.REDIS_HOST
+// env.REDIS_PASSWORD
+export const redis = redisDB;

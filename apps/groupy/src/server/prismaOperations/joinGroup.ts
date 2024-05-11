@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@groupy/db_prisma";
-import type { Redis } from "ioredis";
+import type { Redis } from "@groupy/db_redis";
 
 const dbJoinGroup = async ({
   prisma,
