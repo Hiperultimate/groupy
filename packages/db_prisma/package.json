@@ -11,13 +11,18 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push --skip-generate",
-    "db:studio" : "npx prisma studio"
+    "db:studio": "npx prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.13.0",
-    "prisma": "^4.11.0"
+    "dotenv": "^16.4.5",
+    "prisma": "^4.11.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0"
   }
 }
