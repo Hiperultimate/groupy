@@ -21,14 +21,12 @@ switch (process.env.NODE_ENV) {
   case "production":
     break;
   case "development":
-    console.log("Checking DEVELOPMENT DEFAULT");
     break;
 }
 
 const checkErrors = finalPrismaEnv.safeParse(process.env);
-console.log("Checking for errors in prisma :", checkErrors);
 if (checkErrors.success === false) {
-  console.error(
+  console.log(
     "❌ Invalid environment variables in packages/db_prisma:",
     checkErrors.error.flatten().fieldErrors
   );
