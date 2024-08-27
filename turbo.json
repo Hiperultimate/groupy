@@ -37,6 +37,10 @@
     "db:studio": {
       "cache": false
     },
+    "test": {
+      "cache": true,
+      "persistent": true
+    },
     "lint": {},
     "type-check": {}
   }
