@@ -7,7 +7,8 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@groupy/db_prisma": "*",
@@ -46,6 +47,7 @@
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
+    "@vitest/coverage-v8": "^2.0.5",
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.2.2",
     "eslint": "^8.36.0",
