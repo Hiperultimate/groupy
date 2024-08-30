@@ -41,6 +41,10 @@
       "cache": true,
       "persistent": true
     },
+    "coverage":{
+      "cache": true,
+      "persistent": true
+    },
     "lint": {},
     "type-check": {}
   }

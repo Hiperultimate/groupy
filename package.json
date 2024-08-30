@@ -12,7 +12,8 @@
     "buildrun-groupy": "dotenv -- turbo run start --filter=groupy",
     "prisma-migrate" : "dotenv -- turbo run db:migrate",
     "prisma-studio": "dotenv -- turbo run db:studio",
-    "test-groupy": "dotenv -- turbo run test --scope=groupy --include-dependencies --no-deps"
+    "test-groupy": "dotenv -- turbo run test --scope=groupy --include-dependencies --no-deps",
+    "coverage-groupy": "dotenv -- turbo run coverage --scope=groupy --include-dependencies --no-deps"
   },
   "packageManager": "npm@10.5.0",
   "workspaces": [
