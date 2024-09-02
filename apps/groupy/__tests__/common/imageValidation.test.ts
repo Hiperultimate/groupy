@@ -3,7 +3,7 @@ import {
   serverImageFormatValidation,
   serverImageSizeValidation,
   serverImageTypeValidation,
-} from "../../src/common/imageValidation";
+} from "~/common/imageValidation";
 import { base64Image } from "../__fixtures__/JPGBase64Image";
 
 describe("serverImageTypeValidation", () => {
