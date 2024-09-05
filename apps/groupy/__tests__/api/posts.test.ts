@@ -6,6 +6,7 @@ import { type AppRouter, appRouter } from "~/server/api/root";
 import { createInnerTRPCContext } from "~/server/api/trpc";
 import type { Post, Prisma } from "@prisma/client";
 import { type Session } from "next-auth";
+import { postFindOne } from "__tests__/__factories__/post";
 
 describe("getPosts", () => {
   beforeEach(() => {
@@ -58,90 +59,44 @@ describe("getPosts", () => {
       };
     }>;
 
+    const datePlaceholder = new Date(2015, 11, 19);
     const prismaPostFindManyMock: GetPostOutput[] = [
-      // This post is liked by current user session
-      {
+      postFindOne({
         id: postId,
-        content: "Hello this is a test post",
         image: "9881729412hg5ij",
-        authorId: "125451asffwef",
-        groupId: "k2j35b25hu",
-        groupSize: 100,
-        createdAt: new Date("2022-03-25"),
-        updatedAt: new Date("2022-03-25"),
-        tags: [
-          {
-            id: "15hio15jopif",
-            name: "social",
-          },
-          {
-            id: "b12hui5b",
-            name: "friendly",
-          },
-          {
-            id: "61lhjiof",
-            name: "development",
-          },
-        ],
-        comments: [
-          {
-            authorId: "1hui24ubb",
-            content: "That is nice",
-            id: "12515ghj124",
-            postId: postId,
-            createdAt: new Date("2022-03-25"),
-          },
-        ],
         likedBy: [
           {
             userId: "15uih1234",
-            createdAt: new Date("2022-03-25"),
+            createdAt: datePlaceholder,
             id: "21h5g12jk",
             postId: "iu12hg5",
-            updatedAt: new Date("2022-03-25"),
-          },
-          {
-            userId: "235b63n67",
-            createdAt: new Date("2022-03-25"),
-            id: "512bhgf",
-            postId: "iu12hg5",
-            updatedAt: new Date("2022-03-25"),
+            updatedAt: datePlaceholder,
           },
         ],
-      },
+      }),
     ];
 
     const result = [
       {
         id: postId,
-        content: "Hello this is a test post",
+        content: "Default Content",
         image:
           "https://supabaseURL.co/storage/v1/object/public/images/9881729412hg5ij",
-        authorId: "125451asffwef",
-        groupId: "k2j35b25hu",
-        groupSize: 100,
-        createdAt: new Date("2022-03-25"),
-        updatedAt: new Date("2022-03-25"),
+        authorId: "deafult-author-id",
+        groupId: null,
+        groupSize: null,
+        createdAt: datePlaceholder,
+        updatedAt: datePlaceholder,
         tags: [
-          {
-            id: "15hio15jopif",
-            name: "social",
-          },
-          {
-            id: "b12hui5b",
-            name: "friendly",
-          },
-          {
-            id: "61lhjiof",
-            name: "development",
-          },
+          { id: "default-tag-id-1", name: "default-tag-1" },
+          { id: "default-tag-id-2", name: "default-tag-2" },
         ],
-        likeCount: 2,
+        likeCount: 1,
         isUserLikePost: true,
         commentCount: 1,
       },
     ];
-
+    
     prismaMock.post.findMany.mockResolvedValue(prismaPostFindManyMock);
     const postData = await caller.post.getPosts({ takenPosts: 0 });
     expect(postData).toMatchObject(result);
