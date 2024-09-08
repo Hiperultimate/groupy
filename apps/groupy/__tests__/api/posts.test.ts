@@ -9,47 +9,49 @@ import { type Session } from "next-auth";
 import { postFindOne } from "__tests__/__factories__/post";
 import { TRPCError } from "@trpc/server";
 
+const testSession: Session = {
+  user: {
+    id: "15uih1234",
+    atTag: "@Tester",
+    dateOfBirth: new Date("2022-03-25"),
+    description: null,
+    tags: [],
+    name: "Tester",
+    email: "tester@gmail.com",
+    image: null,
+  },
+  expires: "1",
+};
+
+const ctx = createInnerTRPCContext({ session: testSession });
+const caller = appRouter.createCaller({ ...ctx, prisma: prismaMock });
+
+const supabaseStorageBucketMock = vi.mock("~/utils/storageBucket", () => {
+  return {
+    supabase: {
+      storage: {
+        from: vi.fn((imagePath: string) => ({
+          getPublicUrl: vi.fn((imageName: string) => {
+            return {
+              data: {
+                publicUrl: `https://supabaseURL.co/storage/v1/object/public/${imagePath}/${imageName}`,
+              },
+            };
+          }),
+        })),
+      },
+    },
+  };
+});
+
 describe("getPosts", () => {
   beforeAll(() => {
-    vi.mock("~/utils/storageBucket", () => {
-      return {
-        supabase: {
-          storage: {
-            from: vi.fn((imagePath: string) => ({
-              getPublicUrl: vi.fn((imageName: string) => {
-                return {
-                  data: {
-                    publicUrl: `https://supabaseURL.co/storage/v1/object/public/${imagePath}/${imageName}`,
-                  },
-                };
-              }),
-            })),
-          },
-        },
-      };
-    });
+    supabaseStorageBucketMock;
   });
 
   beforeEach(() => {
     vi.restoreAllMocks();
   });
-
-  const testSession: Session = {
-    user: {
-      id: "15uih1234",
-      atTag: "@Tester",
-      dateOfBirth: new Date("2022-03-25"),
-      description: null,
-      tags: [],
-      name: "Tester",
-      email: "tester@gmail.com",
-      image: null,
-    },
-    expires: "1",
-  };
-
-  const ctx = createInnerTRPCContext({ session: testSession });
-  const caller = appRouter.createCaller({ ...ctx, prisma: prismaMock });
 
   it("Should throw UNAUTHORIZED error if session is invalid ", async () => {
     const nullSessionCtx = createInnerTRPCContext({ session: null });
@@ -169,5 +171,112 @@ describe("getPosts", () => {
     const postData = await caller.post.getPosts({ takenPosts: 0 });
 
     expect(postData[0]?.image).toBe(result[0]?.image);
+  });
+});
+
+describe("getPostsFromUserTag", () => {
+  beforeAll(() => {
+    supabaseStorageBucketMock;
+  });
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("Should throw UNAUTHORIZED error if session is invalid", async () => {
+    const nullSessionCtx = createInnerTRPCContext({ session: null });
+    const testCaller = appRouter.createCaller({
+      ...nullSessionCtx,
+      prisma: prismaMock,
+    });
+
+    await expect(testCaller.post.getPosts({ takenPosts: 0 })).rejects.toThrow(
+      new TRPCError({ code: "UNAUTHORIZED" })
+    );
+  });
+
+  it("Should throw NOT_FOUND error if user is not found in database", async () => {
+    prismaMock.user.findUnique.mockResolvedValue(null);
+
+    await expect(
+      caller.post.getPostsFromUserTag({ userTag: "sphinx", takenPosts: 0 })
+    ).rejects.toThrow(
+      new TRPCError({ code: "NOT_FOUND", message: "User not found" })
+    );
+  });
+
+  it("Should return all posts by the current logged user ", async () => {
+    type PostWithTagsAndCounts = Prisma.PostGetPayload<{
+      include: {
+        tags: true;
+        _count: {
+          select: {
+            comments: true;
+            likedBy: true;
+          };
+        };
+      };
+    }>;
+
+    const randomUser = {
+      id: "15uih1234",
+      atTag: "ttester",
+      dateOfBirth: new Date(2015, 11, 19),
+      password: "hashedPassword",
+      description: null,
+      tags: [],
+      name: "Tester",
+      email: "tester@gmail.com",
+      image: null,
+    };
+
+    const mockPost = {
+      ...postFindOne({
+        image: "image1.jpg",
+        comments: Array.from({ length: 3 }, (_, index) => ({
+          id: `${index}`,
+          content: `Default comment ${index}`,
+          postId: `${index}-post-id`,
+          authorId: `${index}-author-id`,
+          createdAt: new Date("2022-02-02"),
+        })),
+        likedBy: Array.from({ length: 10 }, (_, index) => ({
+          id: `${index}`,
+          userId: `user-id-${index}`,
+          postId: `${index}-post-id`,
+          updatedAt: new Date("2022-02-02"),
+          createdAt: new Date("2022-02-02"),
+        })),
+      }),
+    };
+
+    prismaMock.user.findUnique.mockResolvedValue(randomUser);
+    prismaMock.post.findMany.mockResolvedValue([
+      {
+        ...mockPost,
+        _count: {
+          comments: 3,
+          likedBy: 10,
+        },
+      },
+    ] as PostWithTagsAndCounts[]);
+
+    const getUserPostsFromAtTag = await caller.post.getPostsFromUserTag({
+      userTag: randomUser.atTag,
+      takenPosts: 0,
+    });
+
+    const result = [
+      {
+        ...mockPost,
+        image:
+          "https://supabaseURL.co/storage/v1/object/public/images/image1.jpg",
+        likeCount: 10,
+        isUserLikePost: true,
+        commentCount: 3,
+      },
+    ];
+
+    expect(getUserPostsFromAtTag).toMatchObject(result);
   });
 });
