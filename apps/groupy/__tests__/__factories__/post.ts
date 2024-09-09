@@ -1,4 +1,5 @@
 import { type Prisma } from "@groupy/db_prisma";
+import { IPost } from "~/common/postSchema";
 
 type GetPostOutput = Prisma.PostGetPayload<{
   include: {
@@ -46,3 +47,21 @@ export const postFindOne = (
     ...overrides,
   };
 };
+
+export const createPostDefaultData = (overrides : Partial<IPost>) : IPost => {
+  return {
+    content: "Default content",
+    tags: [
+      { value: "red", label: "Red" },
+      { value: "green", label: "Green" },
+      { value: "blue", label: "Blue" },
+    ],
+    isGroup: true,
+    groupName: "Default group name",
+    ageSpectrum: { minAge: 20, maxAge: 100 },
+    groupSize: 30,
+    instantJoin: false,
+    image: undefined,
+    ...overrides
+  }
+}

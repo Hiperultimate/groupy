@@ -6,8 +6,15 @@ import { appRouter } from "~/server/api/root";
 import { createInnerTRPCContext } from "~/server/api/trpc";
 import type { Prisma } from "@prisma/client";
 import { type Session } from "next-auth";
-import { postFindOne } from "__tests__/__factories__/post";
+import {
+  createPostDefaultData,
+  postFindOne,
+} from "__tests__/__factories__/post";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
+import {
+  base64ImgTag,
+} from "__tests__/__fixtures__/JPGBase64Image";
 
 const testSession: Session = {
   user: {
@@ -31,6 +38,17 @@ const supabaseStorageBucketMock = vi.mock("~/utils/storageBucket", () => {
     supabase: {
       storage: {
         from: vi.fn((imagePath: string) => ({
+          upload: vi.fn(() =>
+            // path: string,
+            // buffer: Buffer,
+            // typeObj: { contentType: string }
+            {
+              return {
+                data: null,
+                error: new Error("Error occured while uploading"),
+              };
+            }
+          ),
           getPublicUrl: vi.fn((imageName: string) => {
             return {
               data: {
@@ -279,4 +297,52 @@ describe("getPostsFromUserTag", () => {
 
     expect(getUserPostsFromAtTag).toMatchObject(result);
   });
+});
+
+describe("createPost", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("Throws UNAUTHORIZED if user session is not created", async () => {
+    const nullSessionCtx = createInnerTRPCContext({ session: null });
+    const nullSessionCaller = appRouter.createCaller({
+      ...nullSessionCtx,
+      prisma: prismaMock,
+    });
+
+    await expect(nullSessionCaller.post.createPost).rejects.toThrow(
+      new TRPCError({ code: "UNAUTHORIZED" })
+    );
+  });
+
+  it("Throws Zod Error if base64Image is not valid", async () => {
+    const createPostInput = createPostDefaultData({
+      image: "invalidBase64ImageData",
+    });
+    await expect(caller.post.createPost(createPostInput)).rejects.toThrow(
+      new z.ZodError([
+        {
+          code: "custom",
+          message: "Something went wrong while converting the image",
+          path: ["image"],
+        },
+      ])
+    );
+  });
+
+  it("Throws INTERNAL_SERVER_ERROR if image upload to storage bucket failed", async () => {
+    const createPostInput = createPostDefaultData({
+      image: base64ImgTag,
+    });
+    await expect(caller.post.createPost(createPostInput)).rejects.toThrow(
+      new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error occured while generating image URL",
+      })
+    );
+  });
+  // it("Throws BAD_REQUEST if isGroup is true and group name is not provided", () => {});
+  // it("Returns serialized post data if createPost API worked", () => {});
+  // it("Returns groupId and groupSize and post data if isGroup field is true and valid data is given", () => {});
 });
