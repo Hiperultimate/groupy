@@ -1,5 +1,5 @@
-import { type Prisma } from "@groupy/db_prisma";
-import { IPost } from "~/common/postSchema";
+import { Prisma } from "@groupy/db_prisma";
+import { type IPost } from "~/common/postSchema";
 
 type GetPostOutput = Prisma.PostGetPayload<{
   include: {
@@ -48,7 +48,7 @@ export const postFindOne = (
   };
 };
 
-export const createPostDefaultData = (overrides : Partial<IPost>) : IPost => {
+export const createPostDefaultData = (overrides: Partial<IPost>): IPost => {
   return {
     content: "Default content",
     tags: [
@@ -62,6 +62,34 @@ export const createPostDefaultData = (overrides : Partial<IPost>) : IPost => {
     groupSize: 30,
     instantJoin: false,
     image: undefined,
-    ...overrides
-  }
-}
+    ...overrides,
+  };
+};
+
+
+// Posts are creating groups, hence group data is in __factories__/posts.ts
+const groupCreate = Prisma.validator<Prisma.GroupArgs>()({
+  select: {
+    id: true,
+    name: true,
+    image: true,
+    minAgeLimit: true,
+    maxAgeLimit: true,
+    size: true,
+    instantJoin: true,
+  },
+});
+type Group = Prisma.GroupGetPayload<typeof groupCreate>;
+
+export const createGroupData = (overrides?: Partial<Group>): Group => {
+  return {
+    id: "default-id",
+    name: "default-name",
+    image: null,
+    minAgeLimit: 0,
+    maxAgeLimit: 100,
+    size: 50,
+    instantJoin: true,
+    ...overrides,
+  };
+};
