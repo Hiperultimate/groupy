@@ -39,6 +39,7 @@ const createGroup = async ({
     });
   }
 
+  // Do error handling and use transactions instead
   const group = await prisma.group.create({
     data: {
       name: groupName,
