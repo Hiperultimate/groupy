@@ -10,11 +10,13 @@ import {
   createPostDefaultData,
   postFindOne,
 } from "__tests__/__factories__/post";
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
 import {
-  base64ImgTag,
-} from "__tests__/__fixtures__/JPGBase64Image";
+  type inferProcedureInput,
+  type inferProcedureOutput,
+  TRPCError,
+} from "@trpc/server";
+import { z } from "zod";
+import { base64ImgTag } from "__tests__/__fixtures__/JPGBase64Image";
 
 const testSession: Session = {
   user: {
@@ -342,7 +344,96 @@ describe("createPost", () => {
       })
     );
   });
-  // it("Throws BAD_REQUEST if isGroup is true and group name is not provided", () => {});
-  // it("Returns serialized post data if createPost API worked", () => {});
-  // it("Returns groupId and groupSize and post data if isGroup field is true and valid data is given", () => {});
+
+  // There is some issue with prisma.$transactions not working while testing.
+  // it("Throws INTERNAL_SERVER_ERROR for rejection in prisma transaction createGroup", async () => {
+  //   vi.mock("~/server/prismaOperations/createGroup", () => ({
+  //     default: vi
+  //       .fn()
+  //       .mockRejectedValue(new Error("Error while creating group.")),
+  //   }));
+
+  //   const createPostData = createPostDefaultData({image : undefined});
+
+  //   // Call createPost API, and expect error code. Check for terminal logs of postRouter/posts/createPost line 257
+  //   // Find out why image is undefined error is occuring
+  //   await expect(caller.post.createPost(createPostData)).rejects.toThrow(
+  //     new TRPCError({
+  //       message: "Error occured while creating group, please try again.",
+  //       code: "INTERNAL_SERVER_ERROR",
+  //     })
+  //   );
+  // });
+});
+
+describe("addCommentToPost", () => {
+  it("Expect FORBIDDEN if input comment exceeds 300 characters", async () => {
+    const procedureInput: inferProcedureInput<
+      typeof appRouter.post.addCommentToPost
+    > = {
+      postId: "1234567",
+      addComment:
+        "In recent years, the importance of mental well-being has gained widespread recognition across various societies. The fast-paced nature of modern life, with its constant demands and pressures, has made mental health an essential part of daily conversations. People are increasingly aware of the need to balance work, social life, and personal care to maintain a healthy mental state. Practices like mindfulness, meditation, and regular physical exercise are now recommended not just as therapeutic interventions but as preventive measures. ",
+    };
+
+    await expect(caller.post.addCommentToPost(procedureInput)).rejects.toThrow(
+      new TRPCError({
+        code: "FORBIDDEN",
+        message: "Character limit exceeded",
+      })
+    );
+  });
+
+  it("Expect NOT_FOUND error if input postId does not exist in DB", async () => {
+    prismaMock.post.findFirst.mockResolvedValue(null);
+    const procedureInput: inferProcedureInput<
+      typeof appRouter.post.addCommentToPost
+    > = {
+      postId: "1234567",
+      addComment: "That is really nice!",
+    };
+
+    await expect(caller.post.addCommentToPost(procedureInput)).rejects.toThrow(
+      new TRPCError({
+        code: "NOT_FOUND",
+        message: "Post not found",
+      })
+    );
+  });
+
+  it("Expect comment data if procedure is working as expected", async () => {
+    const procedureInput: inferProcedureInput<
+      typeof appRouter.post.addCommentToPost
+    > = {
+      postId: "1234567",
+      addComment: "That is really nice!",
+    };
+
+    const procedureOutput: inferProcedureOutput<
+      typeof appRouter.post.addCommentToPost
+    > = {
+      id: "892472913",
+      postId: "1234567",
+      content: "That is really nice!",
+      authorId: "325956",
+      createdAt: new Date("02-04-2022"),
+    };
+
+    // Create a factory for this
+    prismaMock.post.findFirst.mockResolvedValue({
+      id: "8912475",
+      content: "Check out my new ride!",
+      image: null,
+      authorId: "2345692984",
+      groupId: null,
+      groupSize: null,
+      createdAt: new Date("02-04-2022"),
+      updatedAt: new Date("02-04-2022"),
+    });
+    prismaMock.comment.create.mockResolvedValue(procedureOutput);
+
+    await expect(caller.post.addCommentToPost(procedureInput)).resolves.toBe(
+      procedureOutput
+    );
+  });
 });

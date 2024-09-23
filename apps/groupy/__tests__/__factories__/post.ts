@@ -48,7 +48,7 @@ export const postFindOne = (
   };
 };
 
-export const createPostDefaultData = (overrides: Partial<IPost>): IPost => {
+export const createPostDefaultData = (overrides?: Partial<IPost>): IPost => {
   return {
     content: "Default content",
     tags: [
