@@ -419,7 +419,6 @@ describe("addCommentToPost", () => {
       createdAt: new Date("02-04-2022"),
     };
 
-    // Create a factory for this
     prismaMock.post.findFirst.mockResolvedValue({
       id: "8912475",
       content: "Check out my new ride!",
