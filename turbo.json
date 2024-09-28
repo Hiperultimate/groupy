@@ -41,9 +41,13 @@
       "cache": true,
       "persistent": true
     },
-    "coverage":{
+    "coverage": {
       "cache": true,
       "persistent": true
+    },
+    "e2e-test": {
+      "cache": false,
+      "persistent": false
     },
     "lint": {},
     "type-check": {}
