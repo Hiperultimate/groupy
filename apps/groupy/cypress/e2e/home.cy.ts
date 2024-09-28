@@ -1,21 +1,21 @@
 /// <reference types="cypress" />
 
-describe('home-page', () => {
+describe("home-page", () => {
   beforeEach(() => {
-    cy.visit('https://localhost:3000/')
-  })
-  
-  it('displays email and password input box', () => {
+    cy.visit("http://localhost:3000/");
+  });
 
-    cy.get('.todo-list li').should('have.length', 2)
+  it("displays email and password input box", () => {
+    cy.get("[data-test=error-message]").should("have.text", "");
 
-    // We can go even further and check that the default todos each contain
-    // the correct text. We use the `first` and `last` functions
-    // to get just the first and last matched elements individually,
-    // and then perform an assertion with `should`.
-    cy.get('[data-test=email]').first().should('have.text', 'Pay electric bill')
-    cy.get('.todo-list li').last().should('have.text', 'Walk the dog')
-  })
+    cy.get("[data-test=email]").type("invalidUser123");
+    cy.get("[data-test=password]").type("incorrectpassword");
 
+    cy.get("[data-test=loginBtn]").click();
 
-})
+    cy.get("[data-test=error-message]").should(
+      "have.text",
+      "Email-ID or Password is incorrect"
+    );
+  });
+});
