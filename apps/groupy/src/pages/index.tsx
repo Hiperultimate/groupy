@@ -224,6 +224,7 @@ const SignInPage: NextPage<{
                   type="button"
                   className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
                   onClick={() => router.push("/sign-up")}
+                  data-test="signupBtn"
                   disabled={signInFetching}
                 >
                   Sign Up

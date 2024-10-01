@@ -170,7 +170,7 @@ const SignUp: NextPage = () => {
               <div className="absolute top-[-90px] h-20 w-20 rounded-lg bg-orange p-4">
                 <SvgGroupyLogo fillcolor="#ffffff" />
               </div>
-              <div className="m-2 text-3xl font-bold text-dark-blue">
+              <div className="m-2 text-3xl font-bold text-dark-blue" data-test="signup-title">
                 Create your account
               </div>
               <div className="m-2 text-xl text-grey">Start your journey</div>
