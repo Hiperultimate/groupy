@@ -25,6 +25,14 @@
       "cache": true,
       "persistent": true
     },
+    "db-up": {
+      "cache": false,
+      "persistent": false
+    },
+    "db-down" : {
+      "cache": false,
+      "persistent": false
+    },
     "db:generate": {
       "cache": false
     },

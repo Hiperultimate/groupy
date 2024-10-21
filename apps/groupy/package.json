@@ -9,6 +9,8 @@
     "start": "next start",
     "test": "vitest",
     "e2e-test": "cypress run --browser edge",
+    "db-up" : "npx supabase start",
+    "db-down" : "npx supabase stop",
     "cy:open": "cypress open",
     "coverage": "vitest run --coverage"
   },
