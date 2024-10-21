@@ -84,7 +84,6 @@ enabled = true
 public = true
 file_size_limit = "50MiB"
 allowed_mime_types = ["image/png", "image/jpeg", "image/jpg"]
-objects_path = "./images"
 
 [auth]
 enabled = true
