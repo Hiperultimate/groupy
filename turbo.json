@@ -25,11 +25,11 @@
       "cache": true,
       "persistent": true
     },
-    "db-up": {
+    "supabase-up": {
       "cache": false,
       "persistent": false
     },
-    "db-down" : {
+    "supabase-down" : {
       "cache": false,
       "persistent": false
     },

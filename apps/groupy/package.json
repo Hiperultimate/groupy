@@ -9,8 +9,6 @@
     "start": "next start",
     "test": "vitest",
     "e2e-test": "cypress run --browser edge",
-    "db-up" : "npx supabase start",
-    "db-down" : "npx supabase stop",
     "cy:open": "cypress open",
     "coverage": "vitest run --coverage"
   },
@@ -61,7 +59,6 @@
     "postcss": "^8.4.21",
     "prettier": "^2.8.6",
     "prettier-plugin-tailwindcss": "^0.2.6",
-    "supabase": "^1.200.3",
     "tailwindcss": "^3.3.0",
     "typescript": "^5.0.2",
     "vitest": "^2.0.5",
