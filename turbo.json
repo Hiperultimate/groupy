@@ -33,6 +33,14 @@
       "cache": false,
       "persistent": false
     },
+    "redis-up": {
+      "cache": false,
+      "persistent": false
+    },
+    "redis-down" : {
+      "cache": false,
+      "persistent": false
+    },
     "db:generate": {
       "cache": false
     },
