@@ -1,0 +1,14 @@
+{
+  "name": "db_redis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "redis-build": "docker build -t groupy.redis .",
+    "redis-up": "npm run redis-build && docker run -d -p 6379:6379 --name groupy-redis -v groupy_redis:/data groupy.redis:latest",
+    "redis-down": "docker stop groupy-redis && docker rm groupy-redis"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
