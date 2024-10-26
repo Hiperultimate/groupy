@@ -9,7 +9,7 @@
     "safebuild-redis": "node ./scripts/build-redis.js",
     "docker-redis" : "docker run -d -p 6379:6379 --name groupy-redis -v groupy_redis:/data groupy.redis:latest",
     "redis-up": "npm run safebuild-redis && npm run safestart-redis",
-    "redis-down": "docker stop groupy-redis && docker rm groupy-redis",
+    "redis-down": "node ./scripts/stop-redis.js",
     "redis-start" : "docker start groupy-redis",
     "safestart-redis" : "node ./scripts/run-redis.js"
   },
