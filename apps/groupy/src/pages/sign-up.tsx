@@ -191,6 +191,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setNameError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="name-input"
                   />
                 </div>
                 <div className="w-1/2">
@@ -207,6 +208,8 @@ const SignUp: NextPage = () => {
                       changeInputState: setEmailError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="email-input"
+
                   />
                 </div>
               </div>
@@ -226,6 +229,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setPasswordError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="password-input"
                   />
                 </div>
 
@@ -244,6 +248,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setConfirmPasswordError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="confirm-password-input"
                   />
                 </div>
               </div>
@@ -264,6 +269,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setDobError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="dob-input"
                   />
                 </div>
 
@@ -281,6 +287,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setUserNameTagError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="tagname-input"
                   />
                 </div>
               </div>
@@ -300,6 +307,7 @@ const SignUp: NextPage = () => {
                     setDescription(e.target.value);
                     setDescriptionError([]);
                   }}
+                  data-test="userDescription-input"
                 />
                 <InputErrorText errorArray={descriptionError} />
               </div>
@@ -310,6 +318,7 @@ const SignUp: NextPage = () => {
                   them!
                 </span>
                 <AsyncCreatableSelectComponent
+                  id="creatableSelect-input"
                   handleFieldState={{
                     inputState: selectedTags,
                     setInputState: setSelectedTags,
@@ -328,6 +337,7 @@ const SignUp: NextPage = () => {
                 setUserImageFile={setUserImageFile}
                 setUserImageError={setUserImageError}
                 userImageError={userImageError}
+                data-test="image-input"
               />
 
               <div className="my-4">

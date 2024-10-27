@@ -33,7 +33,7 @@ describe("login-page", () => {
 
     cy.get("[data-test=nameTag]", { timeout: 10000 }).should(
       "have.text",
-      "@globalUser10000"
+      "@globalUser"
     );
   });
 });
