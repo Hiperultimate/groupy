@@ -1,25 +1,25 @@
-import React, { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 import { signUpSchema, type ISignUp } from "~/common/authSchema";
 import { api } from "~/utils/api";
 
-import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
+import { getServerAuthSession } from "../server/auth";
 
-import SvgGroupyLogo from "public/SvgGroupyLogo";
+import Image from "next/image";
 import SvgCamera from "public/SvgCamera";
-import InputField from "../components/InputField";
+import SvgGroupyLogo from "public/SvgGroupyLogo";
+import { toast } from "react-toastify";
+import { encodeImageToBase64 } from "~/common/imageConversion";
+import StyledImageInput from "~/components/StyledImageInput";
 import BackgroundContainer from "../components/BackgroundContainer";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
-import Image from "next/image";
 import InputErrorText from "../components/InputErrorText";
-import { encodeImageToBase64 } from "~/common/imageConversion";
-import StyledImageInput from "~/components/StyledImageInput";
-import { toast } from "react-toastify";
+import InputField from "../components/InputField";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -248,7 +248,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setConfirmPasswordError,
                     }}
                     disabled={registerUser_isLoading}
-                    data-test="confirm-password-input"
+                    data-test="confirmPassword-input"
                   />
                 </div>
               </div>
@@ -287,7 +287,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setUserNameTagError,
                     }}
                     disabled={registerUser_isLoading}
-                    data-test="tagname-input"
+                    data-test="tagName-input"
                   />
                 </div>
               </div>
@@ -318,7 +318,7 @@ const SignUp: NextPage = () => {
                   them!
                 </span>
                 <AsyncCreatableSelectComponent
-                  id="creatableSelect-input"
+                  id="tagSelect-input"
                   handleFieldState={{
                     inputState: selectedTags,
                     setInputState: setSelectedTags,
@@ -389,6 +389,7 @@ const SignUp: NextPage = () => {
               <button
                 className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white disabled:bg-[#ff9e3e]"
                 type="submit"
+                data-test="signupSubmit-btn"
                 disabled={registerUser_isLoading}
               >
                 Submit
