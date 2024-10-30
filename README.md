@@ -124,10 +124,10 @@ Contributions to Groupy are welcome! If you'd like to contribute to the project,
 
 1. Fork the repository and clone it to your local machine.
 2. Run the project on your local machine, check the Getting Started section to setup the project.
-5. Make your changes and test them thoroughly.
-6. Commit your changes with clear and concise messages.
-7. Push your changes to your forked repository.
-8. Create a pull request detailing your changes and their purpose.
+3. Make your changes and test them thoroughly.
+4. Commit your changes with clear and concise messages.
+5. Push your changes to your forked repository.
+6. Create a pull request detailing your changes and their purpose.
 
 ## License
 

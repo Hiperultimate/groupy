@@ -29,7 +29,7 @@
       "cache": false,
       "persistent": false
     },
-    "supabase-down" : {
+    "supabase-down": {
       "cache": false,
       "persistent": false
     },
@@ -37,7 +37,7 @@
       "cache": false,
       "persistent": false
     },
-    "redis-down" : {
+    "redis-down": {
       "cache": false,
       "persistent": false
     },
@@ -62,6 +62,10 @@
       "persistent": true
     },
     "e2e-test": {
+      "cache": false,
+      "persistent": false
+    },
+    "cy:open": {
       "cache": false,
       "persistent": false
     },
