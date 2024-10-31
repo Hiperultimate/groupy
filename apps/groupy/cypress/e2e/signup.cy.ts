@@ -51,9 +51,45 @@ describe("signup-page-form", () => {
       .should("eq", "Image size must be less than 1 MB");
   });
 
-  // it("Check if errors go away once the user has entered valid inputs", () => {})
-});
+  it("Check if errors go away once the user has entered valid inputs", () => {
+    cy.visit("/sign-up");
 
+    const possibleErrors = fillInvalidSignupInput();
+    getFormSubmitButton().click();
+    cy.getByData("input-error").should("have.length", possibleErrors.length);
+
+    // Clear values function here
+    clearSignupInput();
+
+    fillValidSignupInput();
+    cy.getByData("input-error").should("have.length", 0);
+  });
+
+  it("Check if users can create new accounts through sign-up and access the home page after successfully logging in", () => {
+    cy.visit("/sign-up");
+
+    const { email, password, tagname } = fillValidSignupInput();
+
+    // Check for request sent to create account creation
+    cy.intercept("POST", "**api/trpc/account.signup*").as("signupRequest");
+
+    getFormSubmitButton().click();
+
+    cy.wait("@signupRequest").its("response.statusCode").should("eq", 200);
+
+    // Check if user reached the home page
+    cy.url().should("contain", "/");
+
+    // Login with those credentials
+    cy.getByData("email").type(email);
+    cy.getByData("password").type(password);
+    cy.getByData("loginBtn").click();
+
+    // Check if we have reached the home page successfully
+    cy.url().should("contain", "/home");
+    cy.getByData("nameTag").invoke("text").should("contain", tagname);
+  });
+});
 
 // Helper functions
 const getNameField = () => cy.getByData("name-input");
@@ -108,6 +144,61 @@ function fillInvalidSignupInput() {
     "Invalid image format",
   ];
   return expectedFieldError;
+}
+
+function fillValidSignupInput() {
+  const olderDate = new Date();
+  olderDate.setFullYear(olderDate.getFullYear() - 10);
+
+  const randomNumber = Date.now();
+  const email = `hamster${randomNumber}@test.com`;
+  const password = String(randomNumber);
+  const username = `Hamster${randomNumber}`;
+  const tagname = `hamst3r:${randomNumber}`;
+
+  // Setting valid values to all inputs
+  getNameField().type(username);
+  getEmailField().type(email);
+  getPasswordField().type(password);
+  getConfirmPasswordField().type(password);
+  getDobField().type(returnCypressDate(olderDate));
+  getTagNameField().type(tagname);
+  getUserDescriptionField().type(
+    "Crawling groupy since the birth of hamsters <:3 )~~"
+  );
+  getTagSelectField().type("nerdy{enter}");
+  getTagSelectField().type("hamster{enter}");
+  getTagSelectField().type("on-the-web{enter}");
+  getImageField().selectFile("cypress/fixtures/images/valid-image.jpg", {
+    force: true,
+  });
+
+  return {
+    email,
+    password,
+    username,
+    tagname,
+  };
+}
+
+function clearSignupInput() {
+  // Removing older tags from multiselect
+  cy.get(`[aria-label^="Remove"]`).each(($el) => {
+    cy.wrap($el).click();
+  });
+
+  getNameField().clear();
+  getEmailField().clear();
+  getPasswordField().clear();
+  getConfirmPasswordField().clear();
+  getDobField().clear();
+  getTagNameField().clear();
+  getUserDescriptionField().clear();
+
+  // Clears input field for getImageField
+  getImageField().then((input) => {
+    (input[0] as HTMLInputElement).value = "";
+  });
 }
 
 function returnCypressDate(date: Date) {

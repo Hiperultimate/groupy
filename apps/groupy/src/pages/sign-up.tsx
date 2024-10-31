@@ -151,7 +151,8 @@ const SignUp: NextPage = () => {
         },
         onSuccess: (data) => {
           console.log("Success!");
-          console.log("New user data : ", data);
+          console.log("Signup request response: ", data);
+          toast.success("Account created successfully!");
           router.push("/");
         },
       });
