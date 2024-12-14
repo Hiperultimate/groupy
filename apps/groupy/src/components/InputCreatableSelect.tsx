@@ -71,7 +71,7 @@ const InputCreatableSelect = ({
   handleFieldState,
   handleErrorState,
 }: {
-  id: string,
+  id?: string,
   handleFieldState: {
     inputState: TagOption[];
     setInputState: React.Dispatch<React.SetStateAction<TagOption[]>>;
