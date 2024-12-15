@@ -12,17 +12,12 @@ Cypress.Commands.add("getById", (selector: string) => {
   cy.get(`[id=${selector}]`);
 });
 
-export type LoginNextAuthParams = {
-  userId: string;
-  name: string;
-  email: string;
-  provider: "credentials";
-};
-
 //https://dev.to/cowofevil/speed-up-cypress-testing-of-nextauth-secured-web-apps-10a0
 Cypress.Commands.add(
   "loginNextAuth",
-  ({ userId, name, email, provider }: LoginNextAuthParams) => {
+  ({ userData, provider }: LoginNextAuthParams) => {
+    const {id : userId, name, email , tags, atTag, dateOfBirth, description, picture} = userData;
+    
     Cypress.log({
       displayName: "NEXT-AUTH LOGIN",
       message: [`🔐 Authenticating | ${name}`],
@@ -35,12 +30,12 @@ Cypress.Commands.add(
     const cookieValue: JWT = {
       name: name,
       email: email,
-      tags: [{ id: "891asd", name: "temp" }],
-      atTag: "GlobalUser",
-      dateOfBirth: new Date(),
-      description: "placeholder description",
+      tags: tags,
+      atTag: atTag,
+      dateOfBirth: new Date(dateOfBirth), // Requires error checking
+      description: description,
       id: userId,
-      picture: "http://127.0.0.1:54321/storage/v1/object/public/images/displayPictures/19cd7cb5-84a1-4725-a4a6-9205eba171c4.jpeg",
+      picture:picture,
       provider: provider,
       tokenType: "Bearer",
       accessToken: "dummy",
@@ -73,3 +68,19 @@ Cypress.Commands.add(
     });
   }
 );
+
+export type ICypressUser = {
+  id: string;
+  name: string;
+  email: string;
+  tags: Array<{ id: string; name: string }>;
+  atTag: string;
+  dateOfBirth: string; // You can use a Date type if needed
+  description: string;
+  picture: string;
+};
+
+export type LoginNextAuthParams = {
+  userData: ICypressUser;
+  provider: "credentials";
+};
