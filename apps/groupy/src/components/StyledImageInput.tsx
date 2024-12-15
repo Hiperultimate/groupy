@@ -27,7 +27,7 @@ const StyledImageInput = ({
 
   userImageError: string[];
 } & InputHTMLAttributes<HTMLInputElement> 
-  & {["data-test"] : string} // for cypress tests
+  & {["data-test"]? : string} // for cypress tests
 ) => {
 
   // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions.
