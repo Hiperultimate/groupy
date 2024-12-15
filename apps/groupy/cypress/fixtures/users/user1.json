@@ -1,0 +1,14 @@
+{
+  "name": "GlobalUser",
+  "email": "globalUser@gmail.com",
+  "tags": [
+    { "id": "891asd", "name": "tag1" },
+    { "id": "984152n", "name": "tag2" },
+    { "id": "gi2uo34h", "name": "tag3" }
+  ],
+  "atTag": "GlobalUser",
+  "dateOfBirth": "Tue May 04 1999 05:30:00 GMT+0530 (India Standard Time)",
+  "description": "placeholder description",
+  "id": "cm2hhokkc0000mihgiv6p79ib",
+  "picture": "http://127.0.0.1:54321/storage/v1/object/public/images/displayPictures/19cd7cb5-84a1-4725-a4a6-9205eba171c4.jpeg"
+}
