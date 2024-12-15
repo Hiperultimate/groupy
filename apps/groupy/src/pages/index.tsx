@@ -156,6 +156,7 @@ const SignInPage: NextPage<{
                 <div className="w-full">
                   <InputField
                     title="Email"
+                    data-test="email"
                     isRequired={true}
                     placeholder="Enter your email address"
                     handleState={{
@@ -170,6 +171,7 @@ const SignInPage: NextPage<{
                   <InputField
                     title="Password"
                     type="password"
+                    data-test="password"
                     isRequired={true}
                     placeholder="Enter your password"
                     handleState={{
@@ -179,13 +181,14 @@ const SignInPage: NextPage<{
                     disabled={signInFetching}
                   />
                 </div>
-                <span className="relative top-[12px] text-red-600">
+                <span className="relative top-[12px] text-red-600" data-test="error-message">
                   {errorMessage}
                 </span>
 
                 <div className="flex w-full">
                   <button
                     type="submit"
+                    data-test="loginBtn"
                     className="my-6 h-12 w-full rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
                   >
                     Login
@@ -221,6 +224,7 @@ const SignInPage: NextPage<{
                   type="button"
                   className="h-12 w-24 rounded-lg bg-orange text-white transition duration-300 ease-in-out hover:bg-[#ff853e]"
                   onClick={() => router.push("/sign-up")}
+                  data-test="signupBtn"
                   disabled={signInFetching}
                 >
                   Sign Up

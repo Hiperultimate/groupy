@@ -67,9 +67,11 @@ const creatableComponentStyle: StylesConfig<TagOption> = {
 };
 
 const InputCreatableSelect = ({
+  id,
   handleFieldState,
   handleErrorState,
 }: {
+  id?: string,
   handleFieldState: {
     inputState: TagOption[];
     setInputState: React.Dispatch<React.SetStateAction<TagOption[]>>;
@@ -144,6 +146,8 @@ const InputCreatableSelect = ({
         placeholder="Type something and press enter..."
         value={handleFieldState.inputState}
         styles={creatableComponentStyle}
+        inputId={id}
+
       />
       <InputErrorText errorArray={handleErrorState?.errorState} />
     </div>

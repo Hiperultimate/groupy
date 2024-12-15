@@ -25,6 +25,22 @@
       "cache": true,
       "persistent": true
     },
+    "supabase-up": {
+      "cache": false,
+      "persistent": false
+    },
+    "supabase-down": {
+      "cache": false,
+      "persistent": false
+    },
+    "redis-up": {
+      "cache": false,
+      "persistent": false
+    },
+    "redis-down": {
+      "cache": false,
+      "persistent": false
+    },
     "db:generate": {
       "cache": false
     },
@@ -36,6 +52,22 @@
     },
     "db:studio": {
       "cache": false
+    },
+    "test": {
+      "cache": true,
+      "persistent": true
+    },
+    "coverage": {
+      "cache": true,
+      "persistent": true
+    },
+    "e2e-test": {
+      "cache": false,
+      "persistent": false
+    },
+    "cy:open": {
+      "cache": false,
+      "persistent": false
     },
     "lint": {},
     "type-check": {}

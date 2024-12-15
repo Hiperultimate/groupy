@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["cypress"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
@@ -24,6 +25,7 @@
   "include": [
     ".eslintrc.cjs",
     "next-env.d.ts",
+    "cypress/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",

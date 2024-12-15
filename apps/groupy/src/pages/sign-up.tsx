@@ -1,25 +1,25 @@
-import React, { useState } from "react";
 import { type NextPage } from "next";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 import { signUpSchema, type ISignUp } from "~/common/authSchema";
 import { api } from "~/utils/api";
 
-import { getServerAuthSession } from "../server/auth";
 import { type GetServerSideProps } from "next";
+import { getServerAuthSession } from "../server/auth";
 
-import SvgGroupyLogo from "public/SvgGroupyLogo";
+import Image from "next/image";
 import SvgCamera from "public/SvgCamera";
-import InputField from "../components/InputField";
+import SvgGroupyLogo from "public/SvgGroupyLogo";
+import { toast } from "react-toastify";
+import { encodeImageToBase64 } from "~/common/imageConversion";
+import StyledImageInput from "~/components/StyledImageInput";
 import BackgroundContainer from "../components/BackgroundContainer";
 import AsyncCreatableSelectComponent, {
   type TagOption,
 } from "../components/InputCreatableSelect";
-import Image from "next/image";
 import InputErrorText from "../components/InputErrorText";
-import { encodeImageToBase64 } from "~/common/imageConversion";
-import StyledImageInput from "~/components/StyledImageInput";
-import { toast } from "react-toastify";
+import InputField from "../components/InputField";
 
 type FieldSetErrorMap = {
   [key: string]: React.Dispatch<React.SetStateAction<string[]>>;
@@ -151,7 +151,8 @@ const SignUp: NextPage = () => {
         },
         onSuccess: (data) => {
           console.log("Success!");
-          console.log("New user data : ", data);
+          console.log("Signup request response: ", data);
+          toast.success("Account created successfully!");
           router.push("/");
         },
       });
@@ -170,7 +171,7 @@ const SignUp: NextPage = () => {
               <div className="absolute top-[-90px] h-20 w-20 rounded-lg bg-orange p-4">
                 <SvgGroupyLogo fillcolor="#ffffff" />
               </div>
-              <div className="m-2 text-3xl font-bold text-dark-blue">
+              <div className="m-2 text-3xl font-bold text-dark-blue" data-test="signup-title">
                 Create your account
               </div>
               <div className="m-2 text-xl text-grey">Start your journey</div>
@@ -191,6 +192,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setNameError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="name-input"
                   />
                 </div>
                 <div className="w-1/2">
@@ -207,6 +209,8 @@ const SignUp: NextPage = () => {
                       changeInputState: setEmailError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="email-input"
+
                   />
                 </div>
               </div>
@@ -226,6 +230,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setPasswordError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="password-input"
                   />
                 </div>
 
@@ -244,6 +249,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setConfirmPasswordError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="confirmPassword-input"
                   />
                 </div>
               </div>
@@ -264,6 +270,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setDobError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="dob-input"
                   />
                 </div>
 
@@ -281,6 +288,7 @@ const SignUp: NextPage = () => {
                       changeInputState: setUserNameTagError,
                     }}
                     disabled={registerUser_isLoading}
+                    data-test="tagName-input"
                   />
                 </div>
               </div>
@@ -300,6 +308,7 @@ const SignUp: NextPage = () => {
                     setDescription(e.target.value);
                     setDescriptionError([]);
                   }}
+                  data-test="userDescription-input"
                 />
                 <InputErrorText errorArray={descriptionError} />
               </div>
@@ -310,6 +319,7 @@ const SignUp: NextPage = () => {
                   them!
                 </span>
                 <AsyncCreatableSelectComponent
+                  id="tagSelect-input"
                   handleFieldState={{
                     inputState: selectedTags,
                     setInputState: setSelectedTags,
@@ -328,6 +338,7 @@ const SignUp: NextPage = () => {
                 setUserImageFile={setUserImageFile}
                 setUserImageError={setUserImageError}
                 userImageError={userImageError}
+                data-test="image-input"
               />
 
               <div className="my-4">
@@ -379,6 +390,7 @@ const SignUp: NextPage = () => {
               <button
                 className="my-4 h-12 w-full rounded-md bg-orange px-2 text-white disabled:bg-[#ff9e3e]"
                 type="submit"
+                data-test="signupSubmit-btn"
                 disabled={registerUser_isLoading}
               >
                 Submit
