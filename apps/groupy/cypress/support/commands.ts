@@ -75,7 +75,7 @@ export type ICypressUser = {
   email: string;
   tags: Array<{ id: string; name: string }>;
   atTag: string;
-  dateOfBirth: string; // You can use a Date type if needed
+  dateOfBirth: string;
   description: string;
   picture: string;
 };

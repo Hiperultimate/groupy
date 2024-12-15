@@ -5,7 +5,6 @@ describe("home-page-posts", () => {
     cy.fixture<ICypressUser>("users/user1.json").then((user) => {
       cy.visit("/");
 
-      // groupy\apps\groupy\cypress\support\commands.ts -> loginNextAuth params to pass user data from cypress fixtures
       cy.loginNextAuth({
         userData : user,
         provider: "credentials",
