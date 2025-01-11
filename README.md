@@ -21,10 +21,14 @@ Groupy is built using the following technologies:
 - Tanstack Query: A powerful data fetching and caching library for managing data in the application.
 - RecoilJS: A state management library for managing and sharing the application's global state.
 - Zod: A TypeScript-first schema validation library for data validation and sanitization.
+- Vitest : A fast, Vite-native testing framework tailored for unit and integration testing.
+- Cypress : A robust end-to-end testing framework for verifying the application's functionality in a browser environment.
 
 ## Project Structure
 
 - `packages/db_prisma`: Contains Prisma ORM which is used to talk to PostgreSQL database.
+- `packages/db_redis`: Contains Dockerfile to run Redis instance locally.
+- `packages/supabase-suite`: Contains supabase config to run supabase in docker locally.
 - `apps/chatServer`: This folder contains the chat server which is runs on express and socket.io. 
 - `apps/chatServer/utils`: Consists of utility functions for chatServer.
 - `apps/groupy/src/pages`: This directory contains the Next.js pages used to structure the application's frontend.
@@ -60,6 +64,9 @@ There are exciting features in the pipeline to enhance Groupy further:
 
 # Getting Started
 
+There are two ways you can run Groupy on your machine. Choose the one which suits you the most.
+
+**Setup Method 1** : Local Groupy with your database environment variables
 To run Groupy locally, follow these steps:
 
 1. Clone the repository.
@@ -84,16 +91,43 @@ To run Groupy locally, follow these steps:
 6. Run database migrations using `npm run prisma-migrate`.
 7. Run the development server using `npm run dev`.
 
+
+**Setup Method 2** : Local Groupy with Docker database Setup
+
+1. Clone the repository.
+2. Install the required dependencies using `npm install`.
+3. Run the command `turbo db:generate` to generate Prisma Client.
+4. Run the command `npm run dev-local`, this may take sometime to setup. (Note: This step utilizes **.env.test** file for environment variables instead of **.env**)
+
+# Testing 
+
+To run E2E test locally you can simply run these commands in order:
+
+**NOTE**: Ensure Docker is running in the background. This allows Groupy to set up local instances of **Supabase** and **Redis** and use the `.env.test` file for configuration.
+
+1. `npm run dev-local` : This command ensures you are running all the databases and storages locally on docker and also starts Groupy dev instance locally.
+2. `npm run e2e-groupy` : Runs cypress tests. 
+
+If you are adding tests and want to open cypress dev environment, simply run `npm run e2e-groupy-dev` instead of step 2 above.
+
+# Running local DB instances on Docker 
+You can start or stop database instances using the following command:
+1. `npm run db-up` : Starts Supabase and redis services on docker.
+2. `npm run db-down` : Stops Supabase and redis services on docker.
+
+
+**Warning**: Running `npm run e2e-groupy` will work but it also generates new data in databases which might be unwanted. It is best to use the local instances for this purpose which you can run by following step 1.
+
 ## Contribution
 
 Contributions to Groupy are welcome! If you'd like to contribute to the project, follow these steps:
 
 1. Fork the repository and clone it to your local machine.
 2. Run the project on your local machine, check the Getting Started section to setup the project.
-5. Make your changes and test them thoroughly.
-6. Commit your changes with clear and concise messages.
-7. Push your changes to your forked repository.
-8. Create a pull request detailing your changes and their purpose.
+3. Make your changes and test them thoroughly.
+4. Commit your changes with clear and concise messages.
+5. Push your changes to your forked repository.
+6. Create a pull request detailing your changes and their purpose.
 
 ## License
 

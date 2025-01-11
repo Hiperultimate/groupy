@@ -362,13 +362,10 @@ export const postRouter = createTRPCRouter({
 
       // Delete the record from userLikedPost table
       if (isPostLikedByUser) {
-        const uniqueId = await ctx.prisma.userLikedPost.findFirst({
-          where: { postId: input.postId, userId: ctx.session.user.id },
+        await ctx.prisma.userLikedPost.delete({
+          where: { id: isPostLikedByUser.id },
         });
-        if (uniqueId) {
-          await ctx.prisma.userLikedPost.delete({ where: { id: uniqueId.id } });
-          return { isPostLiked: false };
-        }
+        return { isPostLiked: false };
       }
 
       const response = await ctx.prisma.userLikedPost.create({

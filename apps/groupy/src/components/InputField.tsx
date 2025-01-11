@@ -1,3 +1,4 @@
+import { type InputHTMLAttributes } from "react";
 import InputErrorText from "./InputErrorText";
 
 type InputFieldPropType = {
@@ -17,7 +18,7 @@ type InputFieldPropType = {
     inputState: string[];
     changeInputState: React.Dispatch<React.SetStateAction<string[]>>;
   };
-};
+} & InputHTMLAttributes<HTMLInputElement>;
 
 const InputField = ({
   title,
@@ -27,6 +28,7 @@ const InputField = ({
   disabled,
   handleState,
   handleErrorState,
+  ...rest
 }: InputFieldPropType): JSX.Element => {
   return (
     <div className="flex flex-col">
@@ -49,6 +51,7 @@ const InputField = ({
           }}
           required={isRequired}
           disabled={disabled}
+          {...rest}
           className="h-10 rounded-lg border-2 px-4 py-6"
         />
       ) : (
@@ -59,6 +62,7 @@ const InputField = ({
           id={title}
           required={isRequired}
           disabled={disabled}
+          {...rest}
           className="h-10 rounded-lg border-2 px-4 py-6"
         />
       )}

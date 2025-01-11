@@ -19,7 +19,7 @@ const UserDetails = ({ userData }: { userData: Session }) => {
       </div>
       <div className="mx-3 mb-3 flex gap-2 flex-wrap">
         <div className="font-bold">{userName}</div>
-        <div className="text-grey">@{userNameTag}</div>
+        <div className="text-grey" data-test="nameTag">@{userNameTag}</div>
       </div>
       <div className="flex flex-wrap gap-1 text-white mb-3">
         {userTags.map((tag) => {

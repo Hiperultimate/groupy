@@ -1,3 +1,5 @@
+import { type InputHTMLAttributes } from "react";
+
 import SvgUploadIcon from "public/SvgUploadIcon";
 import InputErrorText from "./InputErrorText";
 import { encodeImageToBase64 } from "~/common/imageConversion";
@@ -16,13 +18,17 @@ const StyledImageInput = ({
   setUserImageFile,
   setUserImageError,
   userImageError,
+  ...rest
 }: {
   title?: string;
   setUserImageError: React.Dispatch<React.SetStateAction<string[]>>;
   setUserImage: React.Dispatch<React.SetStateAction<string | undefined>>;
   setUserImageFile: React.Dispatch<React.SetStateAction<File | null>>;
+
   userImageError: string[];
-}) => {
+} & InputHTMLAttributes<HTMLInputElement> 
+  & {["data-test"]? : string} // for cypress tests
+) => {
 
   // IMPORTANT NOTE: Dragging images and file select images to upload are two different functions.
   //                 Using this function to keep same logic at both areas.
@@ -61,6 +67,7 @@ const StyledImageInput = ({
         className="hidden"
         type="file"
         id="imageUpload"
+        {...rest}
         onChange={(e) => {
           e.preventDefault();
           setUserImageError([]);

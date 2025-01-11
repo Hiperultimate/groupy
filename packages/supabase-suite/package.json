@@ -1,0 +1,15 @@
+{
+  "name": "supabase-suite",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "supabase-up" : "npx supabase start",
+    "supabase-down" : "npx supabase stop"
+  },
+  "devDependencies": {
+    "supabase": "^1.200.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
