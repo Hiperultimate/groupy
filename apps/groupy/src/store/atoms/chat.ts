@@ -12,6 +12,7 @@ export type TChatOption = {
   lastMsgSentAt: Date | null;
   unreadMsgCount: number;
   isSelected: boolean;
+  isUserModerator: boolean;
 } & ({ [chatUserTagKey]: string | null } | Record<never, never>);
 
 export const ChatMessageSchema = z.object({

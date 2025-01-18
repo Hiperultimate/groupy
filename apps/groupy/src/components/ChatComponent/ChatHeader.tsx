@@ -18,11 +18,13 @@ const ChatHeader = ({
   authorName,
   authorAtTag,
   authorProfilePicture,
+  isUserModerator
 }: {
   chatId: string;
   authorName: string;
   authorAtTag: string | null;
   authorProfilePicture: string | null;
+  isUserModerator: boolean
 }) => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -81,7 +83,8 @@ const ChatHeader = ({
                   setIsEditChatModalOpen,
                   setChatEditModalData,
                   setIsMenuOpen,
-                  chatId
+                  chatId,
+                  isUserModerator
                 )}
               />
             </OutsideClickDetector>
@@ -110,13 +113,14 @@ function checkPermissions(
     editType: ChatMemberEditType;
   }>,
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
-  chatId: string
+  chatId: string,
+  isUserModerator: boolean,
 ) {
   const permission: Options = {};
 
   // Checks for user's permission to chat
   if (true) {
-    permission["leave_chat"] = {
+    permission[menuItems.leave_chat] = {
       optionTitle: "Leave Chat",
       useOption: () => {
         console.log("Removed current user from chat logic here");
@@ -125,7 +129,7 @@ function checkPermissions(
   }
 
   // Checks for user is moderator for chat
-  if (true) {
+  if (isUserModerator) {
     permission[menuItems.invite_member] = {
       optionTitle: "Invite Members",
       useOption: () => {

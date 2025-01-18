@@ -31,6 +31,7 @@ const ChatArea = ({ userId }: { userId: string }) => {
             chatUserTagKey in activeChat ? activeChat.chatUserTag : null
           }
           authorProfilePicture={activeChat.chatImg}
+          isUserModerator={activeChat.isUserModerator}
         />
       </div>
       <div className="h-2 flex-grow overflow-y-auto">

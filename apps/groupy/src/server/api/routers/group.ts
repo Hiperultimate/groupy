@@ -31,6 +31,12 @@ export const groupRouter = createTRPCRouter({
               orderBy: { sentAt: "desc" },
               take: 1,
             },
+
+            moderators: {
+              where: {
+                id: ctx.session.user.id,
+              },
+            },
           },
         },
       },
@@ -48,7 +54,10 @@ export const groupRouter = createTRPCRouter({
         // If redis has any data, that is the latest one. Simply return it
         if (lastRedisMessageId) {
           const lastRedisMessage = await ctx.redis.hgetall(lastRedisMessageId);
-          const unreadMessageCount = await ctx.redis.hget(`unreadMessages:${group.id}`, currentUser.id);
+          const unreadMessageCount = await ctx.redis.hget(
+            `unreadMessages:${group.id}`,
+            currentUser.id
+          );
           return {
             roomID: group.id,
             chatName: group.name,
@@ -59,11 +68,14 @@ export const groupRouter = createTRPCRouter({
             lastMsgSentAt: lastRedisMessage
               ? new Date(Number(lastRedisMessage.sentAt as string))
               : null,
-            unreadMsgCount: Number(unreadMessageCount) ? Number(unreadMessageCount) : 0,
+            unreadMsgCount: Number(unreadMessageCount)
+              ? Number(unreadMessageCount)
+              : 0,
+            isUserModerator: group.moderators.length > 0 ? true : false,
           };
         }
 
-        // Returning last prisma message
+        // Returning from prisma in the end 
         return {
           roomID: group.id,
           chatName: group.name,
@@ -75,6 +87,7 @@ export const groupRouter = createTRPCRouter({
           unreadMsgCount: group.userUnreadMessage[0]
             ? group.userUnreadMessage[0].unreadMessageCount
             : 0,
+          isUserModerator: group.moderators.length > 0 ? true : false,
         };
       })
     );
