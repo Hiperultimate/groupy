@@ -75,7 +75,7 @@ export const groupRouter = createTRPCRouter({
           };
         }
 
-        // Returning from prisma in the end 
+        // Returning from prisma in the end
         return {
           roomID: group.id,
           chatName: group.name,
@@ -94,6 +94,7 @@ export const groupRouter = createTRPCRouter({
 
     return userChatOptions;
   }),
+
   getGroupNameFromId: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -110,6 +111,58 @@ export const groupRouter = createTRPCRouter({
       }
 
       return { status: 200, name: groupName.name };
+    }),
+
+  getGroupMembersExceptModerators: protectedProcedure
+    .input(z.object({ groupId: z.string() }))
+    .output(
+      z.array(z.object({ id: z.string(), name: z.string(), atTag: z.string() }))
+    )
+    .query(async ({ ctx, input }) => {
+      const isUserGroupMember = await ctx.prisma.userGroups.findFirst({
+        where: {
+          groupId: input.groupId,
+          userId: ctx.session.user.id,
+        },
+      });
+      if (!isUserGroupMember) {
+        // Either group doesnt exist or user is not part of that group
+        throw new TRPCError({ message: "Invalid lookup", code: "BAD_REQUEST" });
+      }
+
+      const usersGroupsWithoutMods = await ctx.prisma.userGroups.findMany({
+        where: {
+          groupId: input.groupId,
+          user: {
+            NOT: {
+              moderatingGroups: {
+                some: {
+                  id: input.groupId,
+                },
+              },
+            },
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              atTag: true,
+            },
+          },
+        },
+      });
+
+      const usersWithoutMods = usersGroupsWithoutMods.map((item) => {
+        return {
+          id: item.user.id,
+          name: item.user.name,
+          atTag: item.user.atTag,
+        };
+      });
+
+      return usersWithoutMods
     }),
 
   acceptJoinGroupRequest: protectedProcedure
