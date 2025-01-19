@@ -114,11 +114,25 @@ export const groupRouter = createTRPCRouter({
     }),
 
   getGroupMembersExceptModerators: protectedProcedure
-    .input(z.object({ groupId: z.string() }))
+    .input(
+      z.object({
+        groupId: z.string(),
+        limit: z.number().min(1).max(50).nullish(),
+        cursor: z.string().nullish(),
+      })
+    )
     .output(
-      z.array(z.object({ id: z.string(), name: z.string(), atTag: z.string() }))
+      z.object({
+        groupMembers: z.array(
+          z.object({ id: z.string(), name: z.string(), atTag: z.string() })
+        ),
+        cursor: z.string().nullish(),
+      })
     )
     .query(async ({ ctx, input }) => {
+      const limit = input.limit ?? 10;
+      const { cursor } = input;
+
       const isUserGroupMember = await ctx.prisma.userGroups.findFirst({
         where: {
           groupId: input.groupId,
@@ -131,6 +145,11 @@ export const groupRouter = createTRPCRouter({
       }
 
       const usersGroupsWithoutMods = await ctx.prisma.userGroups.findMany({
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          id: "asc",
+        },
         where: {
           groupId: input.groupId,
           user: {
@@ -154,6 +173,12 @@ export const groupRouter = createTRPCRouter({
         },
       });
 
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (usersGroupsWithoutMods.length > limit) {
+        const nextItem = usersGroupsWithoutMods.pop();
+        nextCursor = nextItem!.id;
+      }
+
       const usersWithoutMods = usersGroupsWithoutMods.map((item) => {
         return {
           id: item.user.id,
@@ -162,7 +187,7 @@ export const groupRouter = createTRPCRouter({
         };
       });
 
-      return usersWithoutMods
+      return { groupMembers: usersWithoutMods, cursor: nextCursor };
     }),
 
   acceptJoinGroupRequest: protectedProcedure
