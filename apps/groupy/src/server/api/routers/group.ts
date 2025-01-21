@@ -190,6 +190,75 @@ export const groupRouter = createTRPCRouter({
       return { groupMembers: usersWithoutMods, cursor: nextCursor };
     }),
 
+  getFriendListNotInGroup: protectedProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        limit: z.number().min(1).max(50).nullish(),
+        cursor: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const isUserGroupMember = await ctx.prisma.userGroups.findFirst({
+        where: {
+          groupId: input.groupId,
+          userId: ctx.session.user.id,
+        },
+      });
+      if (!isUserGroupMember) {
+        // Either group doesnt exist or user is not part of that group
+        throw new TRPCError({ message: "Invalid lookup", code: "BAD_REQUEST" });
+      }
+
+      const limit = input.limit ?? 10;
+      const { cursor } = input;
+      // Get all friends of current user who are not part of the group
+      const friendList = await ctx.prisma.user.findMany({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          friendList: {
+            take: limit + 1,
+            cursor: cursor ? { id: cursor } : undefined,
+            orderBy: {
+              id: "asc",
+            },
+            where: {
+              joinedGroups: {
+                none: {
+                  groupId: input.groupId,
+                },
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              atTag: true,
+            },
+          },
+        },
+      });
+
+      const selectedUsers = friendList[0]?.friendList;
+
+      if (selectedUsers === undefined) {
+        return { userList: [], cursor: undefined };
+      }
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (selectedUsers.length > limit) {
+        const nextItem = selectedUsers.pop();
+        nextCursor = nextItem!.id;
+      }
+      console.log("CHECKING FRIEND LIST : ", selectedUsers);
+
+      return {
+        userList: selectedUsers,
+        cursor: nextCursor,
+      };
+    }),
+
   acceptJoinGroupRequest: protectedProcedure
     .input(z.object({ notificationId: z.string() }))
     .mutation(async ({ ctx, input }) => {
