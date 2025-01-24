@@ -15,14 +15,8 @@ import {
 import { type SetterOrUpdater, useRecoilState, useRecoilValue } from "recoil";
 import SvgCrossIcon from "public/SvgCrossIcon";
 import { menuItems } from "./HeaderMenu";
-import { api } from "~/utils/api";
-import { toast } from "react-toastify";
-
-type TSearchResult = {
-  userId: string;
-  userName: string;
-  userTag: string;
-};
+import useGetFriendsPagination from "~/hooks/useGetFriendsPagination";
+import useGetGroupMemberPagination from "~/hooks/useGetGroupMemberPagination";
 
 export const invokeChatMemberEditModal = (
   setIsEditChatModalOpen: SetterOrUpdater<boolean>,
@@ -39,6 +33,24 @@ export const invokeChatMemberEditModal = (
   setIsMenuOpen(false);
 };
 
+const invokeMemberTypeFetch = (
+  editType: ChatMemberEditType,
+  fetchGroupFn: () => void,
+  fetchFriendFn: () => void
+) => {
+  switch (editType) {
+    case "make_moderator":
+    case "remove_member":
+      fetchGroupFn();
+      break;
+    case "invite_member":
+      fetchFriendFn();
+      break;
+    default:
+      break;
+  }
+};
+
 const ChatMemberEditModal = () => {
   const editModalData = useRecoilValue(chatEditModalData);
   const chatId = editModalData.chatId;
@@ -47,174 +59,26 @@ const ChatMemberEditModal = () => {
   const [isEditChatModalOpen, setIsEditChatModalOpen] =
     useRecoilState(isChatEditModelOpen);
   const [searchInput, setSearchInput] = useState("");
-  const [searchResult, setSearchResult] = useState<TSearchResult[]>([]);
-  const utils = api.useContext();
 
   const {
-    data: groupMembers,
-    hasNextPage: hasMoreGroupMembers,
-    fetchNextPage: fetchMoreGroupMembers,
-    refetch: refetchGroupMembers,
-  } = api.group.getGroupMembersExceptModerators.useInfiniteQuery(
-    {
-      groupId: chatId,
-      searchString: searchInput,
-      limit: 1,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.cursor,
-      enabled: false,
-      staleTime: 30 * 1000, // 30 seconds
-      cacheTime: 30 * 1000, // Keep the cached data for 30 seconds
-      onSuccess: (data) => {
-        const filteredFetchedGroupMembers = data.pages.flatMap((page) =>
-          page.groupMembers.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
-        );
-        console.log("Checking members data :", filteredFetchedGroupMembers);
-        setSearchResult(filteredFetchedGroupMembers);
-      },
-      onError: (e) => {
-        toast.error("Invalid name. Please try again.");
-        console.log(e);
-      },
-    }
-  );
+    searchResult: groupMemberSearchResult,
+    startFetchingGroupMembers,
+    loadMoreGroupMembers,
+  } = useGetGroupMemberPagination({
+    chatId: chatId,
+    searchInput: searchInput,
+    limit: 1,
+  });
 
   const {
-    data: friendListData,
-    hasNextPage: hasMoreFriends,
-    fetchNextPage: fetchMoreFriends,
-    refetch: startFetchingFriends,
-  } = api.group.getFriendListNotInGroup.useInfiniteQuery(
-    { groupId: chatId, searchString: searchInput, limit: 2 },
-    {
-      getNextPageParam: (lastPage) => lastPage.cursor,
-      enabled: false,
-      staleTime: 30 * 1000, // 30 seconds
-      cacheTime: 30 * 1000, // Keep the cached data for 30 seconds
-      onSuccess: (data) => {
-        const allFetchedFriends = data.pages.flatMap((page) =>
-          page.userList.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
-        );
-        console.log("Checking data :", allFetchedFriends);
-        setSearchResult(allFetchedFriends);
-      },
-      onError: (e) => {
-        toast.error("Invalid name. Please try again.");
-        console.log(e);
-      },
-    }
-  );
-
-  // There are bugs in this code while searching and when to refetch. It would be best to isolate these in hooks for now 
-  const startFetching = () => {
-    const cachedData = utils.group.getFriendListNotInGroup.getInfiniteData({
-      groupId: chatId,
-      searchString: searchInput,
-      limit: 2,
-    });
-
-    if (cachedData) {
-      // Update search result with all cached pages
-      setSearchResult(
-        cachedData.pages.flatMap((page) =>
-          page.userList.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
-        )
-      );
-
-      // Check if more pages exist
-      const hasNextPage =
-        cachedData.pages[cachedData.pages.length - 1]?.cursor !== undefined;
-
-      if (hasNextPage) {
-        fetchMoreFriends(); // Fetch next page if there are more results
-      }
-    } else {
-      startFetchingFriends(); // Fetch initial data from the backend if no cached data exists
-    }
-  };
-
-  const loadMoreFriends = () => {
-    const cachedData = utils.group.getFriendListNotInGroup.getInfiniteData({
-      groupId: chatId,
-      searchString: searchInput,
-      limit: 2,
-    });
-    console.log("Checking utils :", cachedData);
-
-    // Determine if there are more pages to fetch
-    const hasNextPage =
-      cachedData?.pages[cachedData.pages.length - 1]?.cursor !== undefined;
-
-    if (hasNextPage) {
-      fetchMoreFriends(); // Fetch the next page
-    } else {
-      console.log("No more pages to fetch, using cached data.");
-    }
-  };
-
-    // See if you can reduce this startFetching, loadMoreFriends or maybe structure it in a better way
-    const startFetchingGroupMembers = () => {
-      const cachedData = utils.group.getGroupMembersExceptModerators.getInfiniteData({
-        groupId: chatId,
-        searchString: searchInput,
-        limit: 1,
-      });
-  
-      if (cachedData) {
-        // Update search result with all cached pages
-        setSearchResult(
-          cachedData.pages.flatMap((page) =>
-            page.groupMembers.map((user) => ({
-              userId: user.id,
-              userName: user.name,
-              userTag: user.atTag,
-            }))
-          )
-        );
-  
-        // Check if more pages exist
-        const hasNextPage =
-          cachedData.pages[cachedData.pages.length - 1]?.cursor !== undefined;
-  
-        if (hasNextPage) {
-          fetchMoreGroupMembers(); // Fetch next page if there are more results
-        }
-      } else {
-        refetchGroupMembers(); // Fetch initial data from the backend if no cached data exists
-      }
-    };
-  
-    const loadMoreGroupMembers = () => {
-      const cachedData = utils.group.getFriendListNotInGroup.getInfiniteData({
-        groupId: chatId,
-        searchString: searchInput,
-        limit: 2,
-      });
-      console.log("Checking utils :", cachedData);
-  
-      // Determine if there are more pages to fetch
-      const hasNextPage =
-        cachedData?.pages[cachedData.pages.length - 1]?.cursor !== undefined;
-  
-      if (hasNextPage) {
-        fetchMoreGroupMembers(); // Fetch the next page
-      } else {
-        console.log("No more pages to fetch, using cached data.");
-      }
-    };
+    searchResult: friendSearchResult,
+    startFetchingFriends,
+    loadMoreFriends,
+  } = useGetFriendsPagination({
+    chatId: chatId,
+    searchInput: searchInput,
+    limit: 2,
+  });
 
   function outsideModalClickHandler(e: React.MouseEvent) {
     const dialogDimensions = dialogRef.current?.getBoundingClientRect();
@@ -231,37 +95,21 @@ const ChatMemberEditModal = () => {
   }
 
   useEffect(() => {
-    setSearchResult([]);
-    switch (editType) {
-      case "make_moderator":
-      case "remove_member":
-        startFetchingGroupMembers();
-        break;
-      case "invite_member":
-        startFetching();
-        break;
-      default:
-        break;
-    }
+    invokeMemberTypeFetch(
+      editType,
+      startFetchingGroupMembers,
+      startFetchingFriends
+    );
   }, [editType]);
 
   const timerRef = useRef<null | NodeJS.Timeout>(null);
   const timeoutFn = () => {
     return setTimeout(() => {
-      console.log("Fetch users data");
-      // startFetching();
-
-      switch (editType) {
-        case "make_moderator":
-        case "remove_member":
-          loadMoreGroupMembers();
-          break;
-        case "invite_member":
-          startFetching();
-          break;
-        default:
-          break;
-      }
+      invokeMemberTypeFetch(
+        editType,
+        startFetchingGroupMembers,
+        startFetchingFriends
+      );
     }, 500);
   };
 
@@ -302,26 +150,21 @@ const ChatMemberEditModal = () => {
         />
         <button
           onClick={() => {
-            // loadMoreFriends();
-            
-            switch (editType) {
-              case "make_moderator":
-              case "remove_member":
-                loadMoreGroupMembers();
-                break;
-              case "invite_member":
-                loadMoreFriends();
-                break;
-              default:
-                break;
-            }
+            invokeMemberTypeFetch(
+              editType,
+              loadMoreGroupMembers,
+              loadMoreFriends
+            );
           }}
         >
           Get more users
         </button>
       </div>
       <div className="h-[450px] overflow-y-scroll pr-2">
-        {searchResult.map((user) => {
+        {(editType === "make_moderator" || editType === "remove_member"
+          ? groupMemberSearchResult
+          : friendSearchResult
+        ).map((user) => {
           return (
             <div
               key={user.userId}
