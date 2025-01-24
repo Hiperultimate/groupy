@@ -18,13 +18,13 @@ const ChatHeader = ({
   authorName,
   authorAtTag,
   authorProfilePicture,
-  isUserModerator
+  isUserModerator,
 }: {
   chatId: string;
   authorName: string;
   authorAtTag: string | null;
   authorProfilePicture: string | null;
-  isUserModerator: boolean
+  isUserModerator: boolean;
 }) => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -77,16 +77,18 @@ const ChatHeader = ({
                 setIsMenuOpen(false);
               }}
             >
-              <HeaderMenu
-                menuOptions={checkPermissions(
-                  invokeChatMemberEditModal,
-                  setIsEditChatModalOpen,
-                  setChatEditModalData,
-                  setIsMenuOpen,
-                  chatId,
-                  isUserModerator
-                )}
-              />
+              {chatId && (
+                <HeaderMenu
+                  menuOptions={checkPermissions(
+                    invokeChatMemberEditModal,
+                    setIsEditChatModalOpen,
+                    setChatEditModalData,
+                    setIsMenuOpen,
+                    chatId,
+                    isUserModerator
+                  )}
+                />
+              )}
             </OutsideClickDetector>
           </FadeInOut>
         </div>
@@ -106,7 +108,7 @@ function checkPermissions(
     chatId: string,
     editType: ChatMemberEditType
   ) => void,
-  
+
   setIsEditChatModalOpen: SetterOrUpdater<boolean>,
   setChatEditModalData: SetterOrUpdater<{
     chatId: string;
@@ -114,7 +116,7 @@ function checkPermissions(
   }>,
   setIsMenuOpen: Dispatch<SetStateAction<boolean>>,
   chatId: string,
-  isUserModerator: boolean,
+  isUserModerator: boolean
 ) {
   const permission: Options = {};
 

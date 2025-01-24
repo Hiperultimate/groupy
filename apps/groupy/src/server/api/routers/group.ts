@@ -117,6 +117,7 @@ export const groupRouter = createTRPCRouter({
     .input(
       z.object({
         groupId: z.string(),
+        searchString: z.string().max(30).nullish(),
         limit: z.number().min(1).max(50).nullish(),
         cursor: z.string().nullish(),
       })
@@ -131,7 +132,7 @@ export const groupRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const limit = input.limit ?? 10;
-      const { cursor } = input;
+      const { cursor, searchString } = input;
 
       const isUserGroupMember = await ctx.prisma.userGroups.findFirst({
         where: {
@@ -160,6 +161,14 @@ export const groupRouter = createTRPCRouter({
                 },
               },
             },
+            AND: searchString
+            ? {
+                name: {
+                  contains: searchString,
+                  mode: "insensitive",
+                },
+              }
+            : {},
           },
         },
         include: {
@@ -186,6 +195,8 @@ export const groupRouter = createTRPCRouter({
           atTag: item.user.atTag,
         };
       });
+      
+      console.log("Fetching more group members : ", usersWithoutMods);
 
       return { groupMembers: usersWithoutMods, cursor: nextCursor };
     }),
@@ -194,6 +205,7 @@ export const groupRouter = createTRPCRouter({
     .input(
       z.object({
         groupId: z.string(),
+        searchString: z.string().max(30).nullish(),
         limit: z.number().min(1).max(50).nullish(),
         cursor: z.string().nullish(),
       })
@@ -211,7 +223,8 @@ export const groupRouter = createTRPCRouter({
       }
 
       const limit = input.limit ?? 10;
-      const { cursor } = input;
+      const { searchString, cursor } = input;
+
       // Get all friends of current user who are not part of the group
       const friendList = await ctx.prisma.user.findMany({
         where: {
@@ -230,6 +243,14 @@ export const groupRouter = createTRPCRouter({
                   groupId: input.groupId,
                 },
               },
+              AND: searchString
+                ? {
+                    name: {
+                      contains: searchString,
+                      mode: "insensitive",
+                    },
+                  }
+                : {},
             },
             select: {
               id: true,
@@ -251,7 +272,8 @@ export const groupRouter = createTRPCRouter({
         const nextItem = selectedUsers.pop();
         nextCursor = nextItem!.id;
       }
-      console.log("CHECKING FRIEND LIST : ", selectedUsers);
+
+      console.log("Fetching more users : ", selectedUsers);
 
       return {
         userList: selectedUsers,
