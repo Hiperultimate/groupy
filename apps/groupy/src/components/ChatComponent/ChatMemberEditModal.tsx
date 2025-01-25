@@ -33,24 +33,6 @@ export const invokeChatMemberEditModal = (
   setIsMenuOpen(false);
 };
 
-const invokeMemberTypeFetch = (
-  editType: ChatMemberEditType,
-  fetchGroupFn: () => void,
-  fetchFriendFn: () => void
-) => {
-  switch (editType) {
-    case "make_moderator":
-    case "remove_member":
-      fetchGroupFn();
-      break;
-    case "invite_member":
-      fetchFriendFn();
-      break;
-    default:
-      break;
-  }
-};
-
 const ChatMemberEditModal = () => {
   const editModalData = useRecoilValue(chatEditModalData);
   const chatId = editModalData.chatId;
@@ -80,36 +62,26 @@ const ChatMemberEditModal = () => {
     limit: 2,
   });
 
-  function outsideModalClickHandler(e: React.MouseEvent) {
-    const dialogDimensions = dialogRef.current?.getBoundingClientRect();
-    if (
-      dialogDimensions &&
-      (e.clientX < dialogDimensions.left ||
-        e.clientX > dialogDimensions.right ||
-        e.clientY < dialogDimensions.top ||
-        e.clientY > dialogDimensions.bottom)
-    ) {
-      dialogRef.current?.close();
-      setIsEditChatModalOpen(false);
-    }
-  }
+  const fetchHandlers = {
+    make_moderator: startFetchingGroupMembers,
+    remove_member: startFetchingGroupMembers,
+    invite_member: startFetchingFriends,
+  };
+
+  const loadMoreHandlers = {
+    make_moderator: loadMoreGroupMembers,
+    remove_member: loadMoreGroupMembers,
+    invite_member: loadMoreFriends,
+  };
 
   useEffect(() => {
-    invokeMemberTypeFetch(
-      editType,
-      startFetchingGroupMembers,
-      startFetchingFriends
-    );
+    fetchHandlers[editType]?.();
   }, [editType]);
 
   const timerRef = useRef<null | NodeJS.Timeout>(null);
   const timeoutFn = () => {
     return setTimeout(() => {
-      invokeMemberTypeFetch(
-        editType,
-        startFetchingGroupMembers,
-        startFetchingFriends
-      );
+      fetchHandlers[editType]?.();
     }, 500);
   };
 
@@ -136,6 +108,20 @@ const ChatMemberEditModal = () => {
       : dialogRef.current?.close();
   }, [isEditChatModalOpen]);
 
+  function outsideModalClickHandler(e: React.MouseEvent) {
+    const dialogDimensions = dialogRef.current?.getBoundingClientRect();
+    if (
+      dialogDimensions &&
+      (e.clientX < dialogDimensions.left ||
+        e.clientX > dialogDimensions.right ||
+        e.clientY < dialogDimensions.top ||
+        e.clientY > dialogDimensions.bottom)
+    ) {
+      dialogRef.current?.close();
+      setIsEditChatModalOpen(false);
+    }
+  }
+
   return (
     <dialog
       ref={dialogRef}
@@ -150,11 +136,7 @@ const ChatMemberEditModal = () => {
         />
         <button
           onClick={() => {
-            invokeMemberTypeFetch(
-              editType,
-              loadMoreGroupMembers,
-              loadMoreFriends
-            );
+            loadMoreHandlers[editType]();
           }}
         >
           Get more users

@@ -8,8 +8,16 @@ type TSearchResult = {
   userTag: string;
 };
 
-// Connect hook to ChatMemberEditModal
-// Improve this hook by using useCallback and DRY
+function getFriendFormat(
+  getFriendResultArr: { id: string; name: string; atTag: string }[]
+) {
+  return getFriendResultArr.map((user) => ({
+    userId: user.id,
+    userName: user.name,
+    userTag: user.atTag,
+  }));
+}
+
 const useGetFriendsPagination = ({
   chatId,
   searchInput,
@@ -41,13 +49,8 @@ const useGetFriendsPagination = ({
       cacheTime: 30 * 1000, // Cache data for 30 seconds after it's unused
       onSuccess: (data) => {
         const allFetchedFriends = data.pages.flatMap((page) =>
-          page.userList.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
+          getFriendFormat(page.userList)
         );
-        console.log("Checking data :", allFetchedFriends);
         setSearchResult(allFetchedFriends);
         onSuccess && onSuccess();
       },
@@ -70,11 +73,7 @@ const useGetFriendsPagination = ({
       // Update search result with all cached pages
       setSearchResult(
         cachedData.pages.flatMap((page) =>
-          page.userList.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
+          getFriendFormat(page.userList)
         )
       );
 
@@ -96,14 +95,10 @@ const useGetFriendsPagination = ({
       searchString: searchInput,
       limit,
     });
-    console.log("Checking inputs : ", chatId, searchInput, limit);
-    console.log("Checking utils :", cachedData);
 
     // Determine if there are more pages to fetch
     const hasNextPage =
       cachedData?.pages[cachedData.pages.length - 1]?.cursor !== undefined;
-
-    console.log("Has next page friends : ", hasNextPage);
 
     if (hasNextPage) {
       fetchNextPage(); // Fetch the next page

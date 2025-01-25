@@ -8,8 +8,16 @@ type TSearchResult = {
   userTag: string;
 };
 
-// Connect hook to ChatMemberEditModal
-// Improve this hook by using useCallback and DRY
+function getGroupMemberFormat(
+  getFriendResultArr: { id: string; name: string; atTag: string }[]
+) {
+  return getFriendResultArr.map((user) => ({
+    userId: user.id,
+    userName: user.name,
+    userTag: user.atTag,
+  }));
+}
+
 const useGetGroupMemberPagination = ({
   chatId,
   searchInput,
@@ -45,11 +53,7 @@ const useGetGroupMemberPagination = ({
       cacheTime: 30 * 1000, // Cache data for 30 seconds after it's unused
       onSuccess: (data) => {
         const filteredFetchedGroupMembers = data.pages.flatMap((page) =>
-          page.groupMembers.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
+          getGroupMemberFormat(page.groupMembers)
         );
         console.log("Checking members data :", filteredFetchedGroupMembers);
         setSearchResult(filteredFetchedGroupMembers);
@@ -75,11 +79,7 @@ const useGetGroupMemberPagination = ({
       // Update search result with all cached pages
       setSearchResult(
         cachedData.pages.flatMap((page) =>
-          page.groupMembers.map((user) => ({
-            userId: user.id,
-            userName: user.name,
-            userTag: user.atTag,
-          }))
+          getGroupMemberFormat(page.groupMembers)
         )
       );
 
@@ -101,7 +101,6 @@ const useGetGroupMemberPagination = ({
       searchString: searchInput,
       limit,
     });
-    console.log("Checking utils :", cachedData);
 
     // Determine if there are more pages to fetch
     const hasNextPage =
