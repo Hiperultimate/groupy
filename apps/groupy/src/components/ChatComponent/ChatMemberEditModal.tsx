@@ -17,6 +17,7 @@ import SvgCrossIcon from "public/SvgCrossIcon";
 import { menuItems } from "./HeaderMenu";
 import useGetFriendsPagination from "~/hooks/useGetFriendsPagination";
 import useGetGroupMemberPagination from "~/hooks/useGetGroupMemberPagination";
+import useHandleModalOutsideClick from "~/hooks/useHandleModalOutsideClick";
 
 export const invokeChatMemberEditModal = (
   setIsEditChatModalOpen: SetterOrUpdater<boolean>,
@@ -41,6 +42,11 @@ const ChatMemberEditModal = () => {
   const [isEditChatModalOpen, setIsEditChatModalOpen] =
     useRecoilState(isChatEditModelOpen);
   const [searchInput, setSearchInput] = useState("");
+  const { outsideModalClickHandler } = useHandleModalOutsideClick(
+    dialogRef,
+    isEditChatModalOpen,
+    setIsEditChatModalOpen
+  );
 
   const {
     searchResult: groupMemberSearchResult,
@@ -101,26 +107,6 @@ const ChatMemberEditModal = () => {
       }
     };
   }, [searchInput]);
-
-  useEffect(() => {
-    isEditChatModalOpen === true
-      ? dialogRef.current?.showModal()
-      : dialogRef.current?.close();
-  }, [isEditChatModalOpen]);
-
-  function outsideModalClickHandler(e: React.MouseEvent) {
-    const dialogDimensions = dialogRef.current?.getBoundingClientRect();
-    if (
-      dialogDimensions &&
-      (e.clientX < dialogDimensions.left ||
-        e.clientX > dialogDimensions.right ||
-        e.clientY < dialogDimensions.top ||
-        e.clientY > dialogDimensions.bottom)
-    ) {
-      dialogRef.current?.close();
-      setIsEditChatModalOpen(false);
-    }
-  }
 
   return (
     <dialog
