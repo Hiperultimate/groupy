@@ -18,6 +18,7 @@ import { menuItems } from "./HeaderMenu";
 import useGetFriendsPagination from "~/hooks/useGetFriendsPagination";
 import useGetGroupMemberPagination from "~/hooks/useGetGroupMemberPagination";
 import useHandleModalOutsideClick from "~/hooks/useHandleModalOutsideClick";
+import useDebouncer from "~/hooks/useDebouncer";
 
 export const invokeChatMemberEditModal = (
   setIsEditChatModalOpen: SetterOrUpdater<boolean>,
@@ -80,33 +81,16 @@ const ChatMemberEditModal = () => {
     invite_member: loadMoreFriends,
   };
 
+  useDebouncer({
+    inputState: searchInput,
+    durationMS: 500,
+    triggerFn: editType ? fetchHandlers[editType] : () => {},
+    triggerCondition: chatId ? true : false,
+  });
+
   useEffect(() => {
     fetchHandlers[editType]?.();
   }, [editType]);
-
-  const timerRef = useRef<null | NodeJS.Timeout>(null);
-  const timeoutFn = () => {
-    return setTimeout(() => {
-      fetchHandlers[editType]?.();
-    }, 500);
-  };
-
-  // Get raw users without search , Get users with search
-  useEffect(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    if (chatId) {
-      timerRef.current = timeoutFn();
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, [searchInput]);
 
   return (
     <dialog
