@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 
@@ -62,7 +62,7 @@ const useGetFriendsPagination = ({
     }
   );
 
-  const startFetchingFriends = () => {
+  const startFetchingFriends = useCallback(() => {
     const cachedData = utils.group.getFriendListNotInGroup.getInfiniteData({
       groupId: chatId,
       searchString: searchInput,
@@ -72,9 +72,7 @@ const useGetFriendsPagination = ({
     if (cachedData) {
       // Update search result with all cached pages
       setSearchResult(
-        cachedData.pages.flatMap((page) =>
-          getFriendFormat(page.userList)
-        )
+        cachedData.pages.flatMap((page) => getFriendFormat(page.userList))
       );
 
       // Check if more pages exist
@@ -87,9 +85,18 @@ const useGetFriendsPagination = ({
     } else {
       refetch(); // Fetch initial data from the backend if no cached data exists
     }
-  };
+  }, [
+    utils.group.getFriendListNotInGroup,
+    chatId,
+    searchInput,
+    limit,
+    setSearchResult,
+    getFriendFormat,
+    fetchNextPage,
+    refetch,
+  ]);
 
-  const loadMoreFriends = () => {
+  const loadMoreFriends = useCallback(() => {
     const cachedData = utils.group.getFriendListNotInGroup.getInfiniteData({
       groupId: chatId,
       searchString: searchInput,
@@ -105,7 +112,13 @@ const useGetFriendsPagination = ({
     } else {
       console.log("No more pages to fetch, using cached data.");
     }
-  };
+  }, [
+    utils.group.getFriendListNotInGroup,
+    chatId,
+    searchInput,
+    limit,
+    fetchNextPage,
+  ]);
 
   return {
     searchResult,

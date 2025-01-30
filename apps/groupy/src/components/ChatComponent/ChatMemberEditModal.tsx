@@ -2,6 +2,7 @@ import {
   type Dispatch,
   type SetStateAction,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -69,17 +70,23 @@ const ChatMemberEditModal = () => {
     limit: 2,
   });
 
-  const fetchHandlers = {
-    make_moderator: startFetchingGroupMembers,
-    remove_member: startFetchingGroupMembers,
-    invite_member: startFetchingFriends,
-  };
+  const fetchHandlers = useMemo(
+    () => ({
+      make_moderator: startFetchingGroupMembers,
+      remove_member: startFetchingGroupMembers,
+      invite_member: startFetchingFriends,
+    }),
+    [startFetchingGroupMembers, startFetchingFriends]
+  );
 
-  const loadMoreHandlers = {
-    make_moderator: loadMoreGroupMembers,
-    remove_member: loadMoreGroupMembers,
-    invite_member: loadMoreFriends,
-  };
+  const loadMoreHandlers = useMemo(
+    () => ({
+      make_moderator: loadMoreGroupMembers,
+      remove_member: loadMoreGroupMembers,
+      invite_member: loadMoreFriends,
+    }),
+    [loadMoreGroupMembers, loadMoreFriends]
+  );
 
   useDebouncer({
     inputState: searchInput,

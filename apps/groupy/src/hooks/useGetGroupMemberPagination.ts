@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 
@@ -67,7 +67,7 @@ const useGetGroupMemberPagination = ({
     }
   );
 
-  const startFetchingGroupMembers = () => {
+  const startFetchingGroupMembers = useCallback(() => {
     const cachedData =
       utils.group.getGroupMembersExceptModerators.getInfiniteData({
         groupId: chatId,
@@ -93,9 +93,18 @@ const useGetGroupMemberPagination = ({
     } else {
       refetch(); // Fetch initial data from the backend if no cached data exists
     }
-  };
+  }, [
+    utils.group.getGroupMembersExceptModerators,
+    chatId,
+    searchInput,
+    limit,
+    setSearchResult,
+    getGroupMemberFormat,
+    fetchNextPage,
+    refetch,
+  ]);
 
-  const loadMoreGroupMembers = () => {
+  const loadMoreGroupMembers = useCallback(() => {
     const cachedData = utils.group.getGroupMembersExceptModerators.getInfiniteData({
       groupId: chatId,
       searchString: searchInput,
@@ -111,7 +120,13 @@ const useGetGroupMemberPagination = ({
     } else {
       console.log("No more pages to fetch, using cached data.");
     }
-  };
+  },[
+    utils.group.getGroupMembersExceptModerators,
+    chatId,
+    searchInput,
+    limit,
+    fetchNextPage,
+  ]);
 
   return {
     searchResult,

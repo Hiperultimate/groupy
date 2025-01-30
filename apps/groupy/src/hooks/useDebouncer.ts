@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 const useDebouncer = ({
   inputState,
@@ -12,21 +12,21 @@ const useDebouncer = ({
   triggerCondition?: boolean;
 }) => {
   const timerRef = useRef<null | NodeJS.Timeout>(null);
-  const timeoutFn = () => {
+  const timeoutFn = useCallback(() => {
     return setTimeout(() => {
       triggerFn();
     }, durationMS);
-  };
+  }, [durationMS, triggerFn]);
 
   // Get raw users without search , Get users with search
   useEffect(() => {
-    if (triggerCondition) {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+    if (!triggerCondition) return;
 
-      timerRef.current = timeoutFn();
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
     }
+
+    timerRef.current = timeoutFn();
 
     return () => {
       if (timerRef.current) {
