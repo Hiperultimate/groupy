@@ -75,23 +75,24 @@ const useGetGroupMemberPagination = ({
         limit,
       });
 
-    if (cachedData) {
-      // Update search result with all cached pages
-      setSearchResult(
-        cachedData.pages.flatMap((page) =>
-          getGroupMemberFormat(page.groupMembers)
-        )
-      );
+    if (!cachedData) {
+      refetch();
+      return;
+    }
 
-      // Check if more pages exist
-      const hasNextPage =
-        cachedData.pages[cachedData.pages.length - 1]?.cursor !== undefined;
+    // Update search result with all cached pages
+    setSearchResult(
+      cachedData.pages.flatMap((page) =>
+        getGroupMemberFormat(page.groupMembers)
+      )
+    );
 
-      if (hasNextPage) {
-        fetchNextPage(); // Fetch next page if there are more results
-      }
-    } else {
-      refetch(); // Fetch initial data from the backend if no cached data exists
+    // Check if more pages exist
+    const hasNextPage =
+      cachedData.pages[cachedData.pages.length - 1]?.cursor !== undefined;
+
+    if (hasNextPage) {
+      fetchNextPage();
     }
   }, [
     utils.group.getGroupMembersExceptModerators,
@@ -105,22 +106,21 @@ const useGetGroupMemberPagination = ({
   ]);
 
   const loadMoreGroupMembers = useCallback(() => {
-    const cachedData = utils.group.getGroupMembersExceptModerators.getInfiniteData({
-      groupId: chatId,
-      searchString: searchInput,
-      limit,
-    });
+    const cachedData =
+      utils.group.getGroupMembersExceptModerators.getInfiniteData({
+        groupId: chatId,
+        searchString: searchInput,
+        limit,
+      });
 
     // Determine if there are more pages to fetch
     const hasNextPage =
       cachedData?.pages[cachedData.pages.length - 1]?.cursor !== undefined;
 
-    if (hasNextPage) {
-      fetchNextPage(); // Fetch the next page
-    } else {
-      console.log("No more pages to fetch, using cached data.");
-    }
-  },[
+    if (!hasNextPage) return;
+
+    fetchNextPage(); // Fetch the next page
+  }, [
     utils.group.getGroupMembersExceptModerators,
     chatId,
     searchInput,
