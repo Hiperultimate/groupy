@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { api } from "~/utils/api";
 
@@ -88,10 +88,10 @@ const useGetGroupMemberPagination = ({
     );
 
     // Check if more pages exist
-    const hasNextPage =
+    const cacheHasNextPage =
       cachedData.pages[cachedData.pages.length - 1]?.cursor !== undefined;
 
-    if (hasNextPage) {
+    if (cacheHasNextPage) {
       fetchNextPage();
     }
   }, [
@@ -114,10 +114,10 @@ const useGetGroupMemberPagination = ({
       });
 
     // Determine if there are more pages to fetch
-    const hasNextPage =
+    const cacheHasNextPage =
       cachedData?.pages[cachedData.pages.length - 1]?.cursor !== undefined;
 
-    if (!hasNextPage) return;
+    if (!cacheHasNextPage) return;
 
     fetchNextPage(); // Fetch the next page
   }, [

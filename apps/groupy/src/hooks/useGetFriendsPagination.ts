@@ -80,10 +80,10 @@ const useGetFriendsPagination = ({
     );
 
     // Check if more pages exist
-    const hasNextPage =
+    const cacheHasNextPage =
       cachedData.pages[cachedData.pages.length - 1]?.cursor !== undefined;
 
-    if (hasNextPage) {
+    if (cacheHasNextPage) {
       fetchNextPage();
     }
   }, [
@@ -105,10 +105,10 @@ const useGetFriendsPagination = ({
     });
 
     // Determine if there are more pages to fetch
-    const hasNextPage =
+    const cacheHasNextPage =
       cachedData?.pages[cachedData.pages.length - 1]?.cursor !== undefined;
 
-    if(!hasNextPage) return;
+    if(!cacheHasNextPage) return;
     
     fetchNextPage(); // Fetch the next page
   }, [
