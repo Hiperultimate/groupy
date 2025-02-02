@@ -20,6 +20,7 @@ import useGetFriendsPagination from "~/hooks/useGetFriendsPagination";
 import useGetGroupMemberPagination from "~/hooks/useGetGroupMemberPagination";
 import useHandleModalOutsideClick from "~/hooks/useHandleModalOutsideClick";
 import useDebouncer from "~/hooks/useDebouncer";
+import { ColorRing } from "react-loader-spinner";
 
 export const invokeChatMemberEditModal = (
   setIsEditChatModalOpen: SetterOrUpdater<boolean>,
@@ -54,6 +55,7 @@ const ChatMemberEditModal = () => {
     searchResult: groupMemberSearchResult,
     startFetchingGroupMembers,
     loadMoreGroupMembers,
+    queryOpts: { isFetching: isGroupMemberSearchFetching },
   } = useGetGroupMemberPagination({
     chatId: chatId,
     searchInput: searchInput,
@@ -64,6 +66,7 @@ const ChatMemberEditModal = () => {
     searchResult: friendSearchResult,
     startFetchingFriends,
     loadMoreFriends,
+    queryOpts: { isFetching: isFriendSearchFetching },
   } = useGetFriendsPagination({
     chatId: chatId,
     searchInput: searchInput,
@@ -99,6 +102,31 @@ const ChatMemberEditModal = () => {
     fetchHandlers[editType]?.();
   }, [editType]);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    if (!scrollContainerRef.current || !sentinelRef.current) return;
+    const options = {
+      root: scrollContainerRef.current,
+      rootMargin: "0px",
+      threshold: 1.0,
+    };
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting && loadMoreHandlers[editType]) {
+        console.log("Reached the bottom, now fetching users...");
+        loadMoreHandlers[editType]();
+      }
+    }, options);
+
+    observer.current.observe(sentinelRef.current);
+    return () => {
+      observer.current?.disconnect();
+    };
+  }, [loadMoreHandlers, editType]);
+
   return (
     <dialog
       ref={dialogRef}
@@ -111,15 +139,11 @@ const ChatMemberEditModal = () => {
           setValueState={setSearchInput}
           placeholder="Search users..."
         />
-        <button
-          onClick={() => {
-            loadMoreHandlers[editType]();
-          }}
-        >
-          Get more users
-        </button>
       </div>
-      <div className="h-[450px] overflow-y-scroll pr-2">
+      <div
+        ref={scrollContainerRef}
+        className="h-[300px] overflow-y-scroll pr-2"
+      >
         {(editType === "make_moderator" || editType === "remove_member"
           ? groupMemberSearchResult
           : friendSearchResult
@@ -139,6 +163,17 @@ const ChatMemberEditModal = () => {
             </div>
           );
         })}
+        <div className="flex w-full justify-center" ref={sentinelRef}>
+          <ColorRing
+            visible={isGroupMemberSearchFetching || isFriendSearchFetching}
+            height="60"
+            width="60"
+            ariaLabel="blocks-loading"
+            wrapperStyle={{}}
+            wrapperClass="blocks-wrapper"
+            colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
+          />
+        </div>
       </div>
     </dialog>
   );
